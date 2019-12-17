@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:magpie_log/file/data_analysis.dart';
 import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
 import 'package:redux/redux.dart';
 
@@ -69,7 +70,13 @@ class _LogScreenState extends State<LogScreen> {
                     });
                     log = "[" + logs.toString() + "]";
                   });
+
+                  MagpieDataAnalysis().writeFile(log);
                 },
+              ),
+              IconButton(
+                icon: Icon(Icons.accessible_forward),
+                onPressed: _redLog,
               )
             ],
           ),
@@ -93,4 +100,6 @@ class _LogScreenState extends State<LogScreen> {
       ),
     );
   }
+
+  Function _redLog() {}
 }
