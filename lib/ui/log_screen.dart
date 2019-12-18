@@ -5,20 +5,29 @@ import 'package:magpie_log/interceptor/interceptor_state_log.dart';
 
 import 'package:redux/redux.dart';
 
-class LogScreen extends StatefulWidget {
-  final Map<String, dynamic> data;
+const int screenLogType = 1; //埋点类型：页面
+const int circleLogType = 2; //埋点类型：redux全局数据埋点
+const int stateLogType = 3; //埋点类型：state局部数据埋点
 
+class LogScreen extends StatefulWidget {
+  //通用参数
+  final int logType; //埋点类型
+  final Map<String, dynamic> data;
+  final String actionName;
+
+  //circleLogType参数
+  final dynamic action; //没有actionName用action替代
   final Store<LogState> store;
-  final dynamic action;
   final NextDispatcher next;
 
-  final String actionName;
+  //stateLogType参数
   final Function func;
   final WidgetLogState state;
 
   const LogScreen(
       {Key key,
-      this.data,
+      @required this.data,
+      @required this.logType,
       this.store,
       this.action,
       this.next,
@@ -50,7 +59,6 @@ class _LogScreenState extends State<LogScreen> {
     });
 
     //TODO:已经配置过得直接展示
-
     super.initState();
   }
 
@@ -63,14 +71,11 @@ class _LogScreenState extends State<LogScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          new Text(
+          Text(
             "Pramas to choose:",
             style: TextStyle(
                 fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
           ),
-//          new Text(
-//            widget.data.toString(),
-//          ),
           SizedBox(
               height: 250,
               child: ListView.builder(
@@ -86,7 +91,7 @@ class _LogScreenState extends State<LogScreen> {
                         });
                   },
                   itemCount: paramList.length)),
-          new Text(
+          Text(
             "Add log or pass?",
             style: TextStyle(
                 fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
@@ -98,9 +103,16 @@ class _LogScreenState extends State<LogScreen> {
                 child: Text("Pass",
                     style: TextStyle(fontSize: 18, color: Colors.lightGreen)),
                 onPressed: () {
-                  widget.next != null
-                      ? widget.next(widget.action)
-                      : widget.state.setRealState(widget.func);
+                  switch (widget.logType) {
+                    case screenLogType:
+                      break;
+                    case stateLogType:
+                      widget.state.setRealState(widget.func);
+                      break;
+                    case circleLogType:
+                      widget.next(widget.action);
+                      break;
+                  }
                   Navigator.pop(context);
                 },
               ),
@@ -109,7 +121,7 @@ class _LogScreenState extends State<LogScreen> {
                 child: Text("log",
                     style: TextStyle(fontSize: 18, color: Colors.deepOrange)),
                 onPressed: () {
-                  if (widget.next == null) {
+                  if (widget.logType == stateLogType) {
                     widget.state.logStatus = 1;
                     widget.state.setRealState(() {});
                   }
@@ -123,10 +135,13 @@ class _LogScreenState extends State<LogScreen> {
                     });
                     log = "[" + logs.toString() + "]";
 
-                    log = widget.action != null
-                        ? widget.action.toString() + ":$log"
-                        : widget.actionName + ":$log";
-
+                    if (widget.actionName != null) {
+                      log = widget.actionName + ":$log";
+                    } else if (widget.action != null) {
+                      log = widget.action.toString() + ":$log";
+                    } else {
+                      debugPrint("error:no action key found!");
+                    }
                   });
 
                   MagpieDataAnalysis().writeFile(log);
@@ -138,7 +153,7 @@ class _LogScreenState extends State<LogScreen> {
               )
             ],
           ),
-          new Text(
+          Text(
             "Config for log:",
             style: TextStyle(
                 fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),

@@ -24,13 +24,12 @@ class LogObserver<S> extends NavigatorObserver {
           Navigator.of(maContext).push(MaterialPageRoute(
               settings: RouteSettings(name: "/LogScreen"),
               builder: (BuildContext context) {
-                return LogScreen(data: logState.toJson());
+                return LogScreen(
+                    data: logState.toJson(), logType: screenLogType);
               }));
 
           print("route" + logState.toJson().toString());
-        } catch (e, stack) {
-
-        }
+        } catch (e, stack) {}
       }
     }
   }

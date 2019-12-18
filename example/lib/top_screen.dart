@@ -18,7 +18,7 @@ class _TopScreenState extends State<TopScreen> {
         title: Text('Magpie Log'),
       ),
       body: Column(children: [
-        new Text(
+        Text(
           "Redux Action:",
           style: TextStyle(
               fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
@@ -44,7 +44,7 @@ class _TopScreenState extends State<TopScreen> {
             );
           },
         ),
-        new Text(
+        Text(
           "Widget SetState:",
           style: TextStyle(
               fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),

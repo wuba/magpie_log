@@ -24,7 +24,11 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
         settings: RouteSettings(name: "/LogScreen"),
         builder: (BuildContext context) {
           return LogScreen(
-              data: json, store: store, action: action, next: next);
+              data: json,
+              logType: circleLogType,
+              store: store,
+              action: action,
+              next: next);
         }));
   }
 }

@@ -15,10 +15,10 @@ class _UnderScreenState extends State<UnderScreen> {
         title: Text('Under Screen'),
       ),
       body: Center(
-        child: new Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new Text(
+            Text(
               'You have pushed the button this many times:',
             ),
             StoreConnector<CountState, int>(

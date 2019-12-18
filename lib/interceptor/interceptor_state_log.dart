@@ -30,6 +30,7 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
         builder: (BuildContext context) {
           return LogScreen(
             data: json,
+            logType: stateLogType,
             actionName: getActionName(),
             func: fn,
             state: this,

@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
           // '/': (BuildContext context) => new OnePage(),
           // Navigator.defaultRouteName:(BuildContext context) => new MyHomePage(),
           //key：value形式
-          '/': (BuildContext context) => new TopScreen(),
+          '/': (BuildContext context) => TopScreen(),
           '/UnderScreen': (BuildContext context) => UnderScreen(),
         },
         navigatorObservers: [
