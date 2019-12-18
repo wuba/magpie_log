@@ -1,16 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
-import 'package:meta/meta.dart';
-
 
 part 'count_state.g.dart';
 
 ///State中所有属性都应该是只读的
 
-@immutable
 @JsonSerializable()
-class CountState implements LogState {
+class CountState extends LogState {
   final int count;
   final int param1;
   final int param2;
