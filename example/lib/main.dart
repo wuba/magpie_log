@@ -24,10 +24,6 @@ class MyApp extends StatelessWidget {
       store: store,
       child: MaterialApp(
         routes: {
-          ///这两个不能同时出现，而且home不为null，不可以设置这个
-          // '/': (BuildContext context) => new OnePage(),
-          // Navigator.defaultRouteName:(BuildContext context) => new MyHomePage(),
-          //key：value形式
           '/': (BuildContext context) => TopScreen(),
           '/UnderScreen': (BuildContext context) => UnderScreen(),
         },
@@ -36,7 +32,6 @@ class MyApp extends StatelessWidget {
         ],
         title: 'Flutter Demo',
         theme: ThemeData(primarySwatch: Colors.deepOrange),
-//        home: TopScreen(),
       ),
     );
   }
