@@ -149,18 +149,23 @@ class _LogScreenState extends State<LogScreen> {
               ),
               IconButton(
                 icon: Icon(Icons.accessible_forward),
-                onPressed: () async {
-                  setState(() async {
-                    readAllLog = await MagpieDataAnalysis().readFileData();
+                onPressed: () {
+                  MagpieDataAnalysis().readFileData().then((allLog) {
+                    setState(() {
+                      readAllLog = allLog;
+                    });
                   });
                 },
               ),
               IconButton(
                 icon: Icon(Icons.add_shopping_cart),
-                onPressed: () async {
-                  setState(() async {
-                    readActionLog =
-                        await MagpieDataAnalysis().readActionData('testAction');
+                onPressed: () {
+                  MagpieDataAnalysis()
+                      .readActionData('testAction')
+                      .then((actionLog) {
+                    setState(() {
+                      readActionLog = actionLog;
+                    });
                   });
                 },
               ),
