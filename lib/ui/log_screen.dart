@@ -26,7 +26,7 @@ class ParamItem {
 
 class _LogScreenState extends State<LogScreen> {
   List<ParamItem> paramList = [];
-  String log;
+  String log, readAllLog, readActionLog;
 
   @override
   void initState() {
@@ -71,12 +71,32 @@ class _LogScreenState extends State<LogScreen> {
                     log = "[" + logs.toString() + "]";
                   });
 
-                  MagpieDataAnalysis().writeFile(log);
+                  MagpieDataAnalysis().writeData('testAction', log);
                 },
               ),
               IconButton(
                 icon: Icon(Icons.accessible_forward),
-                onPressed: _redLog,
+                onPressed: () async {
+                  setState(() async {
+                    readAllLog = await MagpieDataAnalysis().readFileData();
+                  });
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.add_shopping_cart),
+                onPressed: () async {
+                  setState(() async {
+                    readActionLog =
+                        await MagpieDataAnalysis().readActionData('testAction');
+                  });
+                },
+              ),
+              MaterialButton(
+                child: Text('save',
+                    style: TextStyle(color: Colors.blueAccent, fontSize: 20)),
+                onPressed: () async {
+                  await MagpieDataAnalysis().saveData();
+                },
               )
             ],
           ),
@@ -95,11 +115,16 @@ class _LogScreenState extends State<LogScreen> {
                         });
                   },
                   itemCount: paramList.length)),
-          Text(widget.action.toString() + ":$log")
+          Column(
+            children: <Widget>[
+              Text(widget.action.toString() + ":$log"),
+              Text(
+                  widget.action.toString() + " readActionLog = $readActionLog"),
+              Text("readAllLog = $readAllLog"),
+            ],
+          ),
         ],
       ),
     );
   }
-
-  Function _redLog() {}
 }
