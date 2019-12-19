@@ -51,4 +51,8 @@ pubspec.lock
 !**/ios/**/default.mode2v3
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
+!**/ios/**/GeneratedPluginRegistrant.h
+!**/ios/**/GeneratedPluginRegistrant.m
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+flutter_export_environment.sh
+Podfile
