@@ -50,7 +50,7 @@ class ParamItem {
 
 class _LogScreenState extends State<LogScreen> {
   List<ParamItem> paramList = [];
-  String log = "";
+  String log = "", readAllLog, readActionLog;
 
   @override
   void initState() {
@@ -144,12 +144,32 @@ class _LogScreenState extends State<LogScreen> {
                     }
                   });
 
-                  MagpieDataAnalysis().writeFile(log);
+                  MagpieDataAnalysis().writeData('testAction', log);
                 },
               ),
               IconButton(
                 icon: Icon(Icons.accessible_forward),
-                onPressed: _redLog,
+                onPressed: () async {
+                  setState(() async {
+                    readAllLog = await MagpieDataAnalysis().readFileData();
+                  });
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.add_shopping_cart),
+                onPressed: () async {
+                  setState(() async {
+                    readActionLog =
+                        await MagpieDataAnalysis().readActionData('testAction');
+                  });
+                },
+              ),
+              MaterialButton(
+                child: Text('save',
+                    style: TextStyle(color: Colors.blueAccent, fontSize: 20)),
+                onPressed: () async {
+                  await MagpieDataAnalysis().saveData();
+                },
               )
             ],
           ),
@@ -158,11 +178,34 @@ class _LogScreenState extends State<LogScreen> {
             style: TextStyle(
                 fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
           ),
-          Text(log)
+          Column(
+            children: <Widget>[
+              Container(
+                child: Text(
+                  widget.action.toString() + ":$log",
+                  textAlign: TextAlign.center,
+                ),
+                margin: const EdgeInsets.all(10),
+              ),
+              Container(
+                child: Text(
+                  widget.action.toString() + " readActionLog = $readActionLog",
+                  textAlign: TextAlign.center,
+                ),
+                margin: const EdgeInsets.all(10),
+              ),
+              Container(
+                child: Text(
+                  "readAllLog = $readAllLog",
+                  textAlign: TextAlign.center,
+                ),
+                margin: const EdgeInsets.all(10),
+              ),
+            ],
+            mainAxisAlignment: MainAxisAlignment.center,
+          ),
         ],
       ),
     );
   }
-
-  Function _redLog() {}
 }
