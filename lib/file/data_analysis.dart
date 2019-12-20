@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:device_info/device_info.dart';
+import 'package:flutter/material.dart';
 import 'package:magpie_log/constants.dart';
 import 'package:magpie_log/file/file_utils.dart';
 import 'package:magpie_log/model/analysis_model.dart';
@@ -32,7 +33,8 @@ class MagpieDataAnalysis {
         contents: jsonEncode(analysisData.toJson()));
   }
 
-  Future<Null> writeData(String action, String data) async {
+  Future<Null> writeData(
+      BuildContext context, String action, String data) async {
     if (action.isEmpty || data.isEmpty) {
       print('$tag writeData error!!! action or content is empty...');
       return;
@@ -40,7 +42,7 @@ class MagpieDataAnalysis {
 
     if (_listData.isEmpty) {
       //首次添加先获取全量数据
-      String analysisData = await readFileData();
+      String analysisData = await readFileData(context);
       if (analysisData.isNotEmpty) {
         Map<String, dynamic> analysis = jsonDecode(analysisData);
         AnalysisData data = AnalysisData.fromJson(analysis);
@@ -63,11 +65,17 @@ class MagpieDataAnalysis {
   }
 
   ///完整的圈选数据读取
-  Future<String> readFileData() async {
+  Future<String> readFileData(BuildContext context) async {
     try {
-      String all = await MagpieFileUtils()
-          .readFile(dirName: dirName, fileName: fileName);
-      return all;
+      if (!Constants.isDebug) {
+        String data = await MagpieFileUtils()
+            .readFile(dirName: dirName, fileName: fileName);
+        return data;
+      } else {
+        String data = await DefaultAssetBundle.of(context)
+            .loadString('assets/analysis.json');
+        return data;
+      }
     } catch (e) {
       print('$tag : readFile error = $e');
     }
@@ -76,9 +84,9 @@ class MagpieDataAnalysis {
   }
 
   ///根据圈选埋点的action，读取指定数据。[action] 圈选埋点的key。
-  Future<String> readActionData(String action) async {
+  Future<String> readActionData(BuildContext context, String action) async {
     if (_listData.isEmpty) {
-      String analysisData = await readFileData();
+      String analysisData = await readFileData(context);
       if (analysisData.isNotEmpty) {
         Map<String, dynamic> analysis = jsonDecode(analysisData);
         AnalysisData data = AnalysisData.fromJson(analysis);
