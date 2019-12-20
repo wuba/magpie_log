@@ -1,4 +1,4 @@
-import 'package:example/states/count_state.dart';
+import 'package:example/states/app_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magpie_log/file/data_analysis.dart';
 import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
@@ -44,22 +45,86 @@ class ParamItem {
   String key;
   String value;
   bool isChecked = false;
+  bool isPaneled = false;
+  List<ParamItem> paramItems;
 
-  ParamItem(this.key, this.value);
+  ParamItem(this.key, this.value, {this.paramItems});
 }
 
 class _LogScreenState extends State<LogScreen> {
   List<ParamItem> paramList = [];
   String log = "", readAllLog, readActionLog;
 
+  ///递归参数数据初始化
+  void initParam(Map map, List<ParamItem> paramList) {
+    if (map == null) return;
+    map.forEach((k, v) {
+      List<ParamItem> paramList2 = [];
+      if (v is! String && v is! int && v is! double && v is! bool) {
+        initParam(v, paramList2);
+      }
+
+      paramList.add(ParamItem(k, v.toString(), paramItems: paramList2));
+    });
+  }
+
   @override
   void initState() {
-    widget.data.forEach((k, v) {
-      paramList.add(ParamItem(k, v.toString()));
-    });
-
+    initParam(widget.data, paramList);
     //TODO:已经配置过得直接展示
     super.initState();
+  }
+
+  Widget getPaneledItem(bool isPaneled, ParamItem paramItem) {
+    if (isPaneled) {
+      return Padding(
+          padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
+          child: Column(children: intChildList(paramItem.paramItems)));
+    } else {
+      return Container(height: 0, width: 0);
+    }
+  }
+
+  List<Widget> intChildList(List<ParamItem> paramList) {
+    List<Widget> widgetList = [];
+
+    for (int index = 0; index < paramList.length; index++) {
+      if (paramList[index].paramItems.length == 0) {
+        widgetList.add(CheckboxListTile(
+            value: paramList[index].isChecked,
+            title: Text(paramList[index].key),
+            subtitle: Text(paramList[index].value),
+            onChanged: (bool) {
+              setState(() {
+                paramList[index].isChecked = bool;
+              });
+            }));
+      } else {
+        widgetList.add(Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      paramList[index].isPaneled = !paramList[index].isPaneled;
+                    });
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(16, 10, 0, 0),
+                    child: Text(paramList[index].key,
+                        style: TextStyle(fontSize: 15)),
+                  )),
+              getPaneledItem(paramList[index].isPaneled, paramList[index])
+            ]));
+      }
+    }
+
+    return widgetList;
+  }
+
+  ///递归参数圈选列表
+  Widget initPanelList(List<ParamItem> paramList) {
+    return Expanded(child: ListView(children: intChildList(paramList)));
   }
 
   @override
@@ -69,28 +134,8 @@ class _LogScreenState extends State<LogScreen> {
         title: Text('圈选页面'),
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Text(
-            "Pramas to choose:",
-            style: TextStyle(
-                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(
-              height: 250,
-              child: ListView.builder(
-                  itemBuilder: (BuildContext context, int index) {
-                    return CheckboxListTile(
-                        value: paramList[index].isChecked,
-                        title: Text(paramList[index].key),
-                        subtitle: Text(paramList[index].value),
-                        onChanged: (bool) {
-                          setState(() {
-                            paramList[index].isChecked = bool;
-                          });
-                        });
-                  },
-                  itemCount: paramList.length)),
           Text(
             "Add log or pass?",
             style: TextStyle(
@@ -135,6 +180,9 @@ class _LogScreenState extends State<LogScreen> {
                     });
                     log = "[" + logs.toString() + "]";
 
+                    Map map = Map();
+                    getLog(map, paramList);
+                    log = map.toString();
                     if (widget.actionName != null) {
                       log = widget.actionName + ":$log";
                     } else if (widget.action != null) {
@@ -209,8 +257,32 @@ class _LogScreenState extends State<LogScreen> {
             ],
             mainAxisAlignment: MainAxisAlignment.center,
           ),
+          Text(
+            "Pramas to choose:",
+            style: TextStyle(
+                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+          initPanelList(paramList),
         ],
       ),
     );
+  }
+
+  ///生成日志递归
+  bool getLog(Map map, List<ParamItem> paramList) {
+    bool isChecked = false;
+    paramList.forEach((param) {
+      if (param.paramItems.length == 0 && param.isChecked == true) {
+        map[param.key] = 1;
+        isChecked = true;
+      } else {
+        Map childMap = Map();
+        if (getLog(childMap, param.paramItems)) {
+          map[param.key] = childMap;
+          isChecked = true;
+        }
+      }
+    });
+    return isChecked;
   }
 }

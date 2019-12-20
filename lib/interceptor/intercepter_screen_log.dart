@@ -21,6 +21,15 @@ class LogObserver<S> extends NavigatorObserver {
           //route.currentResult获取返回内容
           //....等等
 
+          String actionName = "";
+          if (route is MaterialPageRoute) {
+            MaterialPageRoute materialPageRoute = route;
+            Function a = materialPageRoute.builder;
+            a.toString();
+          }
+
+          actionName =
+              route.settings.name != null ? route.settings.name : actionName;
           Navigator.of(maContext).push(MaterialPageRoute(
               settings: RouteSettings(name: "/LogScreen"),
               builder: (BuildContext context) {
@@ -29,7 +38,9 @@ class LogObserver<S> extends NavigatorObserver {
               }));
 
           print("route" + logState.toJson().toString());
-        } catch (e, stack) {}
+        } catch (e, stack) {
+          debugPrint(e);
+        }
       }
     }
   }
