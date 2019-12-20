@@ -21,8 +21,8 @@ class _UnderScreenState extends State<UnderScreen> {
             Text(
               'You have pushed the button this many times:',
             ),
-            StoreConnector<CountState, int>(
-              converter: (store) => store.state.count,
+            StoreConnector<AppState, int>(
+              converter: (store) => store.state.countState.count,
               builder: (context, count) {
                 return Text(
                   count.toString(),
@@ -33,7 +33,7 @@ class _UnderScreenState extends State<UnderScreen> {
           ],
         ),
       ),
-      floatingActionButton: StoreConnector<CountState, VoidCallback>(
+      floatingActionButton: StoreConnector<AppState, VoidCallback>(
         converter: (store) {
           return () => store.dispatch(LogAction.increment);
         },
