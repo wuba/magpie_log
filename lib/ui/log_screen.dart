@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magpie_log/file/data_analysis.dart';
 import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
@@ -74,34 +75,56 @@ class _LogScreenState extends State<LogScreen> {
     super.initState();
   }
 
+  Widget getPaneledItem(bool isPaneled, ParamItem paramItem) {
+    if (isPaneled) {
+      return Padding(
+          padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
+          child: Column(children: intChildList(paramItem.paramItems)));
+    } else {
+      return Container(height: 0, width: 0);
+    }
+  }
+
+  List<Widget> intChildList(List<ParamItem> paramList) {
+    List<Widget> widgetList = [];
+
+    for (int index = 0; index < paramList.length; index++) {
+      if (paramList[index].paramItems.length == 0) {
+        widgetList.add(CheckboxListTile(
+            value: paramList[index].isChecked,
+            title: Text(paramList[index].key),
+            subtitle: Text(paramList[index].value),
+            onChanged: (bool) {
+              setState(() {
+                paramList[index].isChecked = bool;
+              });
+            }));
+      } else {
+        widgetList.add(Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      paramList[index].isPaneled = !paramList[index].isPaneled;
+                    });
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(16, 10, 0, 0),
+                    child: Text(paramList[index].key,
+                        style: TextStyle(fontSize: 15)),
+                  )),
+              getPaneledItem(paramList[index].isPaneled, paramList[index])
+            ]));
+      }
+    }
+
+    return widgetList;
+  }
+
   ///递归参数圈选列表
   Widget initPanelList(List<ParamItem> paramList) {
-    return Padding(
-        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-        child: SizedBox(
-            height: 72 * paramList.length.toDouble(),
-            child: ListView.builder(
-                itemBuilder: (BuildContext context, int index) {
-                  if (paramList[index].paramItems.length == 0) {
-                    return CheckboxListTile(
-                        value: paramList[index].isChecked,
-                        title: Text(paramList[index].key),
-                        subtitle: Text(paramList[index].value),
-                        onChanged: (bool) {
-                          setState(() {
-                            paramList[index].isChecked = bool;
-                          });
-                        });
-                  } else {
-                    return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(paramList[index].key),
-                          initPanelList(paramList[index].paramItems)
-                        ]);
-                  }
-                },
-                itemCount: paramList.length)));
+    return Expanded(child: ListView(children: intChildList(paramList)));
   }
 
   @override
@@ -110,16 +133,9 @@ class _LogScreenState extends State<LogScreen> {
         appBar: AppBar(
           title: Text('圈选页面'),
         ),
-        body: ListView(
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text(
-              "Pramas to choose:",
-              style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold),
-            ),
-            initPanelList(paramList),
             Text(
               "Add log or pass?",
               style: TextStyle(
@@ -167,8 +183,8 @@ class _LogScreenState extends State<LogScreen> {
                       log = "[" + logs.toString() + "]";
 
                       Map map = Map();
-                      getLog(map,paramList);
-                      log  = map.toString();
+                      getLog(map, paramList);
+                      log = map.toString();
                       if (widget.actionName != null) {
                         log = widget.actionName + ":$log";
                       } else if (widget.action != null) {
@@ -194,7 +210,15 @@ class _LogScreenState extends State<LogScreen> {
                   color: Colors.black,
                   fontWeight: FontWeight.bold),
             ),
-            Text(log)
+            Text(log),
+            Text(
+              "Pramas to choose:",
+              style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold),
+            ),
+            initPanelList(paramList),
           ],
         ));
   }
@@ -206,9 +230,9 @@ class _LogScreenState extends State<LogScreen> {
       if (param.paramItems.length == 0 && param.isChecked == true) {
         map[param.key] = 1;
         isChecked = true;
-      }else{
+      } else {
         Map childMap = Map();
-        if(getLog(childMap,param.paramItems)){
+        if (getLog(childMap, param.paramItems)) {
           map[param.key] = childMap;
           isChecked = true;
         }
