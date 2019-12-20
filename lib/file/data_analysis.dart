@@ -75,9 +75,14 @@ class MagpieDataAnalysis {
     }
     //数据去重
     if (_listData.any((item) => item.actionName == action)) {
-      print('$tag writeData list replace data');
+      print('$tag writeData list replace data, action = $action ');
       _listData.forEach((item) => {
-            if (item.actionName == action) {item.analysisData = data}
+            if (item.actionName == action)
+              {
+                item.analysisData = data,
+                print(
+                    '$tag writeData list replace data, action = $action : actionName = ${item.actionName}')
+              }
           });
     } else {
       print('$tag writeData list add data');

@@ -6,19 +6,18 @@ part of 'device_data.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-DeviceData _$DeviceDataFromJson(Map<String, dynamic> json) {
+DeviceData _$DeviceDataFromJson(Map<String, String> json) {
   return DeviceData(
-    json['clientId'] as String,
-    json['platform'] as String,
-    json['brand'] as String,
-    json['deviceId'] as String,
-    json['deviceVersion'] as String,
-    json['model'] as String,
+    json['clientId'],
+    json['platform'],
+    json['brand'],
+    json['deviceId'],
+    json['deviceVersion'],
+    json['model'],
   );
 }
 
-Map<String, dynamic> _$DeviceDataToJson(DeviceData instance) =>
-    <String, dynamic>{
+Map<String, String> _$DeviceDataToJson(DeviceData instance) => <String, String>{
       'platform': instance.platform,
       'clientId': instance.clientId,
       'deviceVersion': instance.deviceVersion,

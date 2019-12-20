@@ -192,7 +192,8 @@ class _LogScreenState extends State<LogScreen> {
                     }
                   });
 
-                  MagpieDataAnalysis().writeData('testAction', log);
+                  MagpieDataAnalysis()
+                      .writeData('${widget.action.toString()}', log);
                 },
               ),
               IconButton(
@@ -209,7 +210,7 @@ class _LogScreenState extends State<LogScreen> {
                 icon: Icon(Icons.add_shopping_cart),
                 onPressed: () {
                   MagpieDataAnalysis()
-                      .readActionData('testAction')
+                      .readActionData(widget.action.toString())
                       .then((actionLog) {
                     setState(() {
                       readActionLog = actionLog;
@@ -242,7 +243,7 @@ class _LogScreenState extends State<LogScreen> {
               ),
               Container(
                 child: Text(
-                  widget.action.toString() + " readActionLog = $readActionLog",
+                  "readActionLog = $readActionLog",
                   textAlign: TextAlign.center,
                 ),
                 margin: const EdgeInsets.all(10),
