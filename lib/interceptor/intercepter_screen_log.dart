@@ -25,8 +25,7 @@ class LogObserver<S> extends NavigatorObserver {
           if (route is MaterialPageRoute) {
             MaterialPageRoute materialPageRoute = route;
             Function a = materialPageRoute.builder;
-
-            actionName = a().toString();
+            a.toString();
           }
 
           actionName =
@@ -39,7 +38,9 @@ class LogObserver<S> extends NavigatorObserver {
               }));
 
           print("route" + logState.toJson().toString());
-        } catch (e, stack) {}
+        } catch (e, stack) {
+          debugPrint(e);
+        }
       }
     }
   }

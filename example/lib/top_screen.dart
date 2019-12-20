@@ -1,4 +1,4 @@
-import 'package:example/states/count_state.dart';
+import 'package:example/states/app_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
@@ -23,8 +23,8 @@ class _TopScreenState extends State<TopScreen> {
           style: TextStyle(
               fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
         ),
-        StoreConnector<CountState, int>(
-          converter: (store) => store.state.count,
+        StoreConnector<AppState, int>(
+          converter: (store) => store.state.countState.count,
           builder: (context, count) {
             return Text(
               count.toString(),
@@ -32,7 +32,7 @@ class _TopScreenState extends State<TopScreen> {
             );
           },
         ),
-        StoreConnector<CountState, VoidCallback>(
+        StoreConnector<AppState, VoidCallback>(
           converter: (store) {
             return () => store.dispatch(LogAction.increment);
           },
