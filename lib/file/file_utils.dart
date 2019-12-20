@@ -9,13 +9,12 @@ class MagpieFileUtils {
   final String baeFilePath = '/magpie';
 
   ///根据指定文件夹名称创建文件
-  ///[folderName]为空时，默认在magpie下创建文件
-  Future<File> _createFile(
-      {String folderName, @required String fileName}) async {
+  ///[dirName]为空时，默认在magpie下创建文件
+  Future<File> _createFile({String dirName, @required String fileName}) async {
     Directory baseDir = await getApplicationDocumentsDirectory();
     var filePath = Directory(baseDir.path);
-    if (folderName.isNotEmpty) {
-      filePath = Directory(baseDir.path + '/' + folderName);
+    if (dirName.isNotEmpty) {
+      filePath = Directory(baseDir.path + '/' + dirName);
     }
 
     try {
@@ -33,25 +32,25 @@ class MagpieFileUtils {
 
   ///文件中写入数据
   Future<Null> writeFile(
-      {String folderName,
+      {String dirName,
       @required String fileName,
       @required String contents}) async {
     if (fileName.isNotEmpty && contents.isNotEmpty) {
-      File file = await _createFile(folderName: folderName, fileName: fileName);
+      File file = await _createFile(dirName: dirName, fileName: fileName);
       if (!(await file.exists())) {
         file.create();
       }
-      print('$tag writeFile success : content = $contents');
       await (file).writeAsString(contents);
+      print('$tag writeFile success : content = $contents');
     } else {
       print('$tag writeFile error = fileName isEmpty or contents isEmpty');
     }
   }
 
-  Future<File> _getFile(String folderName, String fileName) async {
+  Future<File> _getFile(String dirName, String fileName) async {
     if (fileName.isNotEmpty) {
-      String filePath = folderName.isNotEmpty
-          ? (await getApplicationDocumentsDirectory()).path + '/' + folderName
+      String filePath = dirName.isNotEmpty
+          ? (await getApplicationDocumentsDirectory()).path + '/' + dirName
           : (await getApplicationDocumentsDirectory()).path;
 
       return File('$filePath/$fileName');
@@ -62,21 +61,43 @@ class MagpieFileUtils {
   }
 
   ///从文件中读书数据
-  Future<String> readFile(
-      {String folderName, @required String fileName}) async {
+  Future<String> readFile({String dirName, @required String fileName}) async {
     try {
-      File file = await _getFile(folderName, fileName);
+      File file = await _getFile(dirName, fileName);
       if (await file.exists()) {
         String contents = await file.readAsString();
 
         return contents;
       } else {
-        print('$tag readFile undefined');
+        print('$tag readFile 确定创建了？？？ --- ${file.path}');
       }
     } catch (e) {
       print('$tag readFile error = $e');
     }
 
     return '';
+  }
+
+  Future<bool> isExistsFile({String dirName, @required String fileName}) async {
+    File file = await _getFile(dirName, fileName);
+    if (await file.exists()) {
+      print(
+          '$tag isExistsFile =  true, fileName = $fileName , dirName = $dirName');
+      return true;
+    } else {
+      print(
+          '$tag isExistsFile =  false, fileName = $fileName , dirName = $dirName');
+      return false;
+    }
+  }
+
+  Future<Null> rmFile({String dirName, @required String fileName}) async {
+    if (await isExistsFile(fileName: fileName, dirName: dirName)) {
+      File file = await _getFile(dirName, fileName);
+      file.delete();
+
+      print(
+          '$tag rmFile rmove file, fileName = $fileName , dirName = $dirName');
+    }
   }
 }

@@ -4,5 +4,7 @@ import 'package:flutter/material.dart';
 
 @immutable
 class Constants {
+  static final bool isDebug = true;
+
   static final String clientId = "com.magpie.flutter";
 }
