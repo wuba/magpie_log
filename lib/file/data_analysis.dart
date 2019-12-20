@@ -67,7 +67,7 @@ class MagpieDataAnalysis {
   ///完整的圈选数据读取
   Future<String> readFileData(BuildContext context) async {
     try {
-      if (!Constants.isDebug) {
+      if (Constants.isDebug) {
         String data = await MagpieFileUtils()
             .readFile(dirName: dirName, fileName: fileName);
         return data;
