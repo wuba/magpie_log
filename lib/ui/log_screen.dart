@@ -5,7 +5,7 @@ import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
 
 import 'package:redux/redux.dart';
-
+import 'dart:convert' as convert;
 const int screenLogType = 1; //埋点类型：页面
 const int circleLogType = 2; //埋点类型：redux全局数据埋点
 const int stateLogType = 3; //埋点类型：state局部数据埋点
@@ -32,7 +32,7 @@ class LogScreen extends StatefulWidget {
       this.store,
       this.action,
       this.next,
-      this.actionName,
+      @required this.actionName,
       this.func,
       this.state})
       : super(key: key);
@@ -182,17 +182,18 @@ class _LogScreenState extends State<LogScreen> {
 
                     Map map = Map();
                     getLog(map, paramList);
-                    log = map.toString();
-                    if (widget.actionName != null) {
-                      log = widget.actionName + ":$log";
-                    } else if (widget.action != null) {
-                      log = widget.action.toString() + ":$log";
-                    } else {
-                      debugPrint("error:no action key found!");
-                    }
+                    log = convert.jsonEncode(map);
+//                    if (widget.actionName != null) {
+//                      log = widget.actionName + ":$log";
+//                    } else if (widget.action != null) {
+//                      log = widget.action.toString() + ":$log";
+//                    } else {
+//                      debugPrint("error:no action key found!");
+//                    }
                   });
 
-                  MagpieDataAnalysis().writeData(context, 'testAction', log);
+                  MagpieDataAnalysis()
+                      .writeData(context, widget.actionName, log);
                 },
               ),
               IconButton(
@@ -209,7 +210,7 @@ class _LogScreenState extends State<LogScreen> {
                 icon: Icon(Icons.add_shopping_cart),
                 onPressed: () {
                   MagpieDataAnalysis()
-                      .readActionData(context, 'testAction')
+                      .readActionData(context, widget.actionName)
                       .then((actionLog) {
                     setState(() {
                       readActionLog = actionLog;
@@ -235,14 +236,14 @@ class _LogScreenState extends State<LogScreen> {
             children: <Widget>[
               Container(
                 child: Text(
-                  widget.action.toString() + ":$log",
+                  "${widget.actionName} :$log",
                   textAlign: TextAlign.center,
                 ),
                 margin: const EdgeInsets.all(10),
               ),
               Container(
                 child: Text(
-                  widget.action.toString() + " readActionLog = $readActionLog",
+                  "${widget.actionName} readActionLog = $readActionLog",
                   textAlign: TextAlign.center,
                 ),
                 margin: const EdgeInsets.all(10),

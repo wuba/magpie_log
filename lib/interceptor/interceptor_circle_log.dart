@@ -32,6 +32,7 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
                 logType: circleLogType,
                 store: store,
                 action: action,
+                actionName: action.toString(),
                 next: next);
           }));
     } else {
