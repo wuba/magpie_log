@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:magpie_log/constants.dart';
 import 'package:magpie_log/file/file_utils.dart';
 import 'package:magpie_log/model/analysis_model.dart';
+import 'package:magpie_log/model/device_data.dart';
 
 ///数据分析配置文件操作
 class MagpieDataAnalysis {
@@ -18,6 +19,30 @@ class MagpieDataAnalysis {
 
   static final List<AnalysisModel> _listData = List();
 
+  /// 初始化接口
+  Future<Null> initMagpieData(BuildContext context) async {
+    var data;
+    if (Constants.isDebug) {
+      data = await MagpieFileUtils()
+          .readFile(dirName: dirName, fileName: fileName);
+    } else {
+      data = await DefaultAssetBundle.of(context)
+          .loadString('assets/analysis.json');
+    }
+
+    if (_listData.isEmpty) {
+      if (data.isNotEmpty) {
+        Map<String, dynamic> analysis = jsonDecode(data);
+        AnalysisData analysisData = AnalysisData.fromJson(analysis);
+        _listData.addAll(analysisData.data);
+      }
+    }
+
+    _createCommonParams().then((params) => {
+          //上报公共参数。原则上初始化的时候只需要上报一次
+        });
+  }
+
   Future<Null> saveData() async {
     if (_listData.isEmpty) {
       print('$tag saveData error!!! _listData is empty...');
@@ -25,16 +50,14 @@ class MagpieDataAnalysis {
     }
     //判断是否有之前写入的文件,有则删除
     await MagpieFileUtils().rmFile(dirName: dirName, fileName: fileName);
-    AnalysisData analysisData = await _createCommonParams(_listData);
 
     await MagpieFileUtils().writeFile(
         dirName: dirName,
         fileName: fileName,
-        contents: jsonEncode(analysisData.toJson()));
+        contents: jsonEncode(AnalysisData(_listData).toJson()));
   }
 
-  Future<Null> writeData(
-      BuildContext context, String action, String data) async {
+  Future<Null> writeData(String action, String data) async {
     if (action.isEmpty || data.isEmpty) {
       print('$tag writeData error!!! action or content is empty...');
       return;
@@ -42,7 +65,7 @@ class MagpieDataAnalysis {
 
     if (_listData.isEmpty) {
       //首次添加先获取全量数据
-      String analysisData = await readFileData(context);
+      String analysisData = await readFileData();
       if (analysisData.isNotEmpty) {
         Map<String, dynamic> analysis = jsonDecode(analysisData);
         AnalysisData data = AnalysisData.fromJson(analysis);
@@ -65,28 +88,19 @@ class MagpieDataAnalysis {
   }
 
   ///完整的圈选数据读取
-  Future<String> readFileData(BuildContext context) async {
+  Future<String> readFileData() async {
     try {
-      if (Constants.isDebug) {
-        String data = await MagpieFileUtils()
-            .readFile(dirName: dirName, fileName: fileName);
-        return data;
-      } else {
-        String data = await DefaultAssetBundle.of(context)
-            .loadString('assets/analysis.json');
-        return data;
-      }
+      return jsonEncode(AnalysisData(_listData));
     } catch (e) {
       print('$tag : readFile error = $e');
     }
-
     return '';
   }
 
   ///根据圈选埋点的action，读取指定数据。[action] 圈选埋点的key。
-  Future<String> readActionData(BuildContext context, String action) async {
+  Future<String> readActionData(String action) async {
     if (_listData.isEmpty) {
-      String analysisData = await readFileData(context);
+      String analysisData = await readFileData();
       if (analysisData.isNotEmpty) {
         Map<String, dynamic> analysis = jsonDecode(analysisData);
         AnalysisData data = AnalysisData.fromJson(analysis);
@@ -112,43 +126,31 @@ class MagpieDataAnalysis {
   }
 
   ///构造公共参数
-  Future<AnalysisData> _createCommonParams(List<AnalysisModel> list) async {
+  Future<DeviceData> _createCommonParams() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    var platform, device, clientId;
+    var platform, deviceVersion, clientId, deviceName, deviceId, product, model;
     if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       platform = 'Android';
-      device = jsonEncode(_getAndroidDeviceInfo(await deviceInfo.androidInfo));
-      print(
-          '$tag createCommonParams Android device Info =  ${_getAndroidDeviceInfo(await deviceInfo.androidInfo).toString()}');
+      deviceVersion = androidInfo.version.release;
+      deviceName = androidInfo.brand;
+      model = androidInfo.model;
+      deviceId = androidInfo.androidId;
     } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
       platform = "iOS";
-      device = jsonEncode(_getIosDeviceInfo(await deviceInfo.iosInfo));
+      deviceVersion = iosInfo.systemVersion;
+      deviceName = iosInfo.name;
+      model = iosInfo.model;
+      deviceId = iosInfo.identifierForVendor;
     }
     clientId = Constants.clientId;
 
-    return AnalysisData(platform, device, clientId, list);
-  }
+    DeviceData info = DeviceData(
+        platform, clientId, deviceName, deviceId, deviceVersion, model);
 
-  Map<String, dynamic> _getAndroidDeviceInfo(AndroidDeviceInfo deviceInfo) {
-    return <String, dynamic>{
-      'version.sdkInt': deviceInfo.version.sdkInt,
-      'brand': deviceInfo.brand,
-      'device': deviceInfo.device,
-      'id': deviceInfo.id,
-      'model': deviceInfo.model,
-      'product': deviceInfo.product,
-      'androidId': deviceInfo.androidId
-    };
-  }
+    print('$tag createCommonParams Android device Info =  ${info.toJson()}');
 
-  Map<String, dynamic> _getIosDeviceInfo(IosDeviceInfo deviceInfo) {
-    return <String, dynamic>{
-      'name': deviceInfo.name,
-      'systemName': deviceInfo.systemName,
-      'systemVersion': deviceInfo.systemVersion,
-      'model': deviceInfo.model,
-      'localizedModel': deviceInfo.localizedModel,
-      'identifierForVendor': deviceInfo.identifierForVendor,
-    };
+    return info;
   }
 }

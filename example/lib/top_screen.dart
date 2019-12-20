@@ -1,8 +1,10 @@
-import 'package:example/states/app_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:magpie_log/file/data_analysis.dart';
 import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
+
+import 'states/app_state.dart';
 
 class TopScreen extends StatefulWidget {
   @override
@@ -13,6 +15,7 @@ class _TopScreenState extends State<TopScreen> {
   @override
   Widget build(BuildContext context) {
     maContext = context; //设置全局context 用于弹层
+    MagpieDataAnalysis().initMagpieData(context); //初始化圈选数据
     return Scaffold(
       appBar: AppBar(
         title: Text('Magpie Log'),

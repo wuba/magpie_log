@@ -1,11 +1,12 @@
-import 'package:example/states/app_state.dart';
-import 'package:example/top_screen.dart';
-import 'package:example/under_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:magpie_log/interceptor/intercepter_screen_log.dart';
 import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
 import 'package:redux/redux.dart';
+
+import 'states/app_state.dart';
+import 'top_screen.dart';
+import 'under_screen.dart';
 
 void main() {
   final store = Store<AppState>(reducer,

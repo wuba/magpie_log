@@ -192,13 +192,13 @@ class _LogScreenState extends State<LogScreen> {
                     }
                   });
 
-                  MagpieDataAnalysis().writeData(context, 'testAction', log);
+                  MagpieDataAnalysis().writeData('testAction', log);
                 },
               ),
               IconButton(
                 icon: Icon(Icons.accessible_forward),
                 onPressed: () {
-                  MagpieDataAnalysis().readFileData(context).then((allLog) {
+                  MagpieDataAnalysis().readFileData().then((allLog) {
                     setState(() {
                       readAllLog = allLog;
                     });
@@ -209,7 +209,7 @@ class _LogScreenState extends State<LogScreen> {
                 icon: Icon(Icons.add_shopping_cart),
                 onPressed: () {
                   MagpieDataAnalysis()
-                      .readActionData(context, 'testAction')
+                      .readActionData('testAction')
                       .then((actionLog) {
                     setState(() {
                       readActionLog = actionLog;

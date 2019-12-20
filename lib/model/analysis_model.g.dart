@@ -21,9 +21,6 @@ Map<String, dynamic> _$AnalysisModelToJson(AnalysisModel instance) =>
 
 AnalysisData _$AnalysisDataFromJson(Map<String, dynamic> json) {
   return AnalysisData(
-    json['platform'] as String,
-    json['deviceInfo'],
-    json['clientId'] as String,
     (json['data'] as List)
         ?.map((e) => e == null
             ? null
@@ -35,7 +32,4 @@ AnalysisData _$AnalysisDataFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$AnalysisDataToJson(AnalysisData instance) =>
     <String, dynamic>{
       'data': instance.data,
-      'platform': instance.platform,
-      'deviceInfo': instance.deviceInfo,
-      'clientId': instance.clientId,
     };
