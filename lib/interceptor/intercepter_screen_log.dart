@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:magpie_log/ui/log_screen.dart';
 
+import '../magpie_log.dart';
 import 'interceptor_circle_log.dart';
 
 class LogObserver<S> extends NavigatorObserver {
@@ -31,7 +32,7 @@ class LogObserver<S> extends NavigatorObserver {
 
           actionName =
               route.settings.name != null ? route.settings.name : actionName;
-          Navigator.of(maContext).push(MaterialPageRoute(
+          Navigator.of(logContext).push(MaterialPageRoute(
               settings: RouteSettings(name: "/LogScreen"),
               builder: (BuildContext context) {
                 return LogScreen(

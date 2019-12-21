@@ -3,10 +3,11 @@ import 'dart:io';
 
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
-import 'package:magpie_log/constants.dart';
 import 'package:magpie_log/file/file_utils.dart';
 import 'package:magpie_log/model/analysis_model.dart';
 import 'package:magpie_log/model/device_data.dart';
+
+import '../magpie_log.dart';
 
 ///数据分析配置文件操作
 class MagpieDataAnalysis {
@@ -22,7 +23,7 @@ class MagpieDataAnalysis {
   /// 初始化接口
   Future<Null> initMagpieData(BuildContext context) async {
     var data;
-    if (Constants.isDebug) {
+    if (isDebug) {
       data = await MagpieFileUtils()
           .readFile(dirName: dirName, fileName: fileName);
     } else {
@@ -149,7 +150,7 @@ class MagpieDataAnalysis {
       model = iosInfo.model;
       deviceId = iosInfo.identifierForVendor;
     }
-    clientId = Constants.clientId;
+    clientId = globalClientId;
 
     DeviceData info = DeviceData(
         platform, clientId, deviceName, deviceId, deviceVersion, model);
