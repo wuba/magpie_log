@@ -8,6 +8,8 @@ import 'data_analysis.dart';
 class MagpieLogUtil {
   static void runTimeLog(String actionName, Map json) {
     MagpieDataAnalysis().readActionData(actionName).then((data) {
+      if (data == null || data == "") return;
+
       Map<String, dynamic> dataMap = convert.jsonDecode(data);
       trueData(json, dataMap);
       MagpieLog.instance.logCallBack(actionName, dataMap);
