@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:magpie_log/constants.dart';
 import 'package:magpie_log/file/data_analysis.dart';
 import 'package:magpie_log/ui/log_screen.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'dart:convert' as convert;
 
-///step:1 intercept to add circle log
+import '../magpie_log.dart';
 
-BuildContext maContext;
+///step:1 intercept to add circle log
 
 abstract class LogState {
   int get logStatus => _logStatus;
@@ -23,8 +22,8 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
     LogState logState = store.state;
     Map<String, dynamic> json = logState.toJson();
     print("MyMiddleWare call:${json.toString()}");
-    if (Constants.isDebug) {
-      Navigator.of(maContext).push(MaterialPageRoute(
+    if (isDebug) {
+      Navigator.of(logContext).push(MaterialPageRoute(
           settings: RouteSettings(name: "/LogScreen"),
           builder: (BuildContext context) {
             return LogScreen(
