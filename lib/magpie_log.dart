@@ -5,8 +5,9 @@ import 'file/data_analysis.dart';
 //TODO:release modify
 //const bool isDebug = const bool.fromEnvironment("dart.vm.product");
 const bool isDebug = true;
-
+const bool isPageLogOn = true;
 const String globalClientId = "com.wuba.flutter.magpie_log";
+
 typedef LogCallBack = Function(String actionName, Map content);
 
 class MagpieLog {
