@@ -6,6 +6,7 @@ import 'package:magpie_log/interceptor/interceptor_state_log.dart';
 
 import 'package:redux/redux.dart';
 import 'dart:convert' as convert;
+
 const int screenLogType = 1; //埋点类型：页面
 const int circleLogType = 2; //埋点类型：redux全局数据埋点
 const int stateLogType = 3; //埋点类型：state局部数据埋点
@@ -55,6 +56,13 @@ class _LogScreenState extends State<LogScreen> {
   List<ParamItem> paramList = [];
   String log = "", readAllLog, readActionLog;
 
+  @override
+  void initState() {
+    initParam(widget.data, paramList);
+    //TODO:已经配置过得直接展示
+    super.initState();
+  }
+
   ///递归参数数据初始化
   void initParam(Map map, List<ParamItem> paramList) {
     if (map == null) return;
@@ -69,20 +77,154 @@ class _LogScreenState extends State<LogScreen> {
   }
 
   @override
-  void initState() {
-    initParam(widget.data, paramList);
-    //TODO:已经配置过得直接展示
-    super.initState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('圈选页面'),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Text(
+            "Add log or pass?",
+            style: TextStyle(
+                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+          buttons(),
+          Text(
+            "Config for log:",
+            style: TextStyle(
+                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+          configData(),
+          Text(
+            "Pramas to choose:",
+            style: TextStyle(
+                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+          initPanelList(paramList),
+        ],
+      ),
+    );
   }
 
-  Widget getPaneledItem(bool isPaneled, ParamItem paramItem) {
-    if (isPaneled) {
-      return Padding(
-          padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
-          child: Column(children: intChildList(paramItem.paramItems)));
-    } else {
-      return Container(height: 0, width: 0);
-    }
+  Widget configData() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          child: Text(
+            "${widget.actionName} :$log",
+          ),
+          margin: const EdgeInsets.all(10),
+        ),
+//        Container(
+//          child: Text(
+//            "当前配置"+widget.action.toString() + " : $readActionLog",
+//            textAlign: TextAlign.center,
+//          ),
+//          margin: const EdgeInsets.all(10),
+//        ),
+        Container(
+          child: Text(
+            "全配置 = $readAllLog",
+          ),
+          margin: const EdgeInsets.all(10),
+        ),
+      ],
+      mainAxisAlignment: MainAxisAlignment.center,
+    );
+  }
+
+  Widget buttons() {
+    return Row(
+      children: <Widget>[
+        MaterialButton(
+          color: Colors.white,
+          child: Text("Pass",
+              style: TextStyle(fontSize: 18, color: Colors.lightGreen)),
+          onPressed: () {
+            switch (widget.logType) {
+              case screenLogType:
+                break;
+              case stateLogType:
+                widget.state.setRealState(widget.func);
+                break;
+              case circleLogType:
+                widget.next(widget.action);
+                break;
+            }
+            Navigator.pop(context);
+          },
+        ),
+        MaterialButton(
+          color: Colors.white,
+          child: Text("log",
+              style: TextStyle(fontSize: 18, color: Colors.deepOrange)),
+          onPressed: () {
+            if (widget.logType == stateLogType) {
+              widget.state.logStatus = 1;
+              widget.state.setRealState(() {});
+            }
+
+            setState(() {
+              StringBuffer logs = StringBuffer();
+              paramList.forEach((param) {
+                if (param.isChecked) {
+                  logs.write(param.key + ",");
+                }
+              });
+              log = "[" + logs.toString() + "]";
+
+              Map map = Map();
+              getLog(map, paramList);
+              log = convert.jsonEncode(map);
+            });
+
+            MagpieDataAnalysis().writeData(widget.actionName, log);
+          },
+        ),
+        MaterialButton(
+          color: Colors.white,
+          child: Text('读取配置',
+              style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
+          onPressed: () {
+            MagpieDataAnalysis().readFileData().then((allLog) {
+              setState(() {
+                readAllLog = allLog;
+              });
+            });
+          },
+        ),
+//        MaterialButton(
+//          color: Colors.white,
+//          child: Text('读取当前',
+//              style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
+//          onPressed: () {
+//            MagpieDataAnalysis()
+//                .readActionData(widget.actionName)
+//                .then((actionLog) {
+//              setState(() {
+//                readActionLog = actionLog;
+//              });
+//            });
+//          },
+//        ),
+        MaterialButton(
+          color: Colors.white,
+          child: Text('生成配置',
+              style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
+          onPressed: () async {
+            await MagpieDataAnalysis().saveData();
+          },
+        )
+      ],
+    );
+  }
+
+  ///递归参数圈选列表
+  Widget initPanelList(List<ParamItem> paramList) {
+    return Expanded(child: ListView(children: intChildList(paramList)));
   }
 
   List<Widget> intChildList(List<ParamItem> paramList) {
@@ -122,151 +264,14 @@ class _LogScreenState extends State<LogScreen> {
     return widgetList;
   }
 
-  ///递归参数圈选列表
-  Widget initPanelList(List<ParamItem> paramList) {
-    return Expanded(child: ListView(children: intChildList(paramList)));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('圈选页面'),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Text(
-            "Add log or pass?",
-            style: TextStyle(
-                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          Row(
-            children: <Widget>[
-              MaterialButton(
-                color: Colors.white,
-                child: Text("Pass",
-                    style: TextStyle(fontSize: 18, color: Colors.lightGreen)),
-                onPressed: () {
-                  switch (widget.logType) {
-                    case screenLogType:
-                      break;
-                    case stateLogType:
-                      widget.state.setRealState(widget.func);
-                      break;
-                    case circleLogType:
-                      widget.next(widget.action);
-                      break;
-                  }
-                  Navigator.pop(context);
-                },
-              ),
-              MaterialButton(
-                color: Colors.white,
-                child: Text("log",
-                    style: TextStyle(fontSize: 18, color: Colors.deepOrange)),
-                onPressed: () {
-                  if (widget.logType == stateLogType) {
-                    widget.state.logStatus = 1;
-                    widget.state.setRealState(() {});
-                  }
-
-                  setState(() {
-                    StringBuffer logs = StringBuffer();
-                    paramList.forEach((param) {
-                      if (param.isChecked) {
-                        logs.write(param.key + ",");
-                      }
-                    });
-                    log = "[" + logs.toString() + "]";
-
-                    Map map = Map();
-                    getLog(map, paramList);
-                    log = convert.jsonEncode(map);
-//                    if (widget.actionName != null) {
-//                      log = widget.actionName + ":$log";
-//                    } else if (widget.action != null) {
-//                      log = widget.action.toString() + ":$log";
-//                    } else {
-//                      debugPrint("error:no action key found!");
-//                    }
-                  });
-
-                  MagpieDataAnalysis()
-                      .writeData(widget.actionName, log);
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.accessible_forward),
-                onPressed: () {
-                  MagpieDataAnalysis().readFileData().then((allLog) {
-                    setState(() {
-                      readAllLog = allLog;
-                    });
-                  });
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.add_shopping_cart),
-                onPressed: () {
-                  MagpieDataAnalysis()
-                      .readActionData(widget.actionName)
-                      .then((actionLog) {
-                    setState(() {
-                      readActionLog = actionLog;
-                    });
-                  });
-                },
-              ),
-              MaterialButton(
-                child: Text('save',
-                    style: TextStyle(color: Colors.blueAccent, fontSize: 20)),
-                onPressed: () async {
-                  await MagpieDataAnalysis().saveData();
-                },
-              )
-            ],
-          ),
-          Text(
-            "Config for log:",
-            style: TextStyle(
-                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          Column(
-            children: <Widget>[
-              Container(
-                child: Text(
-                  "${widget.actionName} :$log",
-                  textAlign: TextAlign.center,
-                ),
-                margin: const EdgeInsets.all(10),
-              ),
-              Container(
-                child: Text(
-                  widget.action.toString() + " readActionLog = $readActionLog",
-                  textAlign: TextAlign.center,
-                ),
-                margin: const EdgeInsets.all(10),
-              ),
-              Container(
-                child: Text(
-                  "readAllLog = $readAllLog",
-                  textAlign: TextAlign.center,
-                ),
-                margin: const EdgeInsets.all(10),
-              ),
-            ],
-            mainAxisAlignment: MainAxisAlignment.center,
-          ),
-          Text(
-            "Pramas to choose:",
-            style: TextStyle(
-                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          initPanelList(paramList),
-        ],
-      ),
-    );
+  Widget getPaneledItem(bool isPaneled, ParamItem paramItem) {
+    if (isPaneled) {
+      return Padding(
+          padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
+          child: Column(children: intChildList(paramItem.paramItems)));
+    } else {
+      return Container(height: 0, width: 0);
+    }
   }
 
   ///生成日志递归
