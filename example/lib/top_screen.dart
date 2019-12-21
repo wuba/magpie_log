@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
 import 'package:magpie_log/magpie_log.dart';
 
@@ -11,7 +12,16 @@ class TopScreen extends StatefulWidget {
 }
 
 void log(actionName, content) {
-  print("actionName:$actionName-content:$content");
+  print("MagpieLog=>$actionName:$content");
+  Fluttertoast.showToast(
+      msg: "MagpieLog==>\n$actionName:\n$content",
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIos: 1,
+      backgroundColor: Colors.deepOrange,
+      textColor: Colors.white,
+      fontSize: 16.0
+  );
 }
 
 class _TopScreenState extends State<TopScreen> {

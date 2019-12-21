@@ -23,7 +23,7 @@ class MagpieDataAnalysis {
   /// 初始化接口
   Future<Null> initMagpieData(BuildContext context) async {
     var data;
-    if (isDebug) {
+    if (MagpieLog.instance.isDebug) {
       data = await MagpieFileUtils()
           .readFile(dirName: dirName, fileName: fileName);
     } else {

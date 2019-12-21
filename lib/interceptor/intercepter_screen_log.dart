@@ -12,6 +12,7 @@ class LogObserver<S> extends NavigatorObserver {
     // 当调用Navigator.push时回调
     super.didPush(route, previousRoute);
     if ("/LogScreen" != route.settings.name) {
+      await Future.delayed(Duration(seconds: 3));
       try {
         LogState logState =
             StoreProvider.of<S>(route.navigator.context).state as LogState;
@@ -19,8 +20,7 @@ class LogObserver<S> extends NavigatorObserver {
         String actionName =
             route.settings.name != null ? route.settings.name : "";
 
-        if (isDebug && isPageLogOn) {
-          await Future.delayed(Duration(seconds: 3));
+        if (MagpieLog.instance.isDebug && MagpieLog.instance.isPageLogOn) {
           {
             Navigator.of(MagpieLog.instance.logContext).push(MaterialPageRoute(
                 settings: RouteSettings(name: "/LogScreen"),
