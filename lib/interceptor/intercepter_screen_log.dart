@@ -19,7 +19,7 @@ class LogObserver<S> extends NavigatorObserver {
         String actionName =
             route.settings.name != null ? route.settings.name : "";
 
-        if (isDebug && isPageLogOn) {
+        if (MagpieLog.instance.isDebug && MagpieLog.instance.isPageLogOn) {
           await Future.delayed(Duration(seconds: 3));
           {
             Navigator.of(MagpieLog.instance.logContext).push(MaterialPageRoute(

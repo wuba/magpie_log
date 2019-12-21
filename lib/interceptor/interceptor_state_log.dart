@@ -11,7 +11,7 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
 
   @override
   Widget build(BuildContext context) {
-    if (logStatus == 1 && isDebug)
+    if (logStatus == 1 && MagpieLog.instance.isDebug)
       return Container(
           decoration: BoxDecoration(
             border: Border.all(color: Colors.red, width: 2.0),
@@ -25,11 +25,10 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
 
   @override
   void setState(VoidCallback fn) {
-
     Map<String, dynamic> json = toJson();
     print("MyMiddleWare call:${json.toString()}");
     var actionName = getActionName();
-    if (isDebug) {
+    if (MagpieLog.instance.isDebug) {
       Navigator.of(context).push(MaterialPageRoute(
           settings: RouteSettings(name: "/LogScreen"),
           builder: (BuildContext context) {
