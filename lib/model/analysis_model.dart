@@ -23,13 +23,7 @@ class AnalysisModel {
 class AnalysisData {
   List<AnalysisModel> data;
 
-  final String platform;
-
-  final dynamic deviceInfo;
-
-  final String clientId;
-
-  AnalysisData(this.platform, this.deviceInfo, this.clientId, this.data);
+  AnalysisData(this.data);
 
   factory AnalysisData.fromJson(Map<String, dynamic> json) =>
       _$AnalysisDataFromJson(json);

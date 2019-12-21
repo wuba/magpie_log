@@ -37,10 +37,10 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
           }));
     } else {
       String actionName = action.toString();
-      MagpieDataAnalysis().readActionData(maContext, actionName).then((data) {
+      MagpieDataAnalysis().readActionData(actionName).then((data) {
         Map<String, dynamic> dataMap = convert.jsonDecode(data);
         trueData(json, dataMap);
-        print("666:" + dataMap.toString());
+        print("runtime log:" + dataMap.toString());
       });
     }
   }
