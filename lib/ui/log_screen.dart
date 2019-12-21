@@ -45,8 +45,8 @@ class LogScreen extends StatefulWidget {
 class ParamItem {
   String key;
   String value;
-  bool isChecked;
-  bool isPaneled;
+  bool isChecked;//是否选中
+  bool isPaneled;//是否展开
   List<ParamItem> paramItems;
 
   ParamItem(this.key, this.value,
@@ -75,8 +75,8 @@ class _LogScreenState extends State<LogScreen> {
   bool initParam(Map data, Map logConfig, List<ParamItem> paramList) {
     if (data == null) return false;
 
-    bool isPaneled = false;
-    bool isParentPaneled = false;
+    bool isPaneled = false;//是不是展开
+    bool isParentPaneled = false;//父View是不是展开
     data.forEach((k, v) {
       List<ParamItem> paramList2 = [];
       bool isChecked = false;
@@ -92,7 +92,7 @@ class _LogScreenState extends State<LogScreen> {
       paramList.add(ParamItem(k, v.toString(),
           paramItems: paramList2, isChecked: isChecked, isPaneled: isPaneled));
     });
-
+    //自己施展开的或者父View是展开的都要返回true
     return isPaneled||isParentPaneled;
   }
 
