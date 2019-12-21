@@ -18,48 +18,84 @@ class _TopScreenState extends State<TopScreen> {
       appBar: AppBar(
         title: Text('Magpie Log'),
       ),
-      body: Column(children: [
-        Text(
-          "Redux Action:",
-          style: TextStyle(
-              fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        StoreConnector<AppState, int>(
-          converter: (store) => store.state.countState.count,
-          builder: (context, count) {
-            return Text(
-              count.toString(),
-              style: Theme.of(context).textTheme.display1,
-            );
-          },
-        ),
-        StoreConnector<AppState, VoidCallback>(
-          converter: (store) {
-            return () => store.dispatch(LogAction.increment);
-          },
-          builder: (context, callback) {
-            return MaterialButton(
-              color: Colors.white,
-              child: Text("Log"),
-              onPressed: callback,
-            );
-          },
-        ),
-        Text(
-          "Widget SetState:",
-          style: TextStyle(
-              fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        AddTextWidget()
+      body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        reduxDemo(),
+        stateDemo(),
+        pageDemo(context),
       ]),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/UnderScreen');
-        },
-        child: Icon(Icons.forward),
-      ),
     );
   }
+}
+
+Widget reduxDemo() {
+  return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    Text(
+      "Redux Action",
+      style: TextStyle(
+          fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+    ),
+    Text(
+      "Redux类型埋点：拦截action事件进行统一埋点\n下面以系统count+1为例：",
+      style: TextStyle(fontSize: 14, color: Colors.black),
+    ),
+    StoreConnector<AppState, int>(
+      converter: (store) => store.state.countState.count,
+      builder: (context, count) {
+        return Text(
+          count.toString(),
+          style: Theme.of(context).textTheme.display1,
+        );
+      },
+    ),
+    StoreConnector<AppState, VoidCallback>(
+      converter: (store) {
+        return () => store.dispatch(LogAction.increment);
+      },
+      builder: (context, callback) {
+        return MaterialButton(
+          color: Colors.white,
+          child: Text("Log"),
+          onPressed: callback,
+        );
+      },
+    ),
+  ]);
+}
+
+Widget stateDemo() {
+  return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    Text(
+      "\nWidget SetState:",
+      style: TextStyle(
+          fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+    ),
+    Text(
+      "state类型埋点：拦截setState事件进行统一埋点\n下面以系统count+1为例：",
+      style: TextStyle(fontSize: 14, color: Colors.black),
+    ),
+    AddTextWidget()
+  ]);
+}
+
+Widget pageDemo(BuildContext context) {
+  return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    Text(
+      "\nPage push pop:",
+      style: TextStyle(
+          fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+    ),
+    Text(
+      "Page类型埋点：监听页面push事件，现push页面后 默认两秒跳转圈选部分",
+      style: TextStyle(fontSize: 14, color: Colors.black),
+    ),
+    MaterialButton(
+      color: Colors.white,
+      child: Text("页面跳转"),
+      onPressed: () {
+        Navigator.pushNamed(context, '/UnderScreen');
+      },
+    )
+  ]);
 }
 
 class AddTextWidget extends StatefulWidget {

@@ -15,32 +15,21 @@ class LogObserver<S> extends NavigatorObserver {
       await Future.delayed(Duration(seconds: 2));
       {
         try {
-          //执行build方法
           LogState logState =
               StoreProvider.of<S>(route.navigator.context).state as LogState;
-          //可通过route.settings获取路由相关内容
-          //route.currentResult获取返回内容
-          //....等等
-
-          String actionName = "";
-//          if (route is MaterialPageRoute) {
-//            MaterialPageRoute materialPageRoute = route;
-//            Function a = materialPageRoute.builder;
-//            Closure
-//            //a.toString();
-//          }
-
-          actionName =
-              route.settings.name != null ? route.settings.name : actionName;
+          String actionName =
+              route.settings.name != null ? route.settings.name : "";
           Navigator.of(logContext).push(MaterialPageRoute(
               settings: RouteSettings(name: "/LogScreen"),
               builder: (BuildContext context) {
                 return LogScreen(
-                    data: logState.toJson(), logType: screenLogType);
+                    actionName: actionName,
+                    data: logState.toJson(),
+                    logType: screenLogType);
               }));
 
           //print("route" + logState.toJson().toString());
-        } catch (e, stack) {
+        } catch (e) {
           debugPrint(e.toString());
         }
       }
