@@ -10,10 +10,14 @@ class TopScreen extends StatefulWidget {
   _TopScreenState createState() => _TopScreenState();
 }
 
+void log(actionName, content) {
+  print("actionName:$actionName-content:$content");
+}
+
 class _TopScreenState extends State<TopScreen> {
   @override
   Widget build(BuildContext context) {
-    MagpieLog.init(context);
+    MagpieLog.instance.init(context, log);
     return Scaffold(
       appBar: AppBar(
         title: Text('Magpie Log'),
@@ -85,7 +89,7 @@ Widget pageDemo(BuildContext context) {
           fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
     ),
     Text(
-      "Page类型埋点：监听页面push事件，现push页面后 默认两秒跳转圈选部分",
+      "Page类型埋点：监听页面push事件，现push页面后 默认3秒跳转圈选部分",
       style: TextStyle(fontSize: 14, color: Colors.black),
     ),
     MaterialButton(
@@ -117,6 +121,7 @@ class AddTextState extends WidgetLogState<AddTextWidget> {
   @override
   Widget onBuild(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
           count.toString(),
