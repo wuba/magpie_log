@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:magpie_log/file/data_analysis.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:magpie_log/file/log_util.dart';
 import 'package:magpie_log/ui/log_screen.dart';
 import 'package:redux/redux.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'dart:convert' as convert;
 
 import '../magpie_log.dart';
 
@@ -23,7 +22,7 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
     Map<String, dynamic> json = logState.toJson();
     print("MyMiddleWare call:${json.toString()}");
     if (isDebug) {
-      Navigator.of(logContext).push(MaterialPageRoute(
+      Navigator.of(MagpieLog.instance.logContext).push(MaterialPageRoute(
           settings: RouteSettings(name: "/LogScreen"),
           builder: (BuildContext context) {
             return LogScreen(
@@ -36,24 +35,12 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
           }));
     } else {
       String actionName = action.toString();
-      MagpieDataAnalysis().readActionData(actionName).then((data) {
-        Map<String, dynamic> dataMap = convert.jsonDecode(data);
-        trueData(json, dataMap);
-        print("runtime log:" + dataMap.toString());
-      });
+      MagpieLogUtil.runTimeLog(actionName, json);
     }
   }
 }
 
-void trueData(Map dataMap, Map logMap) {
-  logMap.forEach((k, v) {
-    if (v is Map) {
-      trueData(dataMap[k], v);
-    } else {
-      logMap[k] = dataMap[k];
-    }
-  });
-}
+
 
 class LogStoreConnector<S, ViewModel> extends StoreConnector<S, ViewModel> {
   final ViewModelBuilder<ViewModel> builder;

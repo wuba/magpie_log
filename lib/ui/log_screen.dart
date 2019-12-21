@@ -1,11 +1,11 @@
+import 'dart:convert' as convert;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magpie_log/file/data_analysis.dart';
 import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
-
 import 'package:redux/redux.dart';
-import 'dart:convert' as convert;
 
 const int screenLogType = 1; //埋点类型：页面
 const int circleLogType = 2; //埋点类型：redux全局数据埋点
@@ -45,11 +45,12 @@ class LogScreen extends StatefulWidget {
 class ParamItem {
   String key;
   String value;
-  bool isChecked = false;
-  bool isPaneled = false;
+  bool isChecked;//是否选中
+  bool isPaneled;//是否展开
   List<ParamItem> paramItems;
 
-  ParamItem(this.key, this.value, {this.paramItems});
+  ParamItem(this.key, this.value,
+      {this.paramItems, this.isPaneled = false, this.isChecked = false});
 }
 
 class _LogScreenState extends State<LogScreen> {
@@ -58,22 +59,41 @@ class _LogScreenState extends State<LogScreen> {
 
   @override
   void initState() {
-    initParam(widget.data, paramList);
-    //TODO:已经配置过得直接展示
+    MagpieDataAnalysis().readActionData(widget.actionName).then((actionLog) {
+      Map map;
+      if (actionLog != null && actionLog != "") {
+        map = convert.jsonDecode(actionLog);
+      }
+      initParam(widget.data, map, paramList);
+      setState(() {});
+    });
+
     super.initState();
   }
 
   ///递归参数数据初始化
-  void initParam(Map map, List<ParamItem> paramList) {
-    if (map == null) return;
-    map.forEach((k, v) {
-      List<ParamItem> paramList2 = [];
-      if (v is! String && v is! int && v is! double && v is! bool) {
-        initParam(v, paramList2);
-      }
+  bool initParam(Map data, Map logConfig, List<ParamItem> paramList) {
+    if (data == null) return false;
 
-      paramList.add(ParamItem(k, v.toString(), paramItems: paramList2));
+    bool isPaneled = false;//是不是展开
+    bool isParentPaneled = false;//父View是不是展开
+    data.forEach((k, v) {
+      List<ParamItem> paramList2 = [];
+      bool isChecked = false;
+      if (v is Map) {
+        isPaneled =
+            initParam(v, logConfig == null ? null : logConfig[k], paramList2);
+      } else {
+        if (logConfig != null && logConfig[k] != null && logConfig[k] == 1) {
+          isChecked = true;
+          isParentPaneled = true;
+        }
+      }
+      paramList.add(ParamItem(k, v.toString(),
+          paramItems: paramList2, isChecked: isChecked, isPaneled: isPaneled));
     });
+    //自己施展开的或者父View是展开的都要返回true
+    return isPaneled||isParentPaneled;
   }
 
   @override
