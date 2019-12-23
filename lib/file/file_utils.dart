@@ -100,4 +100,14 @@ class MagpieFileUtils {
           '$tag rmFile rmove file, fileName = $fileName , dirName = $dirName');
     }
   }
+
+  Future<String> getFilePath(String dirName,
+      {@required String fileName}) async {
+    if (await isExistsFile(fileName: fileName, dirName: dirName)) {
+      File file = await _getFile(dirName, fileName);
+      return file.path;
+    } else {
+      return '文件路径不存在';
+    }
+  }
 }

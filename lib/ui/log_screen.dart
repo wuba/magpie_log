@@ -45,8 +45,8 @@ class LogScreen extends StatefulWidget {
 class ParamItem {
   String key;
   String value;
-  bool isChecked;//是否选中
-  bool isPaneled;//是否展开
+  bool isChecked; //是否选中
+  bool isPaneled; //是否展开
   List<ParamItem> paramItems;
 
   ParamItem(this.key, this.value,
@@ -75,8 +75,8 @@ class _LogScreenState extends State<LogScreen> {
   bool initParam(Map data, Map logConfig, List<ParamItem> paramList) {
     if (data == null) return false;
 
-    bool isPaneled = false;//是不是展开
-    bool isParentPaneled = false;//父View是不是展开
+    bool isPaneled = false; //是不是展开
+    bool isParentPaneled = false; //父View是不是展开
     data.forEach((k, v) {
       List<ParamItem> paramList2 = [];
       bool isChecked = false;
@@ -93,7 +93,7 @@ class _LogScreenState extends State<LogScreen> {
           paramItems: paramList2, isChecked: isChecked, isPaneled: isPaneled));
     });
     //自己施展开的或者父View是展开的都要返回true
-    return isPaneled||isParentPaneled;
+    return isPaneled || isParentPaneled;
   }
 
   @override
@@ -204,40 +204,6 @@ class _LogScreenState extends State<LogScreen> {
             MagpieDataAnalysis().writeData(widget.actionName, log);
           },
         ),
-        MaterialButton(
-          color: Colors.white,
-          child: Text('读取配置',
-              style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
-          onPressed: () {
-            MagpieDataAnalysis().readFileData().then((allLog) {
-              setState(() {
-                readAllLog = allLog;
-              });
-            });
-          },
-        ),
-//        MaterialButton(
-//          color: Colors.white,
-//          child: Text('读取当前',
-//              style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
-//          onPressed: () {
-//            MagpieDataAnalysis()
-//                .readActionData(widget.actionName)
-//                .then((actionLog) {
-//              setState(() {
-//                readActionLog = actionLog;
-//              });
-//            });
-//          },
-//        ),
-        MaterialButton(
-          color: Colors.white,
-          child: Text('生成配置',
-              style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
-          onPressed: () async {
-            await MagpieDataAnalysis().saveData();
-          },
-        )
       ],
     );
   }

@@ -26,6 +26,7 @@ class _TopScreenState extends State<TopScreen> {
         reduxDemo(),
         stateDemo(),
         pageDemo(context),
+        logDetail(context)
       ]),
     );
   }
@@ -61,6 +62,34 @@ Widget reduxDemo() {
           child: Text("Log"),
           onPressed: callback,
         );
+      },
+    ),
+  ]);
+}
+
+Widget logDetail(BuildContext context) {
+  return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    Text(
+      "Log detail",
+      style: TextStyle(
+          fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+    ),
+    Text(
+      "已圈选的数据详情页",
+      style: TextStyle(fontSize: 14, color: Colors.black),
+    ),
+    MaterialButton(
+      color: Colors.white,
+      child: Text('数据操作',
+          style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
+      onPressed: () {
+        // MagpieDataAnalysis().readFileData().then((allLog) {
+        //   setState(() {
+        //     readAllLog = allLog;
+        //   });
+        // });
+
+        Navigator.pushNamed(context, '/log_detail');
       },
     ),
   ]);
