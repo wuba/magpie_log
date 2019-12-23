@@ -21,7 +21,7 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
     LogState logState = store.state;
     Map<String, dynamic> json = logState.toJson();
     print("MyMiddleWare call:${json.toString()}");
-    if (isDebug) {
+    if (MagpieLog.instance.isDebug ) {
       Navigator.of(MagpieLog.instance.logContext).push(MaterialPageRoute(
           settings: RouteSettings(name: "/LogScreen"),
           builder: (BuildContext context) {
@@ -36,6 +36,7 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
     } else {
       String actionName = action.toString();
       MagpieLogUtil.runTimeLog(actionName, json);
+      next(action);
     }
   }
 }

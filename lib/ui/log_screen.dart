@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:magpie_log/file/data_analysis.dart';
 import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
+import 'package:magpie_log/magpie_log.dart';
 import 'package:redux/redux.dart';
 
 const int screenLogType = 1; //埋点类型：页面
@@ -56,6 +57,7 @@ class ParamItem {
 class _LogScreenState extends State<LogScreen> {
   List<ParamItem> paramList = [];
   String log = "", readAllLog, readActionLog;
+  String title = "";
 
   @override
   void initState() {
@@ -67,6 +69,18 @@ class _LogScreenState extends State<LogScreen> {
       initParam(widget.data, map, paramList);
       setState(() {});
     });
+
+    switch (widget.logType) {
+      case screenLogType:
+        title = "页面圈选";
+        break;
+      case circleLogType:
+        title = "redux圈选";
+        break;
+      case stateLogType:
+        title = "state圈选";
+        break;
+    }
 
     super.initState();
   }
@@ -100,11 +114,17 @@ class _LogScreenState extends State<LogScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('圈选页面'),
+        title: Text(title),
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          Text(
+            widget.actionName,
+            style: TextStyle(
+                fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+          switches(),
           Text(
             "Add log or pass?",
             style: TextStyle(
@@ -153,6 +173,46 @@ class _LogScreenState extends State<LogScreen> {
         ),
       ],
       mainAxisAlignment: MainAxisAlignment.center,
+    );
+  }
+
+  Widget switches() {
+    return Column(
+      children: <Widget>[
+        Row(children: <Widget>[
+          Switch(
+            value: MagpieLog.instance.isDebug,
+            onChanged: (value) {
+              setState(() {
+                MagpieLog.instance.isDebug = !MagpieLog.instance.isDebug;
+              });
+            },
+            activeTrackColor: Colors.lightGreenAccent,
+            activeColor: Colors.green,
+          ),
+          Text(
+            "isDebug:是否打开圈选 关闭上传埋点 \n需重启才能开启",
+            style: TextStyle(fontSize: 14, color: Colors.black),
+          )
+        ]),
+        Row(children: <Widget>[
+          Switch(
+            value: MagpieLog.instance.isPageLogOn,
+            onChanged: (value) {
+              setState(() {
+                MagpieLog.instance.isPageLogOn =
+                    !MagpieLog.instance.isPageLogOn;
+              });
+            },
+            activeTrackColor: Colors.lightGreenAccent,
+            activeColor: Colors.green,
+          ),
+          Text(
+            "isPageLogOn:是否打开页面展示圈选 \n开启跳转3秒后打开圈选页面",
+            style: TextStyle(fontSize: 14, color: Colors.black),
+          ),
+        ])
+      ],
     );
   }
 
@@ -229,7 +289,7 @@ class _LogScreenState extends State<LogScreen> {
             }));
       } else {
         widgetList.add(Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               GestureDetector(
                   onTap: () {
@@ -239,8 +299,13 @@ class _LogScreenState extends State<LogScreen> {
                   },
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(16, 10, 0, 0),
-                    child: Text(paramList[index].key,
-                        style: TextStyle(fontSize: 15)),
+                    child: Row(children: <Widget>[
+                      Text(paramList[index].key,
+                          style: TextStyle(fontSize: 15)),
+                      !paramList[index].isPaneled
+                          ? Icon(Icons.keyboard_arrow_down)
+                          : Icon(Icons.keyboard_arrow_up),
+                    ]),
                   )),
               getPaneledItem(paramList[index].isPaneled, paramList[index])
             ]));
