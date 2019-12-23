@@ -40,3 +40,22 @@ class MagpieLog {
     MagpieDataAnalysis().initMagpieData(context); //初始化圈选数据
   }
 }
+
+abstract class LogState {
+  int get logStatus => _logStatus;
+  int _logStatus;
+
+  Map<String, dynamic> toJson();
+}
+
+class LogAction {
+  static LogAction setUp(actionName, index, actionParams) {
+    return LogAction(actionName, index: index, actionParams: actionParams);
+  }
+
+  LogAction(this.actionName, {this.index, this.actionParams});
+
+  String actionName;
+  int index; //用于列表页position
+  Map actionParams; //action拓展参数
+}

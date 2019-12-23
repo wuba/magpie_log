@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
+import 'package:magpie_log/magpie_log.dart';
 
 part 'app_state.g.dart';
 
@@ -52,14 +52,13 @@ class OtherState {
       _$OtherStateFromJson(json);
 }
 
-///定义操作该State的全部Action
-///这里只有增加count一个动作
-enum LogAction { increment }
+const String actionAddCount = "addCount";
 
 ///reducer会根据传进来的action生成新的CountState
 AppState reducer(AppState state, action) {
   //匹配Action
-  if (action == LogAction.increment) {
+
+  if (action is LogAction && action.actionName == actionAddCount) {
     return AppState(countState: CountState(state.countState.count + 1));
   }
   return state;

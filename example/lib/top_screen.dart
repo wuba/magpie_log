@@ -20,96 +20,149 @@ void log(actionName, content) {
       timeInSecForIos: 1,
       backgroundColor: Colors.deepOrange,
       textColor: Colors.white,
-      fontSize: 16.0
-  );
+      fontSize: 16.0);
 }
 
 class _TopScreenState extends State<TopScreen> {
   @override
   Widget build(BuildContext context) {
     MagpieLog.instance.init(context, log);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Magpie Log'),
-      ),
-      body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        reduxDemo(),
-        stateDemo(),
-        pageDemo(context),
-      ]),
+    return DefaultTabController(
+      length: choices.length,
+      child: Scaffold(
+          appBar: AppBar(
+            title: Text('Magpie Log'),
+            bottom: TabBar(
+              isScrollable: false,
+              tabs: choices.map((Choice choice) {
+                return Tab(
+                  text: choice.title,
+                  icon: Icon(choice.icon),
+                );
+              }).toList(),
+            ),
+          ),
+          body: TabBarView(children: <Widget>[
+            reduxDemo(),
+            listDemo(),
+            stateDemo(),
+            pageDemo(context),
+          ])),
     );
   }
 }
 
+class Choice {
+  const Choice({this.title, this.icon});
+
+  final String title;
+  final IconData icon;
+}
+
+const List<Choice> choices = const <Choice>[
+  const Choice(title: 'Redux', icon: Icons.group_work),
+  const Choice(title: 'List', icon: Icons.list),
+  const Choice(title: 'setState', icon: Icons.adjust),
+  const Choice(title: '页面', icon: Icons.content_copy),
+];
+
 Widget reduxDemo() {
-  return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Text(
-      "Redux Action",
-      style: TextStyle(
-          fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-    ),
-    Text(
-      "Redux类型埋点：拦截action事件进行统一埋点\n下面以系统count+1为例：",
-      style: TextStyle(fontSize: 14, color: Colors.black),
-    ),
-    StoreConnector<AppState, int>(
-      converter: (store) => store.state.countState.count,
-      builder: (context, count) {
-        return Text(
-          count.toString(),
-          style: Theme.of(context).textTheme.display1,
-        );
-      },
-    ),
-    StoreConnector<AppState, VoidCallback>(
-      converter: (store) {
-        return () => store.dispatch(LogAction.increment);
-      },
-      builder: (context, callback) {
-        return MaterialButton(
-          color: Colors.white,
-          child: Text("Log"),
-          onPressed: callback,
-        );
-      },
-    ),
-  ]);
+  return Padding(
+      padding: EdgeInsets.fromLTRB(50, 30, 50, 30),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        Text(
+          "\n基于Redux的普通圈选展示",
+          style: TextStyle(
+              fontSize: 18, color: Colors.black54, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          "\n原理：拦截redux分发action事件,插入中间件，进行统一埋点\n\n示例：以系统count+1为例：\n",
+          style: TextStyle(fontSize: 14, color: Colors.black54),
+        ),
+        StoreConnector<AppState, int>(
+          converter: (store) => store.state.countState.count,
+          builder: (context, count) {
+            return Text(
+              count.toString(),
+              style: TextStyle(fontSize: 30, color: Colors.red),
+            );
+          },
+        ),
+        StoreConnector<AppState, VoidCallback>(
+          converter: (store) {
+            return () => store.dispatch(LogAction(actionAddCount));
+          },
+          builder: (context, callback) {
+            return MaterialButton(
+              color: Colors.deepOrange,
+              child: Text("数字+1",
+                  style: TextStyle(fontSize: 15, color: Colors.white)),
+              onPressed: callback,
+            );
+          },
+        ),
+      ]));
+}
+
+Widget listDemo() {
+  return Padding(
+      padding: EdgeInsets.fromLTRB(50, 30, 50, 30),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        Text(
+          "\n基于Redux的List圈选展示",
+          style: TextStyle(
+              fontSize: 18, color: Colors.black54, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          "\n原理和redux圈选一样，说明一下处理list的圈选数据取的item里面bean值\n\n示例：如下简单列表\n",
+          style: TextStyle(fontSize: 14, color: Colors.black54),
+        ),
+        Expanded(
+            child: ListView.builder(
+                itemBuilder: (BuildContext context, int index) {},
+                itemCount: 0))
+      ]));
 }
 
 Widget stateDemo() {
-  return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Text(
-      "\nWidget SetState:",
-      style: TextStyle(
-          fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-    ),
-    Text(
-      "state类型埋点：拦截setState事件进行统一埋点\n下面以系统count+1为例：",
-      style: TextStyle(fontSize: 14, color: Colors.black),
-    ),
-    AddTextWidget()
-  ]);
+  return Padding(
+      padding: EdgeInsets.fromLTRB(50, 30, 50, 30),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        Text(
+          "\n局部setState()操作圈选",
+          style: TextStyle(
+              fontSize: 18, color: Colors.black54, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          "\n原理：通过使用LogState，拦截setState事件进行统一埋点\n\n示例：以系统count+1为例：\n",
+          style: TextStyle(fontSize: 14, color: Colors.black54),
+        ),
+        AddTextWidget()
+      ]));
 }
 
 Widget pageDemo(BuildContext context) {
-  return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Text(
-      "\nPage push pop:",
-      style: TextStyle(
-          fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-    ),
-    Text(
-      "Page类型埋点：监听页面push事件，现push页面后 默认3秒跳转圈选部分",
-      style: TextStyle(fontSize: 14, color: Colors.black),
-    ),
-    MaterialButton(
-      color: Colors.white,
-      child: Text("页面跳转"),
-      onPressed: () {
-        Navigator.pushNamed(context, '/UnderScreen');
-      },
-    )
-  ]);
+  return Padding(
+      padding: EdgeInsets.fromLTRB(50, 30, 50, 30),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        Text(
+          "\n页面级曝光统计",
+          style: TextStyle(
+              fontSize: 18, color: Colors.black54, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          "\n原理：通过过NavigatorObserver监听页面push事件，现push页面后 默认3秒跳转圈选部分\n\n示例：点击跳转页面\n",
+          style: TextStyle(fontSize: 14, color: Colors.black54),
+        ),
+        MaterialButton(
+          color: Colors.deepOrange,
+          child:
+              Text("跳转", style: TextStyle(fontSize: 15, color: Colors.white)),
+          onPressed: () {
+            Navigator.pushNamed(context, '/UnderScreen');
+          },
+        )
+      ]));
 }
 
 class AddTextWidget extends StatefulWidget {
@@ -131,15 +184,16 @@ class AddTextState extends WidgetLogState<AddTextWidget> {
   @override
   Widget onBuild(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Text(
           count.toString(),
-          style: Theme.of(context).textTheme.display1,
+          style: TextStyle(fontSize: 30, color: Colors.red),
         ),
         MaterialButton(
-          color: Colors.white,
-          child: Text("Log"),
+          color: Colors.deepOrange,
+          child:
+              Text("数字+1", style: TextStyle(fontSize: 15, color: Colors.white)),
           onPressed: () {
             setState(() {
               count++;

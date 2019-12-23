@@ -3,7 +3,6 @@ import 'dart:convert' as convert;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magpie_log/file/data_analysis.dart';
-import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
 import 'package:magpie_log/magpie_log.dart';
 import 'package:redux/redux.dart';
@@ -119,29 +118,44 @@ class _LogScreenState extends State<LogScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            widget.actionName,
-            style: TextStyle(
-                fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
-          ),
+          Padding(
+              padding: EdgeInsets.fromLTRB(15, 20, 15, 10),
+              child: Row(
+                children: <Widget>[
+                  Text(
+                    "actionName:",
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black54,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    widget.actionName,
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black54,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
+              )),
+
           switches(),
-          Text(
-            "Add log or pass?",
-            style: TextStyle(
-                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-          ),
           buttons(),
-          Text(
-            "Config for log:",
-            style: TextStyle(
-                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          configData(),
-          Text(
-            "Pramas to choose:",
-            style: TextStyle(
-                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-          ),
+//          Text(
+//            "圈选配置:",
+//            style: TextStyle(
+//                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+//          ),
+//          configData(),
+          Padding(
+              padding: EdgeInsets.fromLTRB(15, 10, 10, 10),
+              child: Text(
+                "选取参数:",
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.bold),
+              )),
           initPanelList(paramList),
         ],
       ),
@@ -192,7 +206,7 @@ class _LogScreenState extends State<LogScreen> {
           ),
           Text(
             "isDebug:是否打开圈选 关闭上传埋点 \n需重启才能开启",
-            style: TextStyle(fontSize: 14, color: Colors.black),
+            style: TextStyle(fontSize: 14, color: Colors.black54),
           )
         ]),
         Row(children: <Widget>[
@@ -209,7 +223,7 @@ class _LogScreenState extends State<LogScreen> {
           ),
           Text(
             "isPageLogOn:是否打开页面展示圈选 \n开启跳转3秒后打开圈选页面",
-            style: TextStyle(fontSize: 14, color: Colors.black),
+            style: TextStyle(fontSize: 14, color: Colors.black54),
           ),
         ])
       ],
@@ -217,12 +231,18 @@ class _LogScreenState extends State<LogScreen> {
   }
 
   Widget buttons() {
-    return Row(
+    return Center(
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
         MaterialButton(
+          minWidth: 150,
           color: Colors.white,
-          child: Text("Pass",
-              style: TextStyle(fontSize: 18, color: Colors.lightGreen)),
+          child: Text("跳过",
+              style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.lightGreen,
+                  fontWeight: FontWeight.bold)),
           onPressed: () {
             switch (widget.logType) {
               case screenLogType:
@@ -239,8 +259,11 @@ class _LogScreenState extends State<LogScreen> {
         ),
         MaterialButton(
           color: Colors.white,
-          child: Text("log",
-              style: TextStyle(fontSize: 18, color: Colors.deepOrange)),
+          child: Text("埋点",
+              style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.deepOrange,
+                  fontWeight: FontWeight.bold)),
           onPressed: () {
             if (widget.logType == stateLogType) {
               widget.state.logStatus = 1;
@@ -264,17 +287,17 @@ class _LogScreenState extends State<LogScreen> {
             MagpieDataAnalysis().writeData(widget.actionName, log);
           },
         ),
-        MaterialButton(
-            color: Colors.white,
-            child: Text('读取配置',
-                style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
-            onPressed: () {
-              MagpieDataAnalysis().readFileData().then((allLog) {
-                setState(() {
-                  readAllLog = allLog;
-                });
-              });
-            }),
+//        MaterialButton(
+//            color: Colors.white,
+//            child: Text('读取配置',
+//                style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
+//            onPressed: () {
+//              MagpieDataAnalysis().readFileData().then((allLog) {
+//                setState(() {
+//                  readAllLog = allLog;
+//                });
+//              });
+//            }),
 //        MaterialButton(
 //          color: Colors.white,
 //          child: Text('读取当前',
@@ -289,16 +312,16 @@ class _LogScreenState extends State<LogScreen> {
 //            });
 //          },
 //        ),
-        MaterialButton(
-          color: Colors.white,
-          child: Text('生成配置',
-              style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
-          onPressed: () async {
-            await MagpieDataAnalysis().saveData();
-          },
-        )
+//        MaterialButton(
+//          color: Colors.white,
+//          child: Text('生成配置',
+//              style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
+//          onPressed: () async {
+//            await MagpieDataAnalysis().saveData();
+//          },
+//        )
       ],
-    );
+    ));
   }
 
   ///递归参数圈选列表
