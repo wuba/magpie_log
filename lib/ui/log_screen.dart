@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:magpie_log/file/data_analysis.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
 import 'package:magpie_log/magpie_log.dart';
+import 'package:magpie_log/model/analysis_model.dart';
 import 'package:redux/redux.dart';
 
 const int screenLogType = 1; //埋点类型：页面
@@ -269,41 +270,43 @@ class _LogScreenState extends State<LogScreen> {
               },
             )),
         Container(
-            height: 50,
-            width: MediaQuery.of(context).size.width / 1.5 - 1,
-            child: FlatButton(
-              //minWidth: MediaQuery.of(context).size.width/3,
-              shape: RoundedRectangleBorder(
-                  side: BorderSide.none, borderRadius: BorderRadius.zero),
-              color: Colors.deepOrange,
-              child: Text("埋点",
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold)),
-              onPressed: () {
-                if (widget.logType == stateLogType) {
-                  widget.state.logStatus = 1;
-                  widget.state.setRealState(() {});
-                }
+          height: 50,
+          width: MediaQuery.of(context).size.width / 1.5 - 1,
+          child: FlatButton(
+            //minWidth: MediaQuery.of(context).size.width/3,
+            shape: RoundedRectangleBorder(
+                side: BorderSide.none, borderRadius: BorderRadius.zero),
+            color: Colors.deepOrange,
+            child: Text("埋点",
+                style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold)),
+            onPressed: () {
+              if (widget.logType == stateLogType) {
+                widget.state.logStatus = 1;
+                widget.state.setRealState(() {});
+              }
 
-                setState(() {
-                  StringBuffer logs = StringBuffer();
-                  paramList.forEach((param) {
-                    if (param.isChecked) {
-                      logs.write(param.key + ",");
-                    }
-                  });
-                  log = "[" + logs.toString() + "]";
-
-                  Map map = Map();
-                  getLog(map, paramList);
-                  log = convert.jsonEncode(map);
+              setState(() {
+                StringBuffer logs = StringBuffer();
+                paramList.forEach((param) {
+                  if (param.isChecked) {
+                    logs.write(param.key + ",");
+                  }
                 });
+                log = "[" + logs.toString() + "]";
 
-                MagpieDataAnalysis().writeData(widget.actionName, log);
-              },
-            )),
+                Map map = Map();
+                getLog(map, paramList);
+                log = convert.jsonEncode(map);
+              });
+
+              MagpieDataAnalysis().writeData(
+                  AnalysisModel(widget.actionName, log, 'description', 'type'));
+            },
+          ),
+        )
       ],
     ));
   }

@@ -7,7 +7,12 @@ class AnalysisModel {
 
   String analysisData;
 
-  AnalysisModel(this.actionName, this.analysisData);
+  String description;
+
+  String type;
+
+  AnalysisModel(
+      this.actionName, this.analysisData, this.description, this.type);
 
   factory AnalysisModel.fromJson(Map<String, dynamic> json) =>
       _$AnalysisModelFromJson(json);
@@ -16,6 +21,11 @@ class AnalysisModel {
 
   set updateAnalysis(String data) {
     this.analysisData = data;
+  }
+
+  @override
+  String toString() {
+    return 'actionName : $actionName , analysisData : $analysisData , description : $description , type : $type';
   }
 }
 

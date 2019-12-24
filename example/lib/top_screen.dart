@@ -174,7 +174,7 @@ Widget logDetail(BuildContext context) {
         //   });
         // });
 
-        Navigator.pushNamed(context, '/log_detail');
+        Navigator.pushNamed(context, '/UnStart/log_detail');
       },
     ),
   ]);

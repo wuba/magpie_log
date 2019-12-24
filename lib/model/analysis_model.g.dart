@@ -10,6 +10,8 @@ AnalysisModel _$AnalysisModelFromJson(Map<String, dynamic> json) {
   return AnalysisModel(
     json['actionName'] as String,
     json['analysisData'] as String,
+    json['description'] as String,
+    json['type'] as String,
   );
 }
 
@@ -17,6 +19,8 @@ Map<String, dynamic> _$AnalysisModelToJson(AnalysisModel instance) =>
     <String, dynamic>{
       'actionName': instance.actionName,
       'analysisData': instance.analysisData,
+      'description': instance.description,
+      'type': instance.type,
     };
 
 AnalysisData _$AnalysisDataFromJson(Map<String, dynamic> json) {
