@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:magpie_log/interceptor/intercepter_screen_log.dart';
 import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
-import 'package:magpie_log/magpie_log.dart';
 import 'package:redux/redux.dart';
+import 'package:magpie_log/ui/log_operation_screen.dart';
+import 'package:magpie_log/ui/log_actiion_list.dart';
+import 'package:magpie_log/magpie_constants.dart';
 
-import 'log_detail_screen.dart';
 import 'states/app_state.dart';
 import 'top_screen.dart';
 import 'under_screen.dart';
@@ -28,8 +28,12 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         routes: {
           '/': (BuildContext context) => TopScreen(),
-          '/UnderScreen': (BuildContext context) => UnderScreen(),
-          '/UnStart/log_detail': (BuildContext context) => LogDetailScreen()
+          MagpieConstants.UNDER_SCREEN_PAGE: (BuildContext context) =>
+              UnderScreen(),
+          MagpieConstants.LOG_OPERATION_PAGE: (BuildContext context) =>
+              MagpieLogOperation(),
+          MagpieConstants.ACTION_LIST_PAGE: (BuildContext context) =>
+              MagpieActionList(),
         },
         navigatorObservers: [
           // LogObserver<AppState>(),

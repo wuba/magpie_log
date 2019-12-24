@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
 import 'package:magpie_log/magpie_log.dart';
+import 'package:magpie_log/magpie_constants.dart';
 
 import 'states/app_state.dart';
 
@@ -92,13 +93,7 @@ Widget logDetail(BuildContext context) {
       child: Text('数据操作',
           style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
       onPressed: () {
-        // MagpieDataAnalysis().readFileData().then((allLog) {
-        //   setState(() {
-        //     readAllLog = allLog;
-        //   });
-        // });
-
-        Navigator.pushNamed(context, '/UnStart/log_detail');
+        Navigator.pushNamed(context, MagpieConstants.LOG_OPERATION_PAGE);
       },
     ),
   ]);
@@ -134,7 +129,7 @@ Widget pageDemo(BuildContext context) {
       color: Colors.white,
       child: Text("页面跳转"),
       onPressed: () {
-        Navigator.pushNamed(context, '/UnderScreen');
+        Navigator.pushNamed(context, MagpieConstants.UNDER_SCREEN_PAGE);
       },
     )
   ]);

@@ -106,6 +106,9 @@ class MagpieDataAnalysis {
     return '';
   }
 
+  ///获取已选择的圈选数据集合
+  List<AnalysisModel> getListData() => _listData;
+
   ///根据圈选埋点的action，读取指定数据。[action] 圈选埋点的key。
   Future<String> readActionData(String action) async {
     if (_listData.isEmpty) {
