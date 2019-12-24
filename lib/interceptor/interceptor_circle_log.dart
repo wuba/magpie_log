@@ -8,20 +8,13 @@ import '../magpie_log.dart';
 
 ///step:1 intercept to add circle log
 
-abstract class LogState {
-  int get logStatus => _logStatus;
-  int _logStatus;
-
-  Map<String, dynamic> toJson();
-}
-
 class CircleMiddleWare extends MiddlewareClass<LogState> {
   @override
   void call(Store<LogState> store, action, NextDispatcher next) {
     LogState logState = store.state;
     Map<String, dynamic> json = logState.toJson();
     print("MyMiddleWare call:${json.toString()}");
-    if (MagpieLog.instance.isDebug ) {
+    if (MagpieLog.instance.isDebug) {
       Navigator.of(MagpieLog.instance.logContext).push(MaterialPageRoute(
           settings: RouteSettings(name: "/LogScreen"),
           builder: (BuildContext context) {
@@ -30,7 +23,8 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
                 logType: circleLogType,
                 store: store,
                 action: action,
-                actionName: action.toString(),
+                actionName:
+                    action is LogAction ? action.actionName : action.toString(),
                 next: next);
           }));
     } else {
@@ -40,8 +34,6 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
     }
   }
 }
-
-
 
 class LogStoreConnector<S, ViewModel> extends StoreConnector<S, ViewModel> {
   final ViewModelBuilder<ViewModel> builder;

@@ -3,11 +3,12 @@ import 'dart:convert' as convert;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magpie_log/file/data_analysis.dart';
-import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
 import 'package:magpie_log/magpie_log.dart';
 import 'package:magpie_log/model/analysis_model.dart';
 import 'package:redux/redux.dart';
+
+import '../magpie_constants.dart';
 
 const int screenLogType = 1; //埋点类型：页面
 const int circleLogType = 2; //埋点类型：redux全局数据埋点
@@ -76,10 +77,10 @@ class _LogScreenState extends State<LogScreen> {
         title = "页面圈选";
         break;
       case circleLogType:
-        title = "redux圈选";
+        title = "Redux圈选";
         break;
       case stateLogType:
-        title = "state圈选";
+        title = "State圈选";
         break;
     }
 
@@ -98,6 +99,11 @@ class _LogScreenState extends State<LogScreen> {
       if (v is Map) {
         isPaneled =
             initParam(v, logConfig == null ? null : logConfig[k], paramList2);
+      } else if (v is List && v != null && v.length > 0) {
+        isPaneled = initParam(
+            v[0],
+            logConfig == null || logConfig[k] == null ? null : logConfig[k][0],
+            paramList2);
       } else {
         if (logConfig != null && logConfig[k] != null && logConfig[k] == 1) {
           isChecked = true;
@@ -114,39 +120,64 @@ class _LogScreenState extends State<LogScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            widget.actionName,
-            style: TextStyle(
-                fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          switches(),
-          Text(
-            "Add log or pass?",
-            style: TextStyle(
-                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          buttons(),
-          Text(
-            "Config for log:",
-            style: TextStyle(
-                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          configData(),
-          Text(
-            "Pramas to choose:",
-            style: TextStyle(
-                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          initPanelList(paramList),
-        ],
-      ),
-    );
+        appBar: AppBar(
+          title: Text(title),
+          actions: <Widget>[
+            Center(
+                child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(
+                          context, MagpieConstants.LOG_OPERATION_PAGE);
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                      child: Text('圈选配置',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold)),
+                    )))
+          ],
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+                padding: EdgeInsets.fromLTRB(15, 15, 15, 15),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      "埋点Id:  ",
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      widget.actionName,
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                )),
+            Divider(height: 1.0, color: Colors.black26),
+            switches(),
+            Divider(height: 1.0, color: Colors.black26),
+            Padding(
+                padding: EdgeInsets.fromLTRB(15, 10, 10, 10),
+                child: Text(
+                  "选取参数:",
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black54,
+                      fontWeight: FontWeight.bold),
+                )),
+            initPanelList(paramList),
+            buttons(),
+          ],
+        ));
   }
 
   Widget configData() {
@@ -159,13 +190,6 @@ class _LogScreenState extends State<LogScreen> {
           ),
           margin: const EdgeInsets.all(10),
         ),
-//        Container(
-//          child: Text(
-//            "当前配置"+widget.action.toString() + " : $readActionLog",
-//            textAlign: TextAlign.center,
-//          ),
-//          margin: const EdgeInsets.all(10),
-//        ),
         Container(
           child: Text(
             "全配置 = $readAllLog",
@@ -188,12 +212,12 @@ class _LogScreenState extends State<LogScreen> {
                 MagpieLog.instance.isDebug = !MagpieLog.instance.isDebug;
               });
             },
-            activeTrackColor: Colors.lightGreenAccent,
-            activeColor: Colors.green,
+            activeTrackColor: Colors.orange,
+            activeColor: Colors.deepOrange,
           ),
           Text(
             "isDebug:是否打开圈选 关闭上传埋点 \n需重启才能开启",
-            style: TextStyle(fontSize: 14, color: Colors.black),
+            style: TextStyle(fontSize: 12, color: Colors.black54),
           )
         ]),
         Row(children: <Widget>[
@@ -205,12 +229,12 @@ class _LogScreenState extends State<LogScreen> {
                     !MagpieLog.instance.isPageLogOn;
               });
             },
-            activeTrackColor: Colors.lightGreenAccent,
-            activeColor: Colors.green,
+            activeTrackColor: Colors.orange,
+            activeColor: Colors.deepOrange,
           ),
           Text(
             "isPageLogOn:是否打开页面展示圈选 \n开启跳转3秒后打开圈选页面",
-            style: TextStyle(fontSize: 14, color: Colors.black),
+            style: TextStyle(fontSize: 12, color: Colors.black54),
           ),
         ])
       ],
@@ -218,56 +242,76 @@ class _LogScreenState extends State<LogScreen> {
   }
 
   Widget buttons() {
-    return Row(
+    return Center(
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        MaterialButton(
-          color: Colors.white,
-          child: Text("Pass",
-              style: TextStyle(fontSize: 18, color: Colors.lightGreen)),
-          onPressed: () {
-            switch (widget.logType) {
-              case screenLogType:
-                break;
-              case stateLogType:
-                widget.state.setRealState(widget.func);
-                break;
-              case circleLogType:
-                widget.next(widget.action);
-                break;
-            }
-            Navigator.pop(context);
-          },
-        ),
-        MaterialButton(
-          color: Colors.white,
-          child: Text("log",
-              style: TextStyle(fontSize: 18, color: Colors.deepOrange)),
-          onPressed: () {
-            if (widget.logType == stateLogType) {
-              widget.state.logStatus = 1;
-              widget.state.setRealState(() {});
-            }
-
-            setState(() {
-              StringBuffer logs = StringBuffer();
-              paramList.forEach((param) {
-                if (param.isChecked) {
-                  logs.write(param.key + ",");
+        Container(
+            height: 50,
+            width: MediaQuery.of(context).size.width / 3,
+            child: FlatButton(
+              shape: RoundedRectangleBorder(
+                  side: BorderSide.none, borderRadius: BorderRadius.zero),
+              color: Colors.lightGreen,
+              child: Text("跳过",
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold)),
+              onPressed: () {
+                switch (widget.logType) {
+                  case screenLogType:
+                    break;
+                  case stateLogType:
+                    widget.state.setRealState(widget.func);
+                    break;
+                  case circleLogType:
+                    widget.next(widget.action);
+                    break;
                 }
+                Navigator.pop(context);
+              },
+            )),
+        Container(
+          height: 50,
+          width: MediaQuery.of(context).size.width / 1.5 - 1,
+          child: FlatButton(
+            //minWidth: MediaQuery.of(context).size.width/3,
+            shape: RoundedRectangleBorder(
+                side: BorderSide.none, borderRadius: BorderRadius.zero),
+            color: Colors.deepOrange,
+            child: Text("埋点",
+                style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold)),
+            onPressed: () {
+              if (widget.logType == stateLogType) {
+                widget.state.logStatus = 1;
+                widget.state.setRealState(() {});
+              }
+
+              setState(() {
+                StringBuffer logs = StringBuffer();
+                paramList.forEach((param) {
+                  if (param.isChecked) {
+                    logs.write(param.key + ",");
+                  }
+                });
+                log = "[" + logs.toString() + "]";
+
+                Map map = Map();
+                getLog(map, paramList);
+                log = convert.jsonEncode(map);
               });
-              log = "[" + logs.toString() + "]";
 
-              Map map = Map();
-              getLog(map, paramList);
-              log = convert.jsonEncode(map);
-            });
-
-            MagpieDataAnalysis().writeData(
-                AnalysisModel(widget.actionName, log, 'description', 'type'));
-          },
-        ),
+              MagpieDataAnalysis().writeData(
+                  AnalysisModel(widget.actionName, log, 'description', 'type'));
+            },
+          ),
+        )
       ],
-    );
+    ));
   }
 
   ///递归参数圈选列表
@@ -281,9 +325,12 @@ class _LogScreenState extends State<LogScreen> {
     for (int index = 0; index < paramList.length; index++) {
       if (paramList[index].paramItems.length == 0) {
         widgetList.add(CheckboxListTile(
+            secondary: Icon(Icons.remove),
             value: paramList[index].isChecked,
-            title: Text(paramList[index].key),
-            subtitle: Text(paramList[index].value),
+            title: Text(paramList[index].key,
+                style: TextStyle(color: Colors.black54, fontSize: 13)),
+            subtitle: Text(paramList[index].value,
+                style: TextStyle(color: Colors.black54, fontSize: 11)),
             onChanged: (bool) {
               setState(() {
                 paramList[index].isChecked = bool;
@@ -302,11 +349,22 @@ class _LogScreenState extends State<LogScreen> {
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(16, 10, 0, 0),
                     child: Row(children: <Widget>[
-                      Text(paramList[index].key,
-                          style: TextStyle(fontSize: 15)),
                       !paramList[index].isPaneled
-                          ? Icon(Icons.keyboard_arrow_down)
-                          : Icon(Icons.keyboard_arrow_up),
+                          ? Icon(Icons.add_circle_outline,
+                              color: Colors.black54)
+                          : Icon(Icons.remove_circle_outline,
+                              color: Colors.black54),
+                      Padding(
+                          padding: EdgeInsets.fromLTRB(31, 0, 0, 0),
+                          child: Text(paramList[index].key,
+                              style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold)))
+
+//                      !paramList[index].isPaneled
+//                          ? Icon(Icons.keyboard_arrow_down)
+//                          : Icon(Icons.keyboard_arrow_up),
                     ]),
                   )),
               getPaneledItem(paramList[index].isPaneled, paramList[index])

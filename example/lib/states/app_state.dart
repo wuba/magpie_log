@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
+import 'package:magpie_log/magpie_log.dart';
 
 part 'app_state.g.dart';
 
@@ -24,19 +24,49 @@ class CountState {
 @JsonSerializable()
 class AppState extends LogState {
   final CountState countState;
+  final List<ListItem> listState;
   final OtherState otherState;
   final String param1;
   final int param2;
 
-  AppState({this.countState, this.otherState, this.param1, this.param2});
+  AppState(
+      {this.countState,
+      this.listState,
+      this.otherState,
+      this.param1,
+      this.param2});
 
   AppState.initState({this.param1, this.param2, this.otherState})
-      : countState = CountState.initState();
+      : countState = CountState.initState(),
+        listState = initListState();
 
   Map<String, dynamic> toJson() => _$AppStateToJson(this);
 
   factory AppState.fromJson(Map<String, dynamic> json) =>
       _$AppStateFromJson(json);
+}
+
+List<ListItem> initListState() {
+  List<ListItem> list = [];
+  for (int i = 0; i < 20; i++) {
+    list.add(ListItem(
+        title: "title" + i.toString(), content: "content" + i.toString()));
+  }
+  return list;
+}
+
+@JsonSerializable()
+class ListItem {
+  final String title;
+  final String content;
+  final bool isChecked;
+
+  ListItem({this.title, this.content, this.isChecked = false});
+
+  Map<String, dynamic> toJson() => _$ListItemToJson(this);
+
+  factory ListItem.fromJson(Map<String, dynamic> json) =>
+      _$ListItemFromJson(json);
 }
 
 @JsonSerializable()
@@ -52,15 +82,22 @@ class OtherState {
       _$OtherStateFromJson(json);
 }
 
-///定义操作该State的全部Action
-///这里只有增加count一个动作
-enum LogAction { increment }
+const String actionAddCount = "addCount";
+const String actionListClick = "listClick";
 
 ///reducer会根据传进来的action生成新的CountState
 AppState reducer(AppState state, action) {
   //匹配Action
-  if (action == LogAction.increment) {
+
+  if (action is LogAction && action.actionName == actionAddCount) {
     return AppState(countState: CountState(state.countState.count + 1));
+  } else if (action is LogAction && action.actionName == actionListClick) {
+    ListItem listItem = state.listState[action.index];
+
+    state.listState[action.index] = ListItem(
+        title: listItem.title,
+        content: listItem.content,
+        isChecked: !listItem.isChecked);
   }
   return state;
 }
