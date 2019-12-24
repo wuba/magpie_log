@@ -74,10 +74,10 @@ class _LogScreenState extends State<LogScreen> {
         title = "页面圈选";
         break;
       case circleLogType:
-        title = "redux圈选";
+        title = "Redux圈选";
         break;
       case stateLogType:
-        title = "state圈选";
+        title = "State圈选";
         break;
     }
 
@@ -112,54 +112,63 @@ class _LogScreenState extends State<LogScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-              padding: EdgeInsets.fromLTRB(15, 20, 15, 10),
-              child: Row(
-                children: <Widget>[
-                  Text(
-                    "actionName:",
-                    style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.black54,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    widget.actionName,
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black54,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
-              )),
-
-          switches(),
-          buttons(),
-//          Text(
-//            "圈选配置:",
-//            style: TextStyle(
-//                fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-//          ),
-//          configData(),
-          Padding(
-              padding: EdgeInsets.fromLTRB(15, 10, 10, 10),
-              child: Text(
-                "选取参数:",
-                style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black54,
-                    fontWeight: FontWeight.bold),
-              )),
-          initPanelList(paramList),
-        ],
-      ),
-    );
+        appBar: AppBar(
+          title: Text(title),
+          actions: <Widget>[
+            Center(
+                child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/log_detail');
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                      child: Text('圈选配置',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold)),
+                    )))
+          ],
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+                padding: EdgeInsets.fromLTRB(15, 15, 15, 15),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      "埋点Id:  ",
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      widget.actionName,
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                )),
+            Divider(height: 1.0, color: Colors.black26),
+            switches(),
+            Divider(height: 1.0, color: Colors.black26),
+            Padding(
+                padding: EdgeInsets.fromLTRB(15, 10, 10, 10),
+                child: Text(
+                  "选取参数:",
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black54,
+                      fontWeight: FontWeight.bold),
+                )),
+            initPanelList(paramList),
+            buttons(),
+          ],
+        ));
   }
 
   Widget configData() {
@@ -172,13 +181,6 @@ class _LogScreenState extends State<LogScreen> {
           ),
           margin: const EdgeInsets.all(10),
         ),
-//        Container(
-//          child: Text(
-//            "当前配置"+widget.action.toString() + " : $readActionLog",
-//            textAlign: TextAlign.center,
-//          ),
-//          margin: const EdgeInsets.all(10),
-//        ),
         Container(
           child: Text(
             "全配置 = $readAllLog",
@@ -201,12 +203,12 @@ class _LogScreenState extends State<LogScreen> {
                 MagpieLog.instance.isDebug = !MagpieLog.instance.isDebug;
               });
             },
-            activeTrackColor: Colors.lightGreenAccent,
-            activeColor: Colors.green,
+            activeTrackColor: Colors.orange,
+            activeColor: Colors.deepOrange,
           ),
           Text(
             "isDebug:是否打开圈选 关闭上传埋点 \n需重启才能开启",
-            style: TextStyle(fontSize: 14, color: Colors.black54),
+            style: TextStyle(fontSize: 12, color: Colors.black54),
           )
         ]),
         Row(children: <Widget>[
@@ -218,12 +220,12 @@ class _LogScreenState extends State<LogScreen> {
                     !MagpieLog.instance.isPageLogOn;
               });
             },
-            activeTrackColor: Colors.lightGreenAccent,
-            activeColor: Colors.green,
+            activeTrackColor: Colors.orange,
+            activeColor: Colors.deepOrange,
           ),
           Text(
             "isPageLogOn:是否打开页面展示圈选 \n开启跳转3秒后打开圈选页面",
-            style: TextStyle(fontSize: 14, color: Colors.black54),
+            style: TextStyle(fontSize: 12, color: Colors.black54),
           ),
         ])
       ],
@@ -233,93 +235,70 @@ class _LogScreenState extends State<LogScreen> {
   Widget buttons() {
     return Center(
         child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        MaterialButton(
-          minWidth: 150,
-          color: Colors.white,
-          child: Text("跳过",
-              style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.lightGreen,
-                  fontWeight: FontWeight.bold)),
-          onPressed: () {
-            switch (widget.logType) {
-              case screenLogType:
-                break;
-              case stateLogType:
-                widget.state.setRealState(widget.func);
-                break;
-              case circleLogType:
-                widget.next(widget.action);
-                break;
-            }
-            Navigator.pop(context);
-          },
-        ),
-        MaterialButton(
-          color: Colors.white,
-          child: Text("埋点",
-              style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.deepOrange,
-                  fontWeight: FontWeight.bold)),
-          onPressed: () {
-            if (widget.logType == stateLogType) {
-              widget.state.logStatus = 1;
-              widget.state.setRealState(() {});
-            }
-
-            setState(() {
-              StringBuffer logs = StringBuffer();
-              paramList.forEach((param) {
-                if (param.isChecked) {
-                  logs.write(param.key + ",");
+        Container(
+            height: 50,
+            width: MediaQuery.of(context).size.width / 3,
+            child: FlatButton(
+              shape: RoundedRectangleBorder(
+                  side: BorderSide.none, borderRadius: BorderRadius.zero),
+              color: Colors.lightGreen,
+              child: Text("跳过",
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold)),
+              onPressed: () {
+                switch (widget.logType) {
+                  case screenLogType:
+                    break;
+                  case stateLogType:
+                    widget.state.setRealState(widget.func);
+                    break;
+                  case circleLogType:
+                    widget.next(widget.action);
+                    break;
                 }
-              });
-              log = "[" + logs.toString() + "]";
+                Navigator.pop(context);
+              },
+            )),
+        Container(
+            height: 50,
+            width: MediaQuery.of(context).size.width / 1.5 - 1,
+            child: FlatButton(
+              //minWidth: MediaQuery.of(context).size.width/3,
+              shape: RoundedRectangleBorder(
+                  side: BorderSide.none, borderRadius: BorderRadius.zero),
+              color: Colors.deepOrange,
+              child: Text("埋点",
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold)),
+              onPressed: () {
+                if (widget.logType == stateLogType) {
+                  widget.state.logStatus = 1;
+                  widget.state.setRealState(() {});
+                }
 
-              Map map = Map();
-              getLog(map, paramList);
-              log = convert.jsonEncode(map);
-            });
+                setState(() {
+                  StringBuffer logs = StringBuffer();
+                  paramList.forEach((param) {
+                    if (param.isChecked) {
+                      logs.write(param.key + ",");
+                    }
+                  });
+                  log = "[" + logs.toString() + "]";
 
-            MagpieDataAnalysis().writeData(widget.actionName, log);
-          },
-        ),
-//        MaterialButton(
-//            color: Colors.white,
-//            child: Text('读取配置',
-//                style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
-//            onPressed: () {
-//              MagpieDataAnalysis().readFileData().then((allLog) {
-//                setState(() {
-//                  readAllLog = allLog;
-//                });
-//              });
-//            }),
-//        MaterialButton(
-//          color: Colors.white,
-//          child: Text('读取当前',
-//              style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
-//          onPressed: () {
-//            MagpieDataAnalysis()
-//                .readActionData(widget.actionName)
-//                .then((actionLog) {
-//              setState(() {
-//                readActionLog = actionLog;
-//              });
-//            });
-//          },
-//        ),
-//        MaterialButton(
-//          color: Colors.white,
-//          child: Text('生成配置',
-//              style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
-//          onPressed: () async {
-//            await MagpieDataAnalysis().saveData();
-//          },
-//        )
+                  Map map = Map();
+                  getLog(map, paramList);
+                  log = convert.jsonEncode(map);
+                });
+
+                MagpieDataAnalysis().writeData(widget.actionName, log);
+              },
+            )),
       ],
     ));
   }
@@ -335,9 +314,12 @@ class _LogScreenState extends State<LogScreen> {
     for (int index = 0; index < paramList.length; index++) {
       if (paramList[index].paramItems.length == 0) {
         widgetList.add(CheckboxListTile(
+            secondary: Icon(Icons.remove),
             value: paramList[index].isChecked,
-            title: Text(paramList[index].key),
-            subtitle: Text(paramList[index].value),
+            title: Text(paramList[index].key,
+                style: TextStyle(color: Colors.black54, fontSize: 13)),
+            subtitle: Text(paramList[index].value,
+                style: TextStyle(color: Colors.black54, fontSize: 11)),
             onChanged: (bool) {
               setState(() {
                 paramList[index].isChecked = bool;
@@ -356,11 +338,22 @@ class _LogScreenState extends State<LogScreen> {
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(16, 10, 0, 0),
                     child: Row(children: <Widget>[
-                      Text(paramList[index].key,
-                          style: TextStyle(fontSize: 15)),
                       !paramList[index].isPaneled
-                          ? Icon(Icons.keyboard_arrow_down)
-                          : Icon(Icons.keyboard_arrow_up),
+                          ? Icon(Icons.add_circle_outline,
+                              color: Colors.black54)
+                          : Icon(Icons.remove_circle_outline,
+                              color: Colors.black54),
+                      Padding(
+                          padding: EdgeInsets.fromLTRB(31, 0, 0, 0),
+                          child: Text(paramList[index].key,
+                              style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold)))
+
+//                      !paramList[index].isPaneled
+//                          ? Icon(Icons.keyboard_arrow_down)
+//                          : Icon(Icons.keyboard_arrow_up),
                     ]),
                   )),
               getPaneledItem(paramList[index].isPaneled, paramList[index])

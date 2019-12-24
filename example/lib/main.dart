@@ -4,6 +4,7 @@ import 'package:magpie_log/interceptor/intercepter_screen_log.dart';
 import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
 import 'package:redux/redux.dart';
 
+import 'log_detail_screen.dart';
 import 'states/app_state.dart';
 import 'top_screen.dart';
 import 'under_screen.dart';
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (BuildContext context) => TopScreen(),
           '/UnderScreen': (BuildContext context) => UnderScreen(),
+          '/log_detail': (BuildContext context) => LogDetailScreen()
         },
         navigatorObservers: [
           LogObserver<AppState>(),

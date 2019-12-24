@@ -124,6 +124,34 @@ Widget listDemo() {
       ]));
 }
 
+Widget logDetail(BuildContext context) {
+  return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    Text(
+      "Log detail",
+      style: TextStyle(
+          fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+    ),
+    Text(
+      "已圈选的数据详情页",
+      style: TextStyle(fontSize: 14, color: Colors.black),
+    ),
+    MaterialButton(
+      color: Colors.white,
+      child: Text('数据操作',
+          style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
+      onPressed: () {
+        // MagpieDataAnalysis().readFileData().then((allLog) {
+        //   setState(() {
+        //     readAllLog = allLog;
+        //   });
+        // });
+
+        Navigator.pushNamed(context, '/log_detail');
+      },
+    ),
+  ]);
+}
+
 Widget stateDemo() {
   return Padding(
       padding: EdgeInsets.fromLTRB(50, 30, 50, 30),
