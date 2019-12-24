@@ -39,6 +39,9 @@ pubspec.lock
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
 
+**/ios/**/ios/Runner/GeneratedPluginRegistrant.h
+**/ios/**/ios/ios/Runner/GeneratedPluginRegistrant.m
+
 
 # Exceptions to above rules.
 !**/ios/**/default.mode1v3
