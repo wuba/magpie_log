@@ -21,12 +21,10 @@ class MagpieDataAnalysis {
   static final List<AnalysisModel> _listData = List();
 
   /// 初始化接口
-  Future<Null> initMagpieData(BuildContext context) async {
-    var data;
-    if (MagpieLog.instance.isDebug) {
-      data = await MagpieFileUtils()
-          .readFile(dirName: _dirName, fileName: _fileName);
-    } else {
+  Future<String> initMagpieData(BuildContext context) async {
+    var data = await MagpieFileUtils()
+        .readFile(dirName: _dirName, fileName: _fileName);
+    if (data.isEmpty) {
       data = await DefaultAssetBundle.of(context)
           .loadString('assets/analysis.json');
     }
@@ -39,9 +37,8 @@ class MagpieDataAnalysis {
       }
     }
 
-    _createCommonParams().then((params) => {
-          //上报公共参数。原则上初始化的时候只需要上报一次
-        });
+    //返回公共参数。原则上初始化的时候需要上报一次，但是不强制
+    return (await _createCommonParams()).toJson().toString();
   }
 
   Future<Null> saveData() async {
@@ -58,9 +55,11 @@ class MagpieDataAnalysis {
         contents: jsonEncode(AnalysisData(_listData).toJson()));
   }
 
-  Future<Null> writeData(String action, String data) async {
-    if (action.isEmpty || data.isEmpty) {
-      print('$_tag writeData error!!! action or content is empty...');
+  Future<Null> writeData(AnalysisModel analysisModel) async {
+    if (analysisModel == null ||
+        analysisModel.actionName.isEmpty ||
+        analysisModel.analysisData.isEmpty) {
+      print('$_tag writeData error!!! 请再次检查AnalysisModel！！！ ');
       return;
     }
 
@@ -75,19 +74,20 @@ class MagpieDataAnalysis {
       }
     }
     //数据去重
-    if (_listData.any((item) => item.actionName == action)) {
-      print('$_tag writeData list replace data, action = $action ');
+    if (_listData.any((item) => item.actionName == analysisModel.actionName)) {
+      print(
+          '$_tag writeData list replace data, action = ${analysisModel.toString()} ');
       _listData.forEach((item) => {
-            if (item.actionName == action)
+            if (item.actionName == analysisModel.actionName)
               {
-                item.analysisData = data,
+                item = analysisModel,
                 print(
-                    '$_tag writeData list replace data, action = $action : actionName = ${item.actionName}')
+                    '$_tag writeData list replace data, action = ${analysisModel.actionName}} : actionName = ${item.actionName}')
               }
           });
     } else {
       print('$_tag writeData list add data');
-      _listData.add(AnalysisModel(action, data));
+      _listData.add(analysisModel);
     }
 
     print('$_tag writeData add list length = ${_listData.length}');
@@ -105,14 +105,14 @@ class MagpieDataAnalysis {
 
   ///根据圈选埋点的action，读取指定数据。[action] 圈选埋点的key。
   Future<String> readActionData(String action) async {
-    if (_listData.isEmpty) {
-      String analysisData = await readFileData();
-      if (analysisData.isNotEmpty) {
-        Map<String, dynamic> analysis = jsonDecode(analysisData);
-        AnalysisData data = AnalysisData.fromJson(analysis);
-        _listData.addAll(data.data);
-      }
-    }
+    // if (_listData.isEmpty) {
+    //   String analysisData = await readFileData();
+    //   if (analysisData.isNotEmpty) {
+    //     Map<String, dynamic> analysis = jsonDecode(analysisData);
+    //     AnalysisData data = AnalysisData.fromJson(analysis);
+    //     _listData.addAll(data.data);
+    //   }
+    // }
 
     if (_listData.isEmpty) {
       print('$_tag readActionData isEmpty!!! 数据空空如也(o^^o)');
@@ -121,13 +121,14 @@ class MagpieDataAnalysis {
       if (_listData.any((item) => item.actionName == action)) {
         for (var item in _listData) {
           if (item.actionName == action) {
+            print(
+                '$_tag readActionData actionName = ${item.actionName} , data = ${item.analysisData}');
             return item.analysisData;
           }
         }
-      } else {
-        print('$_tag readActionData listData 不包含此数据鸭(o^^o)');
-        return '';
       }
+      print('$_tag readActionData listData 不包含此数据鸭(o^^o)');
+      return '';
     }
   }
 
@@ -138,7 +139,9 @@ class MagpieDataAnalysis {
 
   ///清除全部数据。直接删除文件就完了呀呀呀呀呀
   Future<Null> clearAnalysisData() async {
+    _listData.clear();
     MagpieFileUtils().rmFile(dirName: _dirName, fileName: _fileName);
+    print('$_tag clearAnalysisData _listData.length = ${_listData.length}');
   }
 
   Future<int> deleteActionData({@required String actionName}) async {

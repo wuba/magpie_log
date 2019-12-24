@@ -20,8 +20,7 @@ void log(actionName, content) {
       timeInSecForIos: 1,
       backgroundColor: Colors.deepOrange,
       textColor: Colors.white,
-      fontSize: 16.0
-  );
+      fontSize: 16.0);
 }
 
 class _TopScreenState extends State<TopScreen> {
@@ -99,7 +98,7 @@ Widget logDetail(BuildContext context) {
         //   });
         // });
 
-        Navigator.pushNamed(context, '/log_detail');
+        Navigator.pushNamed(context, '/UnStart/log_detail');
       },
     ),
   ]);

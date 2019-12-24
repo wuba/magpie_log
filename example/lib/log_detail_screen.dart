@@ -43,6 +43,10 @@ class _LogDetailState extends State<LogDetailScreen> {
                       Expanded(child: saveWidget()),
                     ],
                   )),
+              Divider(
+                height: 10,
+                color: Colors.black,
+              ),
               Container(
                   margin: EdgeInsets.all(20),
                   child: Row(
@@ -61,7 +65,7 @@ class _LogDetailState extends State<LogDetailScreen> {
   }
 
   Widget saveWidget() => SizedBox(
-        height: 260,
+        height: 350,
         child: Column(
           children: <Widget>[
             MaterialButton(
@@ -78,21 +82,23 @@ class _LogDetailState extends State<LogDetailScreen> {
                 });
               },
             ),
-            Container(
-              child: Text(
-                '圈选数据存放路径：$savePath',
-                textAlign: TextAlign.left,
-                softWrap: true,
-                style: TextStyle(color: Colors.black87),
+            Expanded(
+              child: Container(
+                child: Text(
+                  '圈选数据存放路径：$savePath',
+                  textAlign: TextAlign.left,
+                  softWrap: true,
+                  style: TextStyle(color: Colors.black87),
+                ),
+                margin: EdgeInsets.all(10),
               ),
-              margin: EdgeInsets.all(10),
             )
           ],
         ),
       );
 
   Widget checkWidget() => SizedBox(
-        height: 260,
+        height: 350,
         child: Column(
           children: <Widget>[
             MaterialButton(
@@ -109,14 +115,19 @@ class _LogDetailState extends State<LogDetailScreen> {
                 });
               },
             ),
-            Container(
-              child: Text(
-                '已圈选数据：$checkLog',
-                textAlign: TextAlign.left,
-                softWrap: true,
-                style: TextStyle(color: Colors.black87),
-              ),
-              margin: EdgeInsets.all(10),
+            Flex(
+              direction: Axis.vertical,
+              children: <Widget>[
+                Container(
+                  child: Text(
+                    '已圈选数据：$checkLog',
+                    textAlign: TextAlign.left,
+                    softWrap: true,
+                    style: TextStyle(color: Colors.black87),
+                  ),
+                  margin: EdgeInsets.all(10),
+                ),
+              ],
             )
           ],
         ),

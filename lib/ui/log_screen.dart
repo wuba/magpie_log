@@ -6,6 +6,7 @@ import 'package:magpie_log/file/data_analysis.dart';
 import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
 import 'package:magpie_log/magpie_log.dart';
+import 'package:magpie_log/model/analysis_model.dart';
 import 'package:redux/redux.dart';
 
 const int screenLogType = 1; //埋点类型：页面
@@ -261,7 +262,8 @@ class _LogScreenState extends State<LogScreen> {
               log = convert.jsonEncode(map);
             });
 
-            MagpieDataAnalysis().writeData(widget.actionName, log);
+            MagpieDataAnalysis().writeData(
+                AnalysisModel(widget.actionName, log, 'description', 'type'));
           },
         ),
       ],
