@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
 import 'package:magpie_log/magpie_log.dart';
+import 'package:redux/redux.dart';
 
 import 'states/app_state.dart';
 
@@ -105,23 +106,50 @@ Widget reduxDemo() {
 }
 
 Widget listDemo() {
-  return Padding(
-      padding: EdgeInsets.fromLTRB(50, 30, 50, 30),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        Text(
-          "\n基于Redux的List圈选展示",
-          style: TextStyle(
-              fontSize: 18, color: Colors.black54, fontWeight: FontWeight.bold),
-        ),
-        Text(
-          "\n原理和redux圈选一样，说明一下处理list的圈选数据取的item里面bean值\n\n示例：如下简单列表\n",
-          style: TextStyle(fontSize: 14, color: Colors.black54),
-        ),
-        Expanded(
-            child: ListView.builder(
-                itemBuilder: (BuildContext context, int index) {},
-                itemCount: 0))
-      ]));
+  return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+    Padding(
+        padding: EdgeInsets.fromLTRB(50, 30, 50, 10),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          Text(
+            "\n基于Redux的List圈选展示",
+            style: TextStyle(
+                fontSize: 18,
+                color: Colors.black54,
+                fontWeight: FontWeight.bold),
+          ),
+          Text(
+            "\n原理和redux圈选一样，说明一下处理list的圈选数据取的item里面bean值\n\n示例：如下简单列表\n",
+            style: TextStyle(fontSize: 14, color: Colors.black54),
+          ),
+        ])),
+    Expanded(
+        child: StoreConnector<AppState, Store<AppState>>(
+            converter: (store) => store,
+            builder: (context, store) {
+              return ListView.separated(
+                  itemBuilder: (BuildContext context, int index) {
+                    return new ListTile(
+                        selected: store.state.listState[index].isChecked,
+                        onTap: () {
+                          store.dispatch(
+                              LogAction(actionListClick, index: index));
+                        },
+                        title: Center(
+                            child: Text(store.state.listState[index].title,
+                                style: store.state.listState[index].isChecked
+                                    ? TextStyle(
+                                        fontSize: 14, color: Colors.deepOrange)
+                                    : TextStyle(
+                                        fontSize: 14, color: Colors.black54))));
+                  },
+                  separatorBuilder: (context, index) {
+                    return Padding(
+                        padding: EdgeInsets.only(left: 0, right: 0),
+                        child: Divider(height: 1));
+                  },
+                  itemCount: store.state.listState.length);
+            }))
+  ]);
 }
 
 Widget logDetail(BuildContext context) {

@@ -96,6 +96,11 @@ class _LogScreenState extends State<LogScreen> {
       if (v is Map) {
         isPaneled =
             initParam(v, logConfig == null ? null : logConfig[k], paramList2);
+      } else if (v is List && v != null && v.length > 0) {
+        isPaneled = initParam(
+            v[0],
+            logConfig == null || logConfig[k] == null ? null : logConfig[k][0],
+            paramList2);
       } else {
         if (logConfig != null && logConfig[k] != null && logConfig[k] == 1) {
           isChecked = true;
