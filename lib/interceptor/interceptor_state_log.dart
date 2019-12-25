@@ -4,6 +4,8 @@ import 'package:magpie_log/file/log_util.dart';
 import 'package:magpie_log/magpie_log.dart';
 import 'package:magpie_log/ui/log_screen.dart';
 
+import '../magpie_constants.dart';
+
 abstract class WidgetLogState<T extends StatefulWidget> extends State {
   String getActionName();
 
@@ -30,7 +32,7 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
     var actionName = getActionName();
     if (MagpieLog.instance.isDebug) {
       Navigator.of(context).push(MaterialPageRoute(
-          settings: RouteSettings(name: "/LogScreen"),
+          settings: RouteSettings(name: MagpieConstants.logScreen),
           builder: (BuildContext context) {
             return LogScreen(
               data: json,

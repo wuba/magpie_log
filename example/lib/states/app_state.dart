@@ -50,7 +50,7 @@ List<ListItem> initListState() {
   List<ListItem> list = [];
   for (int i = 0; i < 20; i++) {
     list.add(ListItem(
-        title: "title" + i.toString(), content: "content" + i.toString()));
+        title: "Title：" + i.toString(), content: "Content：" + i.toString()));
   }
   return list;
 }
@@ -90,7 +90,9 @@ AppState reducer(AppState state, action) {
   //匹配Action
 
   if (action is LogAction && action.actionName == actionAddCount) {
-    return AppState(countState: CountState(state.countState.count + 1));
+    return AppState(
+        countState: CountState(state.countState.count + 1),
+        listState: state.listState);
   } else if (action is LogAction && action.actionName == actionListClick) {
     ListItem listItem = state.listState[action.index];
 

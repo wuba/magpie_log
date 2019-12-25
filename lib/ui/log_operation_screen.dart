@@ -4,6 +4,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:magpie_log/file/data_analysis.dart';
 import 'package:magpie_log/magpie_constants.dart';
 
+import 'log_actiion_list.dart';
+
 /// 已圈选数据操作页面
 class MagpieLogOperation extends StatefulWidget {
   @override
@@ -75,7 +77,11 @@ class _LogOperationState extends State<MagpieLogOperation> {
               textColor: Colors.black54,
               color: Colors.green[400],
               onPressed: () {
-                Navigator.pushNamed(context, MagpieConstants.actionListPage);
+                Navigator.of(context).push(MaterialPageRoute(
+                    settings: RouteSettings(name: MagpieConstants.actionScreen),
+                    builder: (BuildContext context) {
+                      return MagpieActionList();
+                    }));
               },
             ),
           ],

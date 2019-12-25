@@ -3,9 +3,6 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:magpie_log/interceptor/intercepter_screen_log.dart';
 import 'package:magpie_log/interceptor/interceptor_circle_log.dart';
 import 'package:redux/redux.dart';
-import 'package:magpie_log/ui/log_operation_screen.dart';
-import 'package:magpie_log/ui/log_actiion_list.dart';
-import 'package:magpie_log/magpie_constants.dart';
 
 import 'states/app_state.dart';
 import 'top_screen.dart';
@@ -29,12 +26,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         routes: {
           '/': (BuildContext context) => TopScreen(),
-          MagpieConstants.underScreenPage: (BuildContext context) =>
-              UnderScreen(),
-          MagpieConstants.logOperationPage: (BuildContext context) =>
-              MagpieLogOperation(),
-          MagpieConstants.actionListPage: (BuildContext context) =>
-              MagpieActionList(),
+          '/UnderScreen': (BuildContext context) => UnderScreen(),
         },
         navigatorObservers: [
           LogObserver<AppState>(),

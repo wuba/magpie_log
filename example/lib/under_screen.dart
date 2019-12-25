@@ -17,7 +17,7 @@ class _UnderScreenState extends State<UnderScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              '跳转页面默认3秒后跳转圈选埋点页面',
+              '跳转页面默认0.5秒后跳转圈选埋点页面',
             ),
           ],
         ),
