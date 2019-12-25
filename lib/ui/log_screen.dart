@@ -4,11 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:magpie_log/file/data_analysis.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
+import 'package:magpie_log/magpie_constants.dart';
 import 'package:magpie_log/magpie_log.dart';
 import 'package:magpie_log/model/analysis_model.dart';
 import 'package:redux/redux.dart';
 
-import '../magpie_constants.dart';
 import 'log_operation_screen.dart';
 
 const int screenLogType = 1; //埋点类型：页面
