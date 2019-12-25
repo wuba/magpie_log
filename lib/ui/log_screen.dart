@@ -8,6 +8,9 @@ import 'package:magpie_log/magpie_log.dart';
 import 'package:magpie_log/model/analysis_model.dart';
 import 'package:redux/redux.dart';
 
+import '../magpie_constants.dart';
+import 'log_operation_screen.dart';
+
 const int screenLogType = 1; //埋点类型：页面
 const int circleLogType = 2; //埋点类型：redux全局数据埋点
 const int stateLogType = 3; //埋点类型：state局部数据埋点
@@ -100,7 +103,7 @@ class _LogScreenState extends State<LogScreen> {
       } else if (v is List && v != null && v.length > 0) {
         isPaneled = initParam(
             v[0],
-            logConfig == null || logConfig[k] == null ? null : logConfig[k][0],
+            logConfig == null || logConfig[k] == null ? null : logConfig[k],
             paramList2);
       } else {
         if (logConfig != null && logConfig[k] != null && logConfig[k] == 1) {
@@ -124,7 +127,13 @@ class _LogScreenState extends State<LogScreen> {
             Center(
                 child: GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, '/log_detail');
+                      Navigator.of(MagpieLog.instance.logContext).push(
+                          MaterialPageRoute(
+                              settings: RouteSettings(
+                                  name: MagpieConstants.operationScreen),
+                              builder: (BuildContext context) {
+                                return MagpieLogOperation();
+                              }));
                     },
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
@@ -230,7 +239,7 @@ class _LogScreenState extends State<LogScreen> {
             activeColor: Colors.deepOrange,
           ),
           Text(
-            "isPageLogOn:是否打开页面展示圈选 \n开启跳转3秒后打开圈选页面",
+            "isPageLogOn:是否打开页面展示圈选 \n开启跳转0.5秒后打开圈选页面",
             style: TextStyle(fontSize: 12, color: Colors.black54),
           ),
         ])
@@ -288,19 +297,9 @@ class _LogScreenState extends State<LogScreen> {
                 widget.state.setRealState(() {});
               }
 
-              setState(() {
-                StringBuffer logs = StringBuffer();
-                paramList.forEach((param) {
-                  if (param.isChecked) {
-                    logs.write(param.key + ",");
-                  }
-                });
-                log = "[" + logs.toString() + "]";
-
-                Map map = Map();
-                getLog(map, paramList);
-                log = convert.jsonEncode(map);
-              });
+              Map map = Map();
+              getLog(map, paramList);
+              log = convert.jsonEncode(map);
 
               MagpieDataAnalysis().writeData(
                   AnalysisModel(widget.actionName, log, 'description', 'type'));

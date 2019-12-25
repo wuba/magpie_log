@@ -29,7 +29,6 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (BuildContext context) => TopScreen(),
           '/UnderScreen': (BuildContext context) => UnderScreen(),
-          '/UnStart/log_detail': (BuildContext context) => LogDetailScreen()
         },
         navigatorObservers: [
           LogObserver<AppState>(),
