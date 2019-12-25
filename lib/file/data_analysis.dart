@@ -22,9 +22,13 @@ class MagpieDataAnalysis {
 
   /// 初始化接口
   Future<String> initMagpieData(BuildContext context) async {
-    var data = await MagpieFileUtils()
-        .readFile(dirName: _dirName, fileName: _fileName);
-    if (data.isEmpty) {
+    var data;
+    //圈选数据以文件中的为准，只有首次的时候从assets下读取并copy到内存中
+    //动态下发的埋点数据需要全部写入到文件中
+    if (await MagpieFileUtils().isExistsFile(_fileName, dirName: _dirName)) {
+      data = await MagpieFileUtils().readFile(_fileName, dirName: _dirName);
+    } else {
+      //原则上assets目录中的配置文件只会读取一次
       data = await DefaultAssetBundle.of(context)
           .loadString('assets/analysis.json');
     }
@@ -47,12 +51,11 @@ class MagpieDataAnalysis {
       return;
     }
     //判断是否有之前写入的文件,有则删除
-    await MagpieFileUtils().rmFile(dirName: _dirName, fileName: _fileName);
+    await MagpieFileUtils().rmFile(_fileName, dirName: _dirName);
 
     await MagpieFileUtils().writeFile(
-        dirName: _dirName,
-        fileName: _fileName,
-        contents: jsonEncode(AnalysisData(_listData).toJson()));
+        _fileName, jsonEncode(AnalysisData(_listData).toJson()),
+        dirName: _dirName);
   }
 
   Future<Null> writeData(AnalysisModel analysisModel) async {
@@ -103,17 +106,11 @@ class MagpieDataAnalysis {
     return '';
   }
 
+  ///获取已选择的圈选数据集合
+  List<AnalysisModel> getListData() => _listData;
+
   ///根据圈选埋点的action，读取指定数据。[action] 圈选埋点的key。
   Future<String> readActionData(String action) async {
-    // if (_listData.isEmpty) {
-    //   String analysisData = await readFileData();
-    //   if (analysisData.isNotEmpty) {
-    //     Map<String, dynamic> analysis = jsonDecode(analysisData);
-    //     AnalysisData data = AnalysisData.fromJson(analysis);
-    //     _listData.addAll(data.data);
-    //   }
-    // }
-
     if (_listData.isEmpty) {
       print('$_tag readActionData isEmpty!!! 数据空空如也(o^^o)');
       return '';
@@ -134,13 +131,13 @@ class MagpieDataAnalysis {
 
   ///获取文件路径
   Future<String> getSavePath() async {
-    return await MagpieFileUtils().getFilePath(_dirName, fileName: _fileName);
+    return await MagpieFileUtils().getFilePath(_fileName, dirName: _dirName);
   }
 
   ///清除全部数据。直接删除文件就完了呀呀呀呀呀
   Future<Null> clearAnalysisData() async {
     _listData.clear();
-    MagpieFileUtils().rmFile(dirName: _dirName, fileName: _fileName);
+    MagpieFileUtils().clearFileData(_fileName, dirName: _dirName);
     print('$_tag clearAnalysisData _listData.length = ${_listData.length}');
   }
 

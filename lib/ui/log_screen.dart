@@ -301,8 +301,12 @@ class _LogScreenState extends State<LogScreen> {
               getLog(map, paramList);
               log = convert.jsonEncode(map);
 
-              MagpieDataAnalysis().writeData(
-                  AnalysisModel(widget.actionName, log, 'description', 'type'));
+              MagpieDataAnalysis().writeData(AnalysisModel(
+                  actionName: widget.actionName,
+                  pagePath: '',
+                  analysisData: log,
+                  description: '这条圈选数据是。。。',
+                  type: AnalysisType.reduxType));
             },
           ),
         )

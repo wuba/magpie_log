@@ -10,7 +10,7 @@ class MagpieFileUtils {
 
   ///根据指定文件夹名称创建文件
   ///[dirName]为空时，默认在magpie下创建文件
-  Future<File> _createFile({String dirName, @required String fileName}) async {
+  Future<File> _createFile(String fileName, {String dirName}) async {
     Directory baseDir = await getApplicationDocumentsDirectory();
     var filePath = Directory(baseDir.path);
     if (dirName.isNotEmpty) {
@@ -31,12 +31,10 @@ class MagpieFileUtils {
   }
 
   ///文件中写入数据
-  Future<Null> writeFile(
-      {String dirName,
-      @required String fileName,
-      @required String contents}) async {
+  Future<Null> writeFile(String fileName, String contents,
+      {String dirName}) async {
     if (fileName.isNotEmpty && contents.isNotEmpty) {
-      File file = await _createFile(dirName: dirName, fileName: fileName);
+      File file = await _createFile(fileName, dirName: dirName);
       if (!(await file.exists())) {
         file.create();
       }
@@ -47,7 +45,8 @@ class MagpieFileUtils {
     }
   }
 
-  Future<File> _getFile(String dirName, String fileName) async {
+  ///获取文件。[dirName] 文件夹名称，[fileName] 文件名称
+  Future<File> _getFile(String fileName, {String dirName}) async {
     if (fileName.isNotEmpty) {
       String filePath = dirName.isNotEmpty
           ? (await getApplicationDocumentsDirectory()).path + '/' + dirName
@@ -61,9 +60,9 @@ class MagpieFileUtils {
   }
 
   ///从文件中读书数据
-  Future<String> readFile({String dirName, @required String fileName}) async {
+  Future<String> readFile(String fileName, {String dirName}) async {
     try {
-      File file = await _getFile(dirName, fileName);
+      File file = await _getFile(fileName, dirName: dirName);
       if (await file.exists()) {
         String contents = await file.readAsString();
 
@@ -78,8 +77,9 @@ class MagpieFileUtils {
     return '';
   }
 
-  Future<bool> isExistsFile({String dirName, @required String fileName}) async {
-    File file = await _getFile(dirName, fileName);
+  ///判断文件是否存在
+  Future<bool> isExistsFile(String fileName, {String dirName}) async {
+    File file = await _getFile(fileName, dirName: dirName);
     if (await file.exists()) {
       print(
           '$tag isExistsFile =  true, fileName = $fileName , dirName = $dirName');
@@ -91,9 +91,10 @@ class MagpieFileUtils {
     }
   }
 
-  Future<Null> rmFile({String dirName, @required String fileName}) async {
-    if (await isExistsFile(fileName: fileName, dirName: dirName)) {
-      File file = await _getFile(dirName, fileName);
+  ///删除文件
+  Future<Null> rmFile(String fileName, {String dirName}) async {
+    if (await isExistsFile(fileName, dirName: dirName)) {
+      File file = await _getFile(fileName, dirName: dirName);
       file.delete();
 
       print(
@@ -101,10 +102,18 @@ class MagpieFileUtils {
     }
   }
 
-  Future<String> getFilePath(String dirName,
-      {@required String fileName}) async {
-    if (await isExistsFile(fileName: fileName, dirName: dirName)) {
-      File file = await _getFile(dirName, fileName);
+  ///清除文件中的数据
+  Future<Null> clearFileData(String fileName, {String dirName}) async {
+    //暂且就先用简单直接的方式来吧。。。
+    await rmFile(fileName, dirName: dirName);
+    await _createFile(fileName, dirName: dirName);
+  }
+
+  ///获取文件路径
+  Future<String> getFilePath(String fileName,
+      {@required String dirName}) async {
+    if (await isExistsFile(fileName, dirName: dirName)) {
+      File file = await _getFile(fileName, dirName: dirName);
       return file.path;
     } else {
       return '文件路径不存在';
