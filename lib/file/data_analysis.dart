@@ -61,6 +61,7 @@ class MagpieDataAnalysis {
   Future<Null> writeData(AnalysisModel analysisModel) async {
     if (analysisModel == null ||
         analysisModel.actionName.isEmpty ||
+        analysisModel.pagePath.isEmpty ||
         analysisModel.analysisData.isEmpty) {
       print('$_tag writeData error!!! 请再次检查AnalysisModel！！！ ');
       return;

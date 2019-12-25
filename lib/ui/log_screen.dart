@@ -307,7 +307,7 @@ class _LogScreenState extends State<LogScreen> {
 
               MagpieDataAnalysis().writeData(AnalysisModel(
                   actionName: widget.actionName,
-                  pagePath: '',
+                  pagePath: '../',
                   analysisData: log,
                   description: '这条圈选数据是。。。',
                   type: AnalysisType.reduxType));

@@ -28,8 +28,7 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
                 next: next);
           }));
     } else {
-      String actionName = action.toString();
-      MagpieLogUtil.runTimeLog(actionName, json);
+      MagpieLogUtil.runTimeLog(action?.actionName = '', json);
       next(action);
     }
   }
