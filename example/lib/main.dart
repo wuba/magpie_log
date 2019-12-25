@@ -29,11 +29,11 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         routes: {
           '/': (BuildContext context) => TopScreen(),
-          MagpieConstants.UNDER_SCREEN_PAGE: (BuildContext context) =>
+          MagpieConstants.underScreenPage: (BuildContext context) =>
               UnderScreen(),
-          MagpieConstants.LOG_OPERATION_PAGE: (BuildContext context) =>
+          MagpieConstants.logOperationPage: (BuildContext context) =>
               MagpieLogOperation(),
-          MagpieConstants.ACTION_LIST_PAGE: (BuildContext context) =>
+          MagpieConstants.actionListPage: (BuildContext context) =>
               MagpieActionList(),
         },
         navigatorObservers: [

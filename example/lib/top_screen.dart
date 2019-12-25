@@ -169,7 +169,7 @@ Widget logDetail(BuildContext context) {
       child: Text('数据操作',
           style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
       onPressed: () {
-        Navigator.pushNamed(context, MagpieConstants.LOG_OPERATION_PAGE);
+        Navigator.pushNamed(context, MagpieConstants.logOperationPage);
       },
     ),
   ]);

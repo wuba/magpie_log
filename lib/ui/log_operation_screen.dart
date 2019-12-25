@@ -75,7 +75,7 @@ class _LogOperationState extends State<MagpieLogOperation> {
               textColor: Colors.black54,
               color: Colors.green[400],
               onPressed: () {
-                Navigator.pushNamed(context, MagpieConstants.ACTION_LIST_PAGE);
+                Navigator.pushNamed(context, MagpieConstants.actionListPage);
               },
             ),
           ],

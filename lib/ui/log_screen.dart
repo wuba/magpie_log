@@ -127,7 +127,7 @@ class _LogScreenState extends State<LogScreen> {
                 child: GestureDetector(
                     onTap: () {
                       Navigator.pushNamed(
-                          context, MagpieConstants.LOG_OPERATION_PAGE);
+                          context, MagpieConstants.logOperationPage);
                     },
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
