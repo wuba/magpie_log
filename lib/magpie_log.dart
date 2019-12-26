@@ -37,7 +37,7 @@ class MagpieLog {
   }
 
   init(BuildContext context, LogCallBack callBack) {
-    //TODO 暂时还没有更好的办法处理某些函数只需要初始化一次的方法
+    //TODO 暂时还没有更好的办法来处理某些只需要初始化一次的函数
     if (!_isInit) {
       logCallBack = callBack;
       logContext = context;
