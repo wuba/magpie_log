@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:magpie_log/file/data_analysis.dart';
 import 'package:magpie_log/magpie_constants.dart';
+import 'package:magpie_log/magpie_log.dart';
 
 import 'log_actiion_list.dart';
 
@@ -42,6 +43,7 @@ class _LogOperationState extends State<MagpieLogOperation> {
                 child: clearData(),
                 margin: EdgeInsets.all(20),
               ),
+              switches()
             ],
           ),
         )));
@@ -108,4 +110,44 @@ class _LogOperationState extends State<MagpieLogOperation> {
           ],
         ),
       );
+
+  Widget switches() {
+    return Column(
+      children: <Widget>[
+        Row(children: <Widget>[
+          Switch(
+            value: MagpieLog.instance.isDebug,
+            onChanged: (value) {
+              setState(() {
+                MagpieLog.instance.isDebug = !MagpieLog.instance.isDebug;
+              });
+            },
+            activeTrackColor: Colors.orange,
+            activeColor: Colors.deepOrange,
+          ),
+          Text(
+            "isDebug:是否打开圈选 关闭上传埋点 \n需重启才能开启",
+            style: TextStyle(fontSize: 12, color: Colors.black54),
+          )
+        ]),
+        Row(children: <Widget>[
+          Switch(
+            value: MagpieLog.instance.isPageLogOn,
+            onChanged: (value) {
+              setState(() {
+                MagpieLog.instance.isPageLogOn =
+                !MagpieLog.instance.isPageLogOn;
+              });
+            },
+            activeTrackColor: Colors.orange,
+            activeColor: Colors.deepOrange,
+          ),
+          Text(
+            "isPageLogOn:是否打开页面展示圈选 \n开启跳转0.5秒后打开圈选页面",
+            style: TextStyle(fontSize: 12, color: Colors.black54),
+          ),
+        ])
+      ],
+    );
+  }
 }

@@ -9,6 +9,7 @@ class LogObserver<S> extends NavigatorObserver {
   @override
   void didPush(Route route, Route previousRoute) async {
     // 当调用Navigator.push时回调
+    MagpieLog.instance.routeStack.add(route);
     super.didPush(route, previousRoute);
     if (!route.settings.name.startsWith("/magpie_log")) {
       await Future.delayed(Duration(milliseconds: 500));
@@ -39,6 +40,18 @@ class LogObserver<S> extends NavigatorObserver {
     }
   }
 
+  void didPop(Route<dynamic> route, Route<dynamic> previousRoute) {
+    MagpieLog.instance.routeStack.removeLast();
+  }
+
   @override
-  void didPop(Route<dynamic> route, Route<dynamic> previousRoute) {}
+  void didRemove(Route route, Route previousRoute) {
+    MagpieLog.instance.routeStack.removeLast();
+  }
+
+  @override
+  void didReplace({Route newRoute, Route oldRoute}) {
+    MagpieLog.instance.routeStack.removeLast();
+    MagpieLog.instance.routeStack.add(newRoute);
+  }
 }

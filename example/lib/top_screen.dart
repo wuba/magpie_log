@@ -3,7 +3,6 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
 import 'package:magpie_log/magpie_log.dart';
-import 'package:magpie_log/magpie_constants.dart';
 import 'package:redux/redux.dart';
 
 import 'states/app_state.dart';
@@ -153,6 +152,34 @@ Widget listDemo() {
   ]);
 }
 
+Widget logDetail(BuildContext context) {
+  return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    Text(
+      "Log detail",
+      style: TextStyle(
+          fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+    ),
+    Text(
+      "已圈选的数据详情页",
+      style: TextStyle(fontSize: 14, color: Colors.black),
+    ),
+    MaterialButton(
+      color: Colors.white,
+      child: Text('数据操作',
+          style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
+      onPressed: () {
+        // MagpieDataAnalysis().readFileData().then((allLog) {
+        //   setState(() {
+        //     readAllLog = allLog;
+        //   });
+        // });
+
+        Navigator.pushNamed(context, '/UnStart/log_detail');
+      },
+    ),
+  ]);
+}
+
 Widget stateDemo() {
   return Padding(
       padding: EdgeInsets.fromLTRB(50, 30, 50, 30),
@@ -180,7 +207,7 @@ Widget pageDemo(BuildContext context) {
               fontSize: 18, color: Colors.black54, fontWeight: FontWeight.bold),
         ),
         Text(
-          "\n原理：通过过NavigatorObserver监听页面push事件，现push页面后 默认0.5秒跳转圈选部分\n\n示例：点击跳转页面\n",
+          "\n原理：通过过NavigatorObserver监听页面push事件，现push页面后 默认3秒跳转圈选部分\n\n示例：点击跳转页面\n",
           style: TextStyle(fontSize: 14, color: Colors.black54),
         ),
         MaterialButton(

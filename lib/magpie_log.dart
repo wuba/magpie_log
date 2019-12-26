@@ -26,6 +26,8 @@ class MagpieLog {
 
   bool isDebug = globalIsDebug;
   bool isPageLogOn = globalIsPageLogOn;
+  List<Route<dynamic>> routeStack = List();
+
 
   static bool _isInit = false;
 
