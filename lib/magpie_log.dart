@@ -26,6 +26,7 @@ class MagpieLog {
 
   bool isDebug = globalIsDebug;
   bool isPageLogOn = globalIsPageLogOn;
+  List<Route<dynamic>> routeStack = List();
 
   static bool _isInit = false;
 
@@ -44,6 +45,14 @@ class MagpieLog {
       MagpieDataAnalysis().initMagpieData(context); //初始化圈选数据
       _isInit = true;
     }
+  }
+
+  String getCurrentPath() {
+    return getCurrentRoute().settings.name;
+  }
+
+  Route getCurrentRoute() {
+    return routeStack[MagpieLog.instance.routeStack.length - 1];
   }
 }
 

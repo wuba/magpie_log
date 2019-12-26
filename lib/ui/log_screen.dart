@@ -30,14 +30,17 @@ class LogScreen extends StatefulWidget {
   final Function func;
   final WidgetLogState state;
 
+  final String pagePath;
+
   const LogScreen(
       {Key key,
       @required this.data,
       @required this.logType,
+      @required this.actionName,
       this.store,
+      this.pagePath,
       this.action,
       this.next,
-      @required this.actionName,
       this.func,
       this.state})
       : super(key: key);
@@ -61,15 +64,20 @@ class _LogScreenState extends State<LogScreen> {
   List<ParamItem> paramList = [];
   String log = "", readAllLog, readActionLog;
   String title = "";
+  String description = "";
 
   @override
   void initState() {
     MagpieDataAnalysis()
-        .readActionData(actionName: widget.actionName, pagePath: 'pagePath')
-        .then((actionLog) {
+        .readActionData(
+            actionName: widget.actionName, pagePath: widget.pagePath)
+        .then((logModel) {
       Map map;
-      if (actionLog != null) {
-        map = actionLog.toJson();
+      if (null != logModel) {
+        if (logModel.analysisData != null && logModel.analysisData != "") {
+          map = convert.jsonDecode(logModel.analysisData);
+        }
+        description = logModel.description;
       }
       initParam(widget.data, map, paramList);
       setState(() {});
@@ -129,20 +137,19 @@ class _LogScreenState extends State<LogScreen> {
             Center(
                 child: GestureDetector(
                     onTap: () {
-                      Navigator.of(MagpieLog.instance.logContext).push(
-                          MaterialPageRoute(
-                              settings: RouteSettings(
-                                  name: MagpieConstants.operationScreen),
-                              builder: (BuildContext context) {
-                                return MagpieLogOperation();
-                              }));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          settings: RouteSettings(
+                              name: MagpieConstants.operationScreen),
+                          builder: (BuildContext context) {
+                            return MagpieLogOperation();
+                          }));
                     },
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
                       child: Text('圈选配置',
                           style: TextStyle(
                               color: Colors.white,
-                              fontSize: 15,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold)),
                     )))
           ],
@@ -150,103 +157,112 @@ class _LogScreenState extends State<LogScreen> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            Container(
+              padding: EdgeInsets.fromLTRB(15, 5, 5, 5),
+              width: MediaQuery.of(context).size.width,
+              color: Color(0x66CCCCCC),
+              child: Text(
+                "基础配置",
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+
             Padding(
-                padding: EdgeInsets.fromLTRB(15, 15, 15, 15),
+                padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
                 child: Row(
                   children: <Widget>[
                     Text(
-                      "埋点Id:  ",
+                      "事件标识: ",
                       style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
+                          fontSize: 13,
+                          color: Colors.black26,
                           fontWeight: FontWeight.bold),
                     ),
                     Text(
                       widget.actionName,
                       style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 15,
                           color: Colors.black54,
                           fontWeight: FontWeight.bold),
                     ),
                   ],
                 )),
-            Divider(height: 1.0, color: Colors.black26),
-            switches(),
-            Divider(height: 1.0, color: Colors.black26),
             Padding(
-                padding: EdgeInsets.fromLTRB(15, 10, 10, 10),
-                child: Text(
-                  "选取参数:",
-                  style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black54,
-                      fontWeight: FontWeight.bold),
+                padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      "页面路径: ",
+                      style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.black26,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      widget.pagePath,
+                      style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 )),
+            Padding(
+                padding: EdgeInsets.fromLTRB(15, 0, 15, 10),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      "描述信息: ",
+                      style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.black26,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                        width: 200,
+                        child: TextField(
+                          onChanged: (text) {
+                            description = text;
+                          },
+                          style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.black54,
+                              fontWeight: FontWeight.bold),
+                          decoration: InputDecoration(
+                              hintStyle: TextStyle(
+                                  fontSize: 13, color: Colors.black26),
+                              hintText: '如：列表页点击'),
+                        )),
+//                    Text(
+//                      widget.actionName,
+//                      style: TextStyle(
+//                          fontSize: 15,
+//                          color: Colors.black54,
+//                          fontWeight: FontWeight.bold),
+//                    ),
+                  ],
+                )),
+//            Divider(height: 1.0, color: Colors.black26),
+//            switches(),
+            Container(
+              padding: EdgeInsets.fromLTRB(15, 5, 5, 5),
+              width: MediaQuery.of(context).size.width,
+              color: Color(0x66CCCCCC),
+              child: Text(
+                "选取参数 ",
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
             initPanelList(paramList),
             buttons(),
           ],
         ));
-  }
-
-  Widget configData() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Container(
-          child: Text(
-            "${widget.actionName} :$log",
-          ),
-          margin: const EdgeInsets.all(10),
-        ),
-        Container(
-          child: Text(
-            "全配置 = $readAllLog",
-          ),
-          margin: const EdgeInsets.all(10),
-        ),
-      ],
-      mainAxisAlignment: MainAxisAlignment.center,
-    );
-  }
-
-  Widget switches() {
-    return Column(
-      children: <Widget>[
-        Row(children: <Widget>[
-          Switch(
-            value: MagpieLog.instance.isDebug,
-            onChanged: (value) {
-              setState(() {
-                MagpieLog.instance.isDebug = !MagpieLog.instance.isDebug;
-              });
-            },
-            activeTrackColor: Colors.orange,
-            activeColor: Colors.deepOrange,
-          ),
-          Text(
-            "isDebug:是否打开圈选 关闭上传埋点 \n需重启才能开启",
-            style: TextStyle(fontSize: 12, color: Colors.black54),
-          )
-        ]),
-        Row(children: <Widget>[
-          Switch(
-            value: MagpieLog.instance.isPageLogOn,
-            onChanged: (value) {
-              setState(() {
-                MagpieLog.instance.isPageLogOn =
-                    !MagpieLog.instance.isPageLogOn;
-              });
-            },
-            activeTrackColor: Colors.orange,
-            activeColor: Colors.deepOrange,
-          ),
-          Text(
-            "isPageLogOn:是否打开页面展示圈选 \n开启跳转0.5秒后打开圈选页面",
-            style: TextStyle(fontSize: 12, color: Colors.black54),
-          ),
-        ])
-      ],
-    );
   }
 
   Widget buttons() {
@@ -303,12 +319,25 @@ class _LogScreenState extends State<LogScreen> {
               getLog(map, paramList);
               log = convert.jsonEncode(map);
 
+              String type;
+              switch (widget.logType) {
+                case screenLogType:
+                  type = AnalysisType.pageType;
+                  break;
+                case stateLogType:
+                  type = AnalysisType.stateType;
+                  break;
+                case circleLogType:
+                  type = AnalysisType.reduxType;
+                  break;
+              }
+
               MagpieDataAnalysis().writeData(AnalysisModel(
                   actionName: widget.actionName,
-                  pagePath: '../',
+                  pagePath: widget.pagePath,
                   analysisData: log,
-                  description: '这条圈选数据是。。。',
-                  type: AnalysisType.reduxType));
+                  description: description,
+                  type: type));
             },
           ),
         )

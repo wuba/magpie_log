@@ -35,6 +35,7 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
           settings: RouteSettings(name: MagpieConstants.logScreen),
           builder: (BuildContext context) {
             return LogScreen(
+              pagePath: MagpieLog.instance.getCurrentPath(),
               data: json,
               logType: stateLogType,
               actionName: actionName,
