@@ -64,10 +64,12 @@ class _LogScreenState extends State<LogScreen> {
 
   @override
   void initState() {
-    MagpieDataAnalysis().readActionData(widget.actionName).then((actionLog) {
+    MagpieDataAnalysis()
+        .readActionData(actionName: widget.actionName, pagePath: 'pagePath')
+        .then((actionLog) {
       Map map;
-      if (actionLog != null && actionLog != "") {
-        map = convert.jsonDecode(actionLog);
+      if (actionLog != null) {
+        map = actionLog.toJson();
       }
       initParam(widget.data, map, paramList);
       setState(() {});
@@ -303,7 +305,7 @@ class _LogScreenState extends State<LogScreen> {
 
               MagpieDataAnalysis().writeData(AnalysisModel(
                   actionName: widget.actionName,
-                  pagePath: '',
+                  pagePath: '../',
                   analysisData: log,
                   description: '这条圈选数据是。。。',
                   type: AnalysisType.reduxType));

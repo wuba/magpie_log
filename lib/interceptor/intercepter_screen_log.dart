@@ -31,7 +31,7 @@ class LogObserver<S> extends NavigatorObserver {
                 }));
           }
         } else {
-          MagpieLogUtil.runTimeLog(actionName, json);
+          MagpieLogUtil.runTimeLog(actionName, 'pagePath', json);
         }
       } catch (e) {
         debugPrint(e.toString());

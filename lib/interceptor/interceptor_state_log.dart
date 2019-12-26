@@ -43,7 +43,7 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
             );
           }));
     } else {
-      MagpieLogUtil.runTimeLog(actionName, json);
+      MagpieLogUtil.runTimeLog(actionName, 'pagePath', json);
       super.setState(fn);
     }
     //super.setState(fn);
