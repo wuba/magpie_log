@@ -81,21 +81,22 @@ class MagpieDataAnalysis {
     if (_listData.any((item) => item.actionName == analysisModel.actionName)) {
       print(
           '$_tag writeData list replace data, action = ${analysisModel.toString()} ');
-      _listData.forEach((item) => {
-            if (item.actionName == analysisModel.actionName &&
-                item.pagePath == analysisModel.pagePath)
-              {
-                item = analysisModel,
-                print(
-                    '$_tag writeData list replace data, action = ${analysisModel.actionName}} : actionName = ${item.actionName}')
-              }
-          });
+      for (var item in _listData) {
+        if (item.actionName == analysisModel.actionName &&
+            item.pagePath == analysisModel.pagePath) {
+          _listData.remove(item);
+          _listData.add(analysisModel);
+          print(
+              '$_tag writeData list replace data, action = ${analysisModel.actionName}} : pagePath = ${analysisModel.pagePath} : data = ${item.analysisData}');
+        }
+      }
     } else {
       print('$_tag writeData list add data');
       _listData.add(analysisModel);
     }
 
-    print('$_tag writeData add list length = ${_listData.length}');
+    print(
+        '$_tag writeData list length = ${_listData.length}, action = ${analysisModel.actionName} : pagePath = ${analysisModel.pagePath} : data = ${analysisModel.analysisData}');
   }
 
   ///完整的圈选数据读取
@@ -121,17 +122,20 @@ class MagpieDataAnalysis {
       print('$_tag readActionData 请检查传入参数是否正确！！！');
       return null;
     } else {
-      if (_listData.any((item) =>
-          item.actionName == actionName && item.pagePath == pagePath)) {
-        for (var item in _listData) {
-          if (item.actionName == actionName && item.pagePath == pagePath) {
-            print(
-                '$_tag readActionData actionName = ${item.actionName} , pagePath = ${item.pagePath} ,data = ${item.analysisData}');
-            return item;
-          }
+      // if (_listData.any((item) =>
+      //     item.actionName == actionName && item.pagePath == pagePath)) {
+      for (var item in _listData) {
+        print(
+            '$_tag readActionData actionName = ${item.actionName} , pagePath = ${item.pagePath} ,data = ${item.analysisData}');
+        if (item.actionName == actionName && item.pagePath == pagePath) {
+          print(
+              '$_tag readActionData select actionName = ${item.actionName} , pagePath = ${item.pagePath} ,data = ${item.analysisData}');
+          return item;
         }
       }
-      print('$_tag readActionData listData 不包含此数据鸭(o^^o)');
+      // }
+      print(
+          '$_tag readActionData listData 不包含此数据鸭(o^^o), actionName = $actionName , pagePath = $pagePath');
       return null;
     }
   }
