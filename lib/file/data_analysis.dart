@@ -61,6 +61,7 @@ class MagpieDataAnalysis {
   Future<Null> writeData(AnalysisModel analysisModel) async {
     if (analysisModel == null ||
         analysisModel.actionName.isEmpty ||
+        analysisModel.pagePath.isEmpty ||
         analysisModel.analysisData.isEmpty) {
       print('$_tag writeData error!!! 请再次检查AnalysisModel！！！ ');
       return;
@@ -81,7 +82,8 @@ class MagpieDataAnalysis {
       print(
           '$_tag writeData list replace data, action = ${analysisModel.toString()} ');
       _listData.forEach((item) => {
-            if (item.actionName == analysisModel.actionName)
+            if (item.actionName == analysisModel.actionName &&
+                item.pagePath == analysisModel.pagePath)
               {
                 item = analysisModel,
                 print(
@@ -110,22 +112,27 @@ class MagpieDataAnalysis {
   List<AnalysisModel> getListData() => _listData;
 
   ///根据圈选埋点的action，读取指定数据。[action] 圈选埋点的key。
-  Future<String> readActionData(String action) async {
+  Future<AnalysisModel> readActionData(
+      {@required String actionName, @required String pagePath}) async {
     if (_listData.isEmpty) {
-      print('$_tag readActionData isEmpty!!! 数据空空如也(o^^o)');
-      return '';
+      print('$_tag readActionData listData isEmpty！！！');
+      return null;
+    } else if (actionName.isEmpty || pagePath.isEmpty) {
+      print('$_tag readActionData 请检查传入参数是否正确！！！');
+      return null;
     } else {
-      if (_listData.any((item) => item.actionName == action)) {
+      if (_listData.any((item) =>
+          item.actionName == actionName && item.pagePath == pagePath)) {
         for (var item in _listData) {
-          if (item.actionName == action) {
+          if (item.actionName == actionName && item.pagePath == pagePath) {
             print(
-                '$_tag readActionData actionName = ${item.actionName} , data = ${item.analysisData}');
-            return item.analysisData;
+                '$_tag readActionData actionName = ${item.actionName} , pagePath = ${item.pagePath} ,data = ${item.analysisData}');
+            return item;
           }
         }
       }
       print('$_tag readActionData listData 不包含此数据鸭(o^^o)');
-      return '';
+      return null;
     }
   }
 

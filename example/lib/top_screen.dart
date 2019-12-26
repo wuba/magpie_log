@@ -37,8 +37,14 @@ class _TopScreenState extends State<TopScreen> {
               isScrollable: false,
               tabs: choices.map((Choice choice) {
                 return Tab(
-                  text: choice.title,
-                  icon: Icon(choice.icon),
+                  child: Text(
+                    '${choice.title}',
+                    style: TextStyle(fontSize: 10),
+                  ),
+                  icon: Icon(
+                    choice.icon,
+                    size: 30,
+                  ),
                 );
               }).toList(),
             ),
@@ -47,6 +53,7 @@ class _TopScreenState extends State<TopScreen> {
             reduxDemo(),
             listDemo(),
             stateDemo(),
+            manuallyDemo(),
             pageDemo(context),
           ])),
     );
@@ -63,7 +70,8 @@ class Choice {
 const List<Choice> choices = const <Choice>[
   const Choice(title: 'Redux', icon: Icons.group_work),
   const Choice(title: 'List', icon: Icons.list),
-  const Choice(title: 'setState', icon: Icons.adjust),
+  const Choice(title: 'State', icon: Icons.adjust),
+  const Choice(title: 'verbose', icon: Icons.colorize),
   const Choice(title: '页面', icon: Icons.content_copy),
 ];
 
@@ -195,6 +203,33 @@ Widget stateDemo() {
         ),
         AddTextWidget()
       ]));
+}
+
+Widget manuallyDemo() {
+  return Padding(
+    padding: EdgeInsets.fromLTRB(50, 30, 50, 30),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          '手动埋点展示 \n 示例：',
+          style: TextStyle(
+              fontSize: 18, color: Colors.black54, fontWeight: FontWeight.bold),
+        ),
+        Container(
+          margin: EdgeInsets.all(30),
+          child: MaterialButton(
+            color: Colors.deepOrange,
+            child: Text('手动埋点',
+                style: TextStyle(fontSize: 15, color: Colors.white)),
+            onPressed: () {
+              //TODO 手动埋点数据示例
+            },
+          ),
+        )
+      ],
+    ),
+  );
 }
 
 Widget pageDemo(BuildContext context) {

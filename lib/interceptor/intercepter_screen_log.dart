@@ -26,13 +26,14 @@ class LogObserver<S> extends NavigatorObserver {
                 settings: RouteSettings(name: MagpieConstants.logScreen),
                 builder: (BuildContext context) {
                   return LogScreen(
+                      pagePath: MagpieLog.instance.getCurrentPath(),
                       actionName: actionName,
                       data: logState.toJson(),
                       logType: screenLogType);
                 }));
           }
         } else {
-          MagpieLogUtil.runTimeLog(actionName, json);
+          MagpieLogUtil.runTimeLog(actionName, 'pagePath', json);
         }
       } catch (e) {
         debugPrint(e.toString());

@@ -28,7 +28,6 @@ class MagpieLog {
   bool isPageLogOn = globalIsPageLogOn;
   List<Route<dynamic>> routeStack = List();
 
-
   static bool _isInit = false;
 
   static MagpieLog _getInstance() {
@@ -39,13 +38,21 @@ class MagpieLog {
   }
 
   init(BuildContext context, LogCallBack callBack) {
-    //TODO 暂时还没有更好的办法处理某些函数只需要初始化一次的方法
+    //TODO 暂时还没有更好的办法来处理某些只需要初始化一次的函数
     if (!_isInit) {
       logCallBack = callBack;
       logContext = context;
       MagpieDataAnalysis().initMagpieData(context); //初始化圈选数据
       _isInit = true;
     }
+  }
+
+  String getCurrentPath() {
+    return getCurrentRoute().settings.name;
+  }
+
+  Route getCurrentRoute() {
+    return routeStack[MagpieLog.instance.routeStack.length - 1];
   }
 }
 

@@ -35,6 +35,7 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
           settings: RouteSettings(name: MagpieConstants.logScreen),
           builder: (BuildContext context) {
             return LogScreen(
+              pagePath: MagpieLog.instance.getCurrentPath(),
               data: json,
               logType: stateLogType,
               actionName: actionName,
@@ -43,7 +44,7 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
             );
           }));
     } else {
-      MagpieLogUtil.runTimeLog(actionName, json);
+      MagpieLogUtil.runTimeLog(actionName, 'pagePath', json);
       super.setState(fn);
     }
     //super.setState(fn);

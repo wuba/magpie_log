@@ -17,8 +17,7 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
     String actionName =
         action is LogAction ? action.actionName : action.toString();
     if (MagpieLog.instance.isDebug) {
-      Route route = MagpieLog
-          .instance.routeStack[MagpieLog.instance.routeStack.length - 1];
+      String pagePath = MagpieLog.instance.getCurrentPath();
       Navigator.of(MagpieLog.instance.logContext).push(MaterialPageRoute(
           settings: RouteSettings(name: MagpieConstants.logScreen),
           builder: (BuildContext context) {
@@ -27,12 +26,12 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
                 logType: circleLogType,
                 store: store,
                 action: action,
-                pagePath: route.settings.name,
+                pagePath: pagePath,
                 actionName: actionName,
                 next: next);
           }));
     } else {
-      MagpieLogUtil.runTimeLog(actionName, json);
+      MagpieLogUtil.runTimeLog(actionName, 'pagePath', json);
       next(action);
     }
   }

@@ -68,10 +68,16 @@ class _LogScreenState extends State<LogScreen> {
 
   @override
   void initState() {
-    MagpieDataAnalysis().readActionData(widget.actionName).then((actionLog) {
+    MagpieDataAnalysis()
+        .readActionData(
+            actionName: widget.actionName, pagePath: widget.pagePath)
+        .then((logModel) {
       Map map;
-      if (actionLog != null && actionLog != "") {
-        map = convert.jsonDecode(actionLog);
+      if (null != logModel) {
+        if (logModel.analysisData != null && logModel.analysisData != "") {
+          map = convert.jsonDecode(logModel.analysisData);
+        }
+        description = logModel.description;
       }
       initParam(widget.data, map, paramList);
       setState(() {});
