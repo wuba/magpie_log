@@ -31,13 +31,15 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
     print("MyMiddleWare call:${json.toString()}");
     var actionName = getActionName();
     if (MagpieLog.instance.isDebug) {
+      String pagePath = MagpieLog.instance.getCurrentPath();
+
       Navigator.of(context).push(MaterialPageRoute(
           settings: RouteSettings(name: MagpieConstants.logScreen),
           builder: (BuildContext context) {
             return LogScreen(
-              pagePath: MagpieLog.instance.getCurrentPath(),
               data: json,
               logType: stateLogType,
+              pagePath: pagePath,
               actionName: actionName,
               func: fn,
               state: this,

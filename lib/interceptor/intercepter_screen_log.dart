@@ -19,14 +19,14 @@ class LogObserver<S> extends NavigatorObserver {
         var json = logState.toJson();
         String actionName =
             route.settings.name != null ? route.settings.name : "";
-
+        String pagePath = MagpieLog.instance.getCurrentPath();
         if (MagpieLog.instance.isDebug && MagpieLog.instance.isPageLogOn) {
           {
             Navigator.of(MagpieLog.instance.logContext).push(MaterialPageRoute(
                 settings: RouteSettings(name: MagpieConstants.logScreen),
                 builder: (BuildContext context) {
                   return LogScreen(
-                      pagePath: MagpieLog.instance.getCurrentPath(),
+                      pagePath: pagePath,
                       actionName: actionName,
                       data: logState.toJson(),
                       logType: screenLogType);
