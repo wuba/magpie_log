@@ -1,74 +1,74 @@
 import 'dart:convert';
-
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
-typedef AnalysisCallback = Function(String actionName, String actionData);
+typedef AnalysisCallback = Function(Map<String, dynamic> data);
 
-class MagpieSendData {
-  static final int _channelType = 0;
+class MagpieAnalysisHandler {
+  static final String _tag = 'AnalysisHandler';
 
-  static void sendData(Map<String, dynamic> data) {
+  static final String _channelName = 'magpie_analysis_channel';
+
+  //上报圈选数据通道类型，0 - Flutter，1 - Native
+  int _channelType = 0;
+
+  factory MagpieAnalysisHandler() => _getInstance();
+
+  static MagpieAnalysisHandler get instance => _getInstance();
+
+  static MagpieAnalysisHandler _instance;
+
+  var _msgChannel;
+
+  AnalysisCallback _callback;
+
+  //发送圈选数据
+  void sendData(Map<String, dynamic> data) {
+    if (data == null || data.isEmpty) {
+      print('$_tag sendData data 不合法！！！');
+      return;
+    }
     if (_channelType == 0) {
-      _AnalysisHandler.instance.sendMsgToFlutter(data);
+      MagpieAnalysisHandler.instance._sendMsgToFlutter(data);
     } else {
-      _AnalysisHandler.instance.sendMsgToNative(data);
+      MagpieAnalysisHandler.instance._sendMsgToNative(data);
     }
   }
-}
 
-class _AnalysisHandler implements _MessageHandler {
-  static final String tag = 'AnalysisHandler';
-
-  static final String channelName = 'magpie_analysis_channel';
-
-  factory _AnalysisHandler() => _getInstance();
-
-  static _AnalysisHandler get instance => _getInstance();
-
-  static _AnalysisHandler _instance;
-
-  var msgChannel;
-
-  _AnalysisHandler._handler() {
-    msgChannel = BasicMessageChannel(channelName, StringCodec());
+  //设置Flutter通信的callback。如果数据上报通过flutter实现，此方法必须实现！！！
+  void initHandler(int channelType, AnalysisCallback callback) {
+    this._channelType = channelType;
+    if (channelType == 0) {
+      this._callback = callback;
+    }
   }
 
-  static _AnalysisHandler _getInstance() {
+  MagpieAnalysisHandler._handler() {
+    _msgChannel = BasicMessageChannel(_channelName, StringCodec());
+  }
+
+  static MagpieAnalysisHandler _getInstance() {
     if (_instance == null) {
-      _instance = _AnalysisHandler._handler();
+      _instance = MagpieAnalysisHandler._handler();
     }
     return _instance;
   }
 
   Future<Null> _sendMagpieData(String data) async {
-    await msgChannel.send(data);
+    await _msgChannel.send(data);
   }
 
-  @override
-  void sendMsgToFlutter(Map<String, dynamic> data) {
-    Fluttertoast.showToast(
-        msg: "sendMsgToFlutter==>\n$data",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIos: 1,
-        backgroundColor: Colors.deepOrange,
-        textColor: Colors.white,
-        fontSize: 16.0);
+  //通过callback发送数据给Flutter
+  void _sendMsgToFlutter(Map<String, dynamic> data) {
+    if (_callback == null) {
+      print('$_tag callback is null');
+      return;
+    }
+    _callback(data);
   }
 
-  @override
-  void sendMsgToNative(Map<String, dynamic> data) {
+  //通过BasicMessageChannel发送数据给Native
+  void _sendMsgToNative(Map<String, dynamic> data) {
     _sendMagpieData(jsonEncode(data).toString());
-    print('$tag sendMsgToNative : ${jsonEncode(data).toString()}');
+    print('$_tag sendMsgToNative : ${jsonEncode(data).toString()}');
   }
-}
-
-class _MessageHandler {
-  //圈选数据上报到flutter
-  void sendMsgToFlutter(Map<String, dynamic> data) {}
-
-  //圈选数据上报到native
-  void sendMsgToNative(Map<String, dynamic> data) {}
 }

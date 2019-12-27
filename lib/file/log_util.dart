@@ -11,7 +11,7 @@ class MagpieLogUtil {
 
       Map<String, dynamic> dataMap = data.toJson();
       trueData(json, dataMap);
-      MagpieSendData.sendData(dataMap);
+      MagpieAnalysisHandler.instance.sendData(dataMap);
       debugPrint("runtime log:" + dataMap.toString());
     });
   }

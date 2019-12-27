@@ -1,6 +1,6 @@
+import 'package:example/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
 import 'package:magpie_log/magpie_log.dart';
 import 'package:redux/redux.dart';
@@ -15,7 +15,7 @@ class TopScreen extends StatefulWidget {
 class _TopScreenState extends State<TopScreen> {
   @override
   Widget build(BuildContext context) {
-    MagpieLog.instance.init(context);
+    MagpieExampleUtils().init(context);
     return DefaultTabController(
       length: choices.length,
       child: Scaffold(
