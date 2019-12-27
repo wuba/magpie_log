@@ -8,8 +8,6 @@ const bool globalIsDebug = true;
 const bool globalIsPageLogOn = true;
 const String globalClientId = "com.wuba.flutter.magpie_log";
 
-typedef LogCallBack = Function(String actionName, Map content);
-
 class MagpieLog {
   // 工厂模式
   factory MagpieLog() => _getInstance();
@@ -22,7 +20,6 @@ class MagpieLog {
   }
 
   BuildContext logContext;
-  LogCallBack logCallBack;
 
   bool isDebug = globalIsDebug;
   bool isPageLogOn = globalIsPageLogOn;
@@ -37,10 +34,9 @@ class MagpieLog {
     return _instance;
   }
 
-  init(BuildContext context, LogCallBack callBack) {
+  init(BuildContext context) {
     //TODO 暂时还没有更好的办法来处理某些只需要初始化一次的函数
     if (!_isInit) {
-      logCallBack = callBack;
       logContext = context;
       MagpieDataAnalysis().initMagpieData(context); //初始化圈选数据
       _isInit = true;

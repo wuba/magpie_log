@@ -12,22 +12,10 @@ class TopScreen extends StatefulWidget {
   _TopScreenState createState() => _TopScreenState();
 }
 
-void log(actionName, content) {
-  print("MagpieLog=>$actionName:$content");
-  Fluttertoast.showToast(
-      msg: "MagpieLog==>\n$actionName:\n$content",
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIos: 1,
-      backgroundColor: Colors.deepOrange,
-      textColor: Colors.white,
-      fontSize: 16.0);
-}
-
 class _TopScreenState extends State<TopScreen> {
   @override
   Widget build(BuildContext context) {
-    MagpieLog.instance.init(context, log);
+    MagpieLog.instance.init(context);
     return DefaultTabController(
       length: choices.length,
       child: Scaffold(
