@@ -16,22 +16,24 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
     print("MyMiddleWare call:${json.toString()}");
     String actionName =
         action is LogAction ? action.actionName : action.toString();
+    String pagePath = MagpieLog.instance.getCurrentPath();
     if (MagpieLog.instance.isDebug) {
-      String pagePath = MagpieLog.instance.getCurrentPath();
-      Navigator.of(MagpieLog.instance.logContext).push(MaterialPageRoute(
-          settings: RouteSettings(name: MagpieConstants.logScreen),
-          builder: (BuildContext context) {
-            return LogScreen(
-                data: json,
-                logType: circleLogType,
-                store: store,
-                action: action,
-                pagePath: pagePath,
-                actionName: actionName,
-                next: next);
-          }));
+      Navigator.push(
+          MagpieLog.instance.logContext,
+          PageRouteBuilder(
+              opaque: false,
+              settings: RouteSettings(name: MagpieConstants.logScreen),
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  LogScreen(
+                      data: json,
+                      logType: circleLogType,
+                      store: store,
+                      action: action,
+                      pagePath: pagePath,
+                      actionName: actionName,
+                      next: next)));
     } else {
-      MagpieLogUtil.runTimeLog(actionName, 'pagePath', json);
+      MagpieLogUtil.runTimeLog(actionName, pagePath, json);
       next(action);
     }
   }

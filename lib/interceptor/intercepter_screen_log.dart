@@ -19,21 +19,26 @@ class LogObserver<S> extends NavigatorObserver {
         var json = logState.toJson();
         String actionName =
             route.settings.name != null ? route.settings.name : "";
-
+        String pagePath = MagpieLog.instance.getCurrentPath();
         if (MagpieLog.instance.isDebug && MagpieLog.instance.isPageLogOn) {
           {
-            Navigator.of(MagpieLog.instance.logContext).push(MaterialPageRoute(
-                settings: RouteSettings(name: MagpieConstants.logScreen),
-                builder: (BuildContext context) {
-                  return LogScreen(
-                      pagePath: MagpieLog.instance.getCurrentPath(),
-                      actionName: actionName,
-                      data: logState.toJson(),
-                      logType: screenLogType);
-                }));
+
+
+            Navigator.push(
+              MagpieLog.instance.logContext,
+              PageRouteBuilder(
+                  opaque: false,
+                  settings: RouteSettings(name: MagpieConstants.logScreen),
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      LogScreen(
+                          pagePath: pagePath,
+                          actionName: actionName,
+                          data: logState.toJson(),
+                          logType: screenLogType)),
+            );
           }
         } else {
-          MagpieLogUtil.runTimeLog(actionName, 'pagePath', json);
+          MagpieLogUtil.runTimeLog(actionName, pagePath, json);
         }
       } catch (e) {
         debugPrint(e.toString());

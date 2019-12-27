@@ -25,129 +25,120 @@ class _LogOperationState extends State<MagpieLogOperation> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-        appBar: AppBar(title: Text('埋点数据详情')),
-        body: SingleChildScrollView(
-            child: Align(
-          alignment: Alignment.topCenter,
-          child: Column(
+      appBar: AppBar(title: Text('圈选配置')),
+      body: Container(
+          color: Color(0x66CCCCCC),
+          child: ListView(
             children: <Widget>[
-              Container(
-                child: checkWidget(),
-                margin: EdgeInsets.all(20),
-              ),
-              Container(
-                child: saveWidget(),
-                margin: EdgeInsets.all(20),
-              ),
-              Container(
-                child: clearData(),
-                margin: EdgeInsets.all(20),
-              ),
-              switches()
-            ],
-          ),
-        )));
-  }
-
-  Widget saveWidget() => SizedBox(
-        child: Column(
-          children: <Widget>[
-            MaterialButton(
-              child: Text('保存圈选数据'),
-              textColor: Colors.black54,
-              color: Colors.blue[400],
-              onPressed: () {
+              listItem("查看圈选数据",
+                  leftWidget: Icon(
+                    Icons.list,
+                    color: Colors.black26,
+                  ), onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    settings: RouteSettings(name: MagpieConstants.actionScreen),
+                    builder: (BuildContext context) {
+                      return MagpieActionList();
+                    }));
+              }),
+              listItem("保存圈选数据至文件",
+                  leftWidget: Icon(
+                    Icons.save_alt,
+                    color: Colors.black26,
+                  ), onTap: () {
                 MagpieDataAnalysis().saveData().then((data) async {
                   MagpieDataAnalysis().getSavePath().then((path) {
                     Fluttertoast.showToast(
                         msg: '数据已保存至：$path', toastLength: Toast.LENGTH_SHORT);
                   });
                 });
-              },
-            ),
-          ],
-        ),
-      );
-
-  Widget checkWidget() => SizedBox(
-        child: Column(
-          children: <Widget>[
-            MaterialButton(
-              child: Text(
-                '查看圈选数据',
-              ),
-              textColor: Colors.black54,
-              color: Colors.green[400],
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    settings: RouteSettings(name: MagpieConstants.actionScreen),
-                    builder: (BuildContext context) {
-                      return MagpieActionList();
-                    }));
-              },
-            ),
-          ],
-        ),
-      );
-
-  Widget clearData() => SizedBox(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              child: MaterialButton(
-                child: Text('清除全部圈选数据'),
-                textColor: Colors.white,
-                color: Colors.lightBlue,
-                onPressed: () {
-                  MagpieDataAnalysis().clearAnalysisData().then((value) {
-                    Fluttertoast.showToast(
-                        msg: '数据清除成功～', toastLength: Toast.LENGTH_SHORT);
-                  });
-                },
-              ),
-            )
-          ],
-        ),
-      );
-
-  Widget switches() {
-    return Column(
-      children: <Widget>[
-        Row(children: <Widget>[
-          Switch(
-            value: MagpieLog.instance.isDebug,
-            onChanged: (value) {
-              setState(() {
-                MagpieLog.instance.isDebug = !MagpieLog.instance.isDebug;
-              });
-            },
-            activeTrackColor: Colors.orange,
-            activeColor: Colors.deepOrange,
-          ),
-          Text(
-            "isDebug:是否打开圈选 关闭上传埋点 \n需重启才能开启",
-            style: TextStyle(fontSize: 12, color: Colors.black54),
-          )
-        ]),
-        Row(children: <Widget>[
-          Switch(
-            value: MagpieLog.instance.isPageLogOn,
-            onChanged: (value) {
-              setState(() {
-                MagpieLog.instance.isPageLogOn =
-                !MagpieLog.instance.isPageLogOn;
-              });
-            },
-            activeTrackColor: Colors.orange,
-            activeColor: Colors.deepOrange,
-          ),
-          Text(
-            "isPageLogOn:是否打开页面展示圈选 \n开启跳转0.5秒后打开圈选页面",
-            style: TextStyle(fontSize: 12, color: Colors.black54),
-          ),
-        ])
-      ],
+              }),
+              listItem("清除全部圈选数据",
+                  leftWidget: Icon(
+                    Icons.delete_forever,
+                    color: Colors.black26,
+                  ), onTap: () {
+                MagpieDataAnalysis().clearAnalysisData().then((value) {
+                  Fluttertoast.showToast(
+                      msg: '数据清除成功～', toastLength: Toast.LENGTH_SHORT);
+                });
+              }),
+              listItem("打开Debug模式",
+                  content: "是否打开圈选 关闭上传埋点 \n需重启才能开启",
+                  leftWidget: Icon(
+                    Icons.adjust,
+                    color: Colors.black26,
+                  ),
+                  rightWidget: Switch(
+                    value: MagpieLog.instance.isDebug,
+                    onChanged: (value) {
+                      setState(() {
+                        MagpieLog.instance.isDebug =
+                            !MagpieLog.instance.isDebug;
+                      });
+                    },
+                    activeTrackColor: Colors.orange,
+                    activeColor: Colors.deepOrange,
+                  )),
+              listItem("打开页面圈选",
+                  content: "是否打开页面展示圈选 \n开启跳转0.5秒后打开圈选页面",
+                  leftWidget: Icon(
+                    Icons.content_copy,
+                    color: Colors.black26,
+                  ),
+                  rightWidget: Switch(
+                    value: MagpieLog.instance.isPageLogOn,
+                    onChanged: (value) {
+                      setState(() {
+                        MagpieLog.instance.isPageLogOn =
+                            !MagpieLog.instance.isPageLogOn;
+                      });
+                    },
+                    activeTrackColor: Colors.orange,
+                    activeColor: Colors.deepOrange,
+                  )),
+            ],
+          )),
     );
+  }
+
+  Widget listItem(String title,
+      {Widget leftWidget,
+      String content,
+      Widget rightWidget,
+      GestureTapCallback onTap}) {
+    return GestureDetector(
+        onTap: onTap,
+        child: Container(
+            height: 50,
+            color: Colors.white,
+            margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+            padding: EdgeInsets.fromLTRB(15, 0, 10, 0),
+            child: Row(
+              children: <Widget>[
+                leftWidget != null
+                    ? leftWidget
+                    : Icon(
+                        Icons.settings,
+                        color: Colors.black26,
+                      ),
+                Container(width: 5),
+                Expanded(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                      Container(
+                        child: Text(title),
+                      )
+                    ])),
+                rightWidget != null
+                    ? rightWidget
+                    : Icon(
+                        Icons.chevron_right,
+                        color: Colors.black26,
+                      ),
+              ],
+            )));
   }
 }

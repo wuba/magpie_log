@@ -2,12 +2,14 @@ import 'dart:convert' as convert;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:magpie_log/file/data_analysis.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
 import 'package:magpie_log/magpie_constants.dart';
 import 'package:magpie_log/magpie_log.dart';
 import 'package:magpie_log/model/analysis_model.dart';
 import 'package:redux/redux.dart';
+import 'package:rubber/rubber.dart';
 
 import 'log_operation_screen.dart';
 
@@ -60,7 +62,11 @@ class ParamItem {
       {this.paramItems, this.isPaneled = false, this.isChecked = false});
 }
 
-class _LogScreenState extends State<LogScreen> {
+class _LogScreenState extends State<LogScreen>
+    with SingleTickerProviderStateMixin {
+  RubberAnimationController _controller;
+  ScrollController _scrollController = ScrollController();
+
   List<ParamItem> paramList = [];
   String log = "", readAllLog, readActionLog;
   String title = "";
@@ -94,6 +100,12 @@ class _LogScreenState extends State<LogScreen> {
         title = "State圈选";
         break;
     }
+
+    _controller = RubberAnimationController(
+        vsync: this,
+        halfBoundValue: AnimationControllerValue(percentage: 0.9),
+        lowerBoundValue: AnimationControllerValue(pixel: 205),
+        duration: Duration(milliseconds: 200));
 
     super.initState();
   }
@@ -131,223 +143,295 @@ class _LogScreenState extends State<LogScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-          actions: <Widget>[
-            Center(
-                child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          settings: RouteSettings(
-                              name: MagpieConstants.operationScreen),
-                          builder: (BuildContext context) {
-                            return MagpieLogOperation();
-                          }));
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                      child: Text('圈选配置',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold)),
-                    )))
-          ],
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        backgroundColor: Color(0x66000000),
+        body: Column(children: <Widget>[
+          Expanded(
+              child: RubberBottomSheet(
+            header: _getHeader(),
+            headerHeight: 50,
+            scrollController: _scrollController,
+            lowerLayer: _getLowerLayer(),
+            upperLayer: _getUpperLayer(),
+            animationController: _controller,
+          )),
+          buttons(),
+        ]));
+  }
+
+  Widget _getHeader() {
+    return Container(
+        height: 50,
+        color: Colors.deepOrange,
+        padding: EdgeInsets.fromLTRB(15, 0, 10, 0),
+        child: Stack(children: <Widget>[
+          Row(children: <Widget>[
+            GestureDetector(
+                onTap: () {},
+                child: Icon(
+                  Icons.keyboard_arrow_left,
+                  color: Colors.white,
+                )),
+            Container(width: 5),
+            Expanded(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                  Container(
+                    child: Text(title,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold)),
+                  )
+                ])),
+            GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      settings:
+                          RouteSettings(name: MagpieConstants.operationScreen),
+                      builder: (BuildContext context) {
+                        return MagpieLogOperation();
+                      }));
+                },
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                  child: Text('圈选配置',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold)),
+                )),
+          ]),
+          Center(
+              child: Icon(
+            Icons.vertical_align_top,
+            color: Colors.white,
+          ))
+        ]));
+  }
+
+  Widget _getLowerLayer() {
+    return Container(
+      decoration: BoxDecoration(color: Colors.transparent),
+    );
+  }
+
+  Widget _getUpperLayer() {
+    return Container(
+        color: Colors.white,
+        child: MediaQuery.removePadding(
+            removeTop: true,
+            context: context,
+            child: ListView(
+              controller: _scrollController,
+              children: initPanelList(paramList),
+            )));
+  }
+
+  Widget buttons() {
+    return Container(
+        color: Colors.white,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Container(
-              padding: EdgeInsets.fromLTRB(15, 5, 5, 5),
-              width: MediaQuery.of(context).size.width,
-              color: Color(0x66CCCCCC),
-              child: Text(
-                "基础配置",
-                style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black54,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-
-            Padding(
-                padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      "事件标识: ",
+                height: 45,
+                width: MediaQuery.of(context).size.width / 4 - 1,
+                child: FlatButton(
+                  shape: RoundedRectangleBorder(
+                      side: BorderSide.none, borderRadius: BorderRadius.zero),
+                  color: Colors.lightGreen,
+                  child: Text("跳过",
                       style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.black26,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      widget.actionName,
-                      style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black54,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold)),
+                  onPressed: () {
+                    switch (widget.logType) {
+                      case screenLogType:
+                        break;
+                      case stateLogType:
+                        widget.state.setRealState(widget.func);
+                        break;
+                      case circleLogType:
+                        widget.next(widget.action);
+                        break;
+                    }
+                    Navigator.pop(context);
+                  },
                 )),
-            Padding(
-                padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      "页面路径: ",
-                      style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.black26,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      widget.pagePath,
-                      style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black54,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                )),
-            Padding(
-                padding: EdgeInsets.fromLTRB(15, 0, 15, 10),
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      "描述信息: ",
-                      style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.black26,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                        width: 200,
-                        child: TextField(
-                          onChanged: (text) {
-                            description = text;
-                          },
-                          style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.black54,
-                              fontWeight: FontWeight.bold),
-                          decoration: InputDecoration(
-                              hintStyle: TextStyle(
-                                  fontSize: 13, color: Colors.black26),
-                              hintText: '如：列表页点击'),
-                        )),
-//                    Text(
-//                      widget.actionName,
-//                      style: TextStyle(
-//                          fontSize: 15,
-//                          color: Colors.black54,
-//                          fontWeight: FontWeight.bold),
-//                    ),
-                  ],
-                )),
-//            Divider(height: 1.0, color: Colors.black26),
-//            switches(),
             Container(
-              padding: EdgeInsets.fromLTRB(15, 5, 5, 5),
-              width: MediaQuery.of(context).size.width,
-              color: Color(0x66CCCCCC),
-              child: Text(
-                "选取参数 ",
-                style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black54,
-                    fontWeight: FontWeight.bold),
+                height: 45,
+                width: MediaQuery.of(context).size.width / 4 - 1,
+                child: FlatButton(
+                  shape: RoundedRectangleBorder(
+                      side: BorderSide.none, borderRadius: BorderRadius.zero),
+                  color: Colors.orange,
+                  child: Text("保存",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold)),
+                  onPressed: () {
+                    MagpieDataAnalysis().saveData().then((data) async {
+                      MagpieDataAnalysis().getSavePath().then((path) {
+                        Fluttertoast.showToast(
+                            msg: '数据已保存至：$path',
+                            toastLength: Toast.LENGTH_SHORT);
+                      });
+                    });
+                  },
+                )),
+            Container(
+              height: 45,
+              width: MediaQuery.of(context).size.width / 2,
+              child: FlatButton(
+                //minWidth: MediaQuery.of(context).size.width/3,
+                shape: RoundedRectangleBorder(
+                    side: BorderSide.none, borderRadius: BorderRadius.zero),
+                color: Colors.deepOrange,
+                child: Text("埋点",
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold)),
+                onPressed: () {
+                  if (widget.logType == stateLogType) {
+                    widget.state.logStatus = 1;
+                    widget.state.setRealState(() {});
+                  }
+
+                  Map map = Map();
+                  getLog(map, paramList);
+                  log = convert.jsonEncode(map);
+
+                  String type;
+                  switch (widget.logType) {
+                    case screenLogType:
+                      type = AnalysisType.pageType;
+                      break;
+                    case stateLogType:
+                      type = AnalysisType.stateType;
+                      break;
+                    case circleLogType:
+                      type = AnalysisType.reduxType;
+                      break;
+                  }
+
+                  MagpieDataAnalysis()
+                      .writeData(AnalysisModel(
+                          actionName: widget.actionName,
+                          pagePath: widget.pagePath,
+                          analysisData: log,
+                          description: description,
+                          type: type))
+                      .then((value) {
+                    Fluttertoast.showToast(msg: "埋点添加成功");
+                  });
+                },
               ),
-            ),
-            initPanelList(paramList),
-            buttons(),
+            )
           ],
         ));
   }
 
-  Widget buttons() {
-    return Center(
-        child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Container(
-            height: 50,
-            width: MediaQuery.of(context).size.width / 3,
-            child: FlatButton(
-              shape: RoundedRectangleBorder(
-                  side: BorderSide.none, borderRadius: BorderRadius.zero),
-              color: Colors.lightGreen,
-              child: Text("跳过",
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold)),
-              onPressed: () {
-                switch (widget.logType) {
-                  case screenLogType:
-                    break;
-                  case stateLogType:
-                    widget.state.setRealState(widget.func);
-                    break;
-                  case circleLogType:
-                    widget.next(widget.action);
-                    break;
-                }
-                Navigator.pop(context);
-              },
-            )),
-        Container(
-          height: 50,
-          width: MediaQuery.of(context).size.width / 1.5 - 1,
-          child: FlatButton(
-            //minWidth: MediaQuery.of(context).size.width/3,
-            shape: RoundedRectangleBorder(
-                side: BorderSide.none, borderRadius: BorderRadius.zero),
-            color: Colors.deepOrange,
-            child: Text("埋点",
-                style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold)),
-            onPressed: () {
-              if (widget.logType == stateLogType) {
-                widget.state.logStatus = 1;
-                widget.state.setRealState(() {});
-              }
-
-              Map map = Map();
-              getLog(map, paramList);
-              log = convert.jsonEncode(map);
-
-              String type;
-              switch (widget.logType) {
-                case screenLogType:
-                  type = AnalysisType.pageType;
-                  break;
-                case stateLogType:
-                  type = AnalysisType.stateType;
-                  break;
-                case circleLogType:
-                  type = AnalysisType.reduxType;
-                  break;
-              }
-
-              MagpieDataAnalysis().writeData(AnalysisModel(
-                  actionName: widget.actionName,
-                  pagePath: widget.pagePath,
-                  analysisData: log,
-                  description: description,
-                  type: type));
-            },
-          ),
-        )
-      ],
-    ));
-  }
-
   ///递归参数圈选列表
-  Widget initPanelList(List<ParamItem> paramList) {
-    return Expanded(child: ListView(children: intChildList(paramList)));
+  List<Widget> initPanelList(List<ParamItem> paramList) {
+    List<Widget> list = [];
+    list.add(Container(
+      padding: EdgeInsets.fromLTRB(15, 5, 5, 5),
+      width: MediaQuery.of(context).size.width,
+      color: Color(0x66CCCCCC),
+      child: Text(
+        "基础配置",
+        style: TextStyle(
+            fontSize: 14, color: Colors.black54, fontWeight: FontWeight.bold),
+      ),
+    ));
+    list.add(Padding(
+        padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+        child: Row(
+          children: <Widget>[
+            Text(
+              "事件标识: ",
+              style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.black26,
+                  fontWeight: FontWeight.bold),
+            ),
+            Text(
+              widget.actionName,
+              style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.bold),
+            ),
+          ],
+        )));
+    list.add(Padding(
+        padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+        child: Row(
+          children: <Widget>[
+            Text(
+              "页面路径: ",
+              style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.black26,
+                  fontWeight: FontWeight.bold),
+            ),
+            Text(
+              widget.pagePath,
+              style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.bold),
+            ),
+          ],
+        )));
+    list.add(
+      Padding(
+          padding: EdgeInsets.fromLTRB(15, 0, 15, 10),
+          child: Row(
+            children: <Widget>[
+              Text(
+                "描述信息: ",
+                style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.black26,
+                    fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                  width: 200,
+                  child: TextField(
+                    controller: TextEditingController(text: description),
+                    onChanged: (text) {
+                      description = text;
+                    },
+                    style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.black54,
+                        fontWeight: FontWeight.bold),
+                    decoration: InputDecoration(
+                        hintStyle:
+                            TextStyle(fontSize: 13, color: Colors.black26),
+                        hintText: '如：列表页点击'),
+                  )),
+            ],
+          )),
+    );
+    list.add(Container(
+      padding: EdgeInsets.fromLTRB(15, 5, 5, 5),
+      width: MediaQuery.of(context).size.width,
+      color: Color(0x66CCCCCC),
+      child: Text(
+        "参数配置",
+        style: TextStyle(
+            fontSize: 14, color: Colors.black54, fontWeight: FontWeight.bold),
+      ),
+    ));
+    list.addAll(intChildList(paramList));
+    return list;
   }
 
   List<Widget> intChildList(List<ParamItem> paramList) {
