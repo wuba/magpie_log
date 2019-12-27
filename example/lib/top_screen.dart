@@ -1,6 +1,7 @@
+import 'package:example/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:magpie_log/handler/analysis_handler.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
 import 'package:magpie_log/magpie_log.dart';
 import 'package:redux/redux.dart';
@@ -12,22 +13,10 @@ class TopScreen extends StatefulWidget {
   _TopScreenState createState() => _TopScreenState();
 }
 
-void log(actionName, content) {
-  print("MagpieLog=>$actionName:$content");
-  Fluttertoast.showToast(
-      msg: "MagpieLog==>\n$actionName:\n$content",
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIos: 1,
-      backgroundColor: Colors.deepOrange,
-      textColor: Colors.white,
-      fontSize: 16.0);
-}
-
 class _TopScreenState extends State<TopScreen> {
   @override
   Widget build(BuildContext context) {
-    MagpieLog.instance.init(context, log);
+    MagpieExampleUtils().init(context);
     return DefaultTabController(
       length: choices.length,
       child: Scaffold(
@@ -176,12 +165,6 @@ Widget logDetail(BuildContext context) {
       child: Text('数据操作',
           style: TextStyle(color: Colors.blueAccent, fontSize: 15)),
       onPressed: () {
-        // MagpieDataAnalysis().readFileData().then((allLog) {
-        //   setState(() {
-        //     readAllLog = allLog;
-        //   });
-        // });
-
         Navigator.pushNamed(context, '/UnStart/log_detail');
       },
     ),
@@ -224,6 +207,7 @@ Widget manuallyDemo() {
                 style: TextStyle(fontSize: 15, color: Colors.white)),
             onPressed: () {
               //TODO 手动埋点数据示例
+              MagpieAnalysisHandler.instance.sendData({'data': '手动埋点数据示例'});
             },
           ),
         )
@@ -242,7 +226,7 @@ Widget pageDemo(BuildContext context) {
               fontSize: 18, color: Colors.black54, fontWeight: FontWeight.bold),
         ),
         Text(
-          "\n原理：通过过NavigatorObserver监听页面push事件，现push页面后 默认3秒跳转圈选部分\n\n示例：点击跳转页面\n",
+          "\n原理：通过过NavigatorObserver监听页面push事件，现push页面后 默认3秒跳转圈选部分\n\n示例：���击跳转页面\n",
           style: TextStyle(fontSize: 14, color: Colors.black54),
         ),
         MaterialButton(
