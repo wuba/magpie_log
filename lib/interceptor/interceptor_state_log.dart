@@ -30,9 +30,8 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
     Map<String, dynamic> json = toJson();
     print("MyMiddleWare call:${json.toString()}");
     var actionName = getActionName();
+    String pagePath = MagpieLog.instance.getCurrentPath();
     if (MagpieLog.instance.isDebug) {
-      String pagePath = MagpieLog.instance.getCurrentPath();
-
       Navigator.of(context).push(MaterialPageRoute(
           settings: RouteSettings(name: MagpieConstants.logScreen),
           builder: (BuildContext context) {
@@ -46,7 +45,7 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
             );
           }));
     } else {
-      MagpieLogUtil.runTimeLog(actionName, 'pagePath', json);
+      MagpieLogUtil.runTimeLog(actionName, pagePath, json);
       super.setState(fn);
     }
     //super.setState(fn);

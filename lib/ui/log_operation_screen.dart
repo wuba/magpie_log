@@ -131,13 +131,6 @@ class _LogOperationState extends State<MagpieLogOperation> {
                       Container(
                         child: Text(title),
                       )
-
-//                      content != null
-//                          ? Text(content)
-//                          : Container(
-//                              height: 0,
-//                              width: 0,
-//                            ),
                     ])),
                 rightWidget != null
                     ? rightWidget
