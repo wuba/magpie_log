@@ -1,4 +1,5 @@
 import 'dart:convert' as convert;
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -71,24 +72,12 @@ class _LogScreenState extends State<LogScreen>
   String log = "", readAllLog, readActionLog;
   String title = "";
   String description = "";
+  bool isExpanded = false;
+  bool isModify = true; //是否是修改状态
 
   @override
   void initState() {
-    MagpieDataAnalysis()
-        .readActionData(
-            actionName: widget.actionName, pagePath: widget.pagePath)
-        .then((logModel) {
-      Map map;
-      if (null != logModel) {
-        if (logModel.analysisData != null && logModel.analysisData != "") {
-          map = convert.jsonDecode(logModel.analysisData);
-        }
-        description = logModel.description;
-      }
-      initParam(widget.data, map, paramList);
-      setState(() {});
-    });
-
+    //埋点类型判断
     switch (widget.logType) {
       case screenLogType:
         title = "页面圈选";
@@ -101,11 +90,30 @@ class _LogScreenState extends State<LogScreen>
         break;
     }
 
+    //初始化抽屉组件
     _controller = RubberAnimationController(
         vsync: this,
         halfBoundValue: AnimationControllerValue(percentage: 0.9),
         lowerBoundValue: AnimationControllerValue(pixel: 205),
         duration: Duration(milliseconds: 200));
+    _controller.animationState.addListener(_stateListener);
+
+    //初始化已有埋点数据
+    MagpieDataAnalysis()
+        .readActionData(
+            actionName: widget.actionName, pagePath: widget.pagePath)
+        .then((logModel) {
+      Map map;
+      if (null != logModel) {
+        if (logModel.analysisData != null && logModel.analysisData != "") {
+          map = convert.jsonDecode(logModel.analysisData);
+        }
+        description = logModel.description;
+        isModify = false;
+      }
+      initParam(widget.data, map, paramList);
+      setState(() {});
+    });
 
     super.initState();
   }
@@ -140,6 +148,25 @@ class _LogScreenState extends State<LogScreen>
     return isPaneled || isParentPaneled;
   }
 
+  ///抽屉状态监听 改变按钮样式和展开收起事件
+  void _stateListener() {
+    switch (_controller.animationState.value) {
+      case AnimationState.expanded:
+      case AnimationState.half_expanded:
+        setState(() {
+          isExpanded = true;
+        });
+        break;
+      case AnimationState.collapsed:
+        setState(() {
+          isExpanded = false;
+        });
+        break;
+      case AnimationState.animating:
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -158,65 +185,89 @@ class _LogScreenState extends State<LogScreen>
         ]));
   }
 
+  ///抽屉头部组件
   Widget _getHeader() {
     return Container(
-        height: 50,
-        color: Colors.deepOrange,
-        padding: EdgeInsets.fromLTRB(15, 0, 10, 0),
+        height: 60,
         child: Stack(children: <Widget>[
-          Row(children: <Widget>[
-            GestureDetector(
-                onTap: () {},
-                child: Icon(
-                  Icons.keyboard_arrow_left,
-                  color: Colors.white,
-                )),
-            Container(width: 5),
-            Expanded(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                  Container(
-                    child: Text(title,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold)),
-                  )
-                ])),
-            GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      settings:
-                          RouteSettings(name: MagpieConstants.operationScreen),
-                      builder: (BuildContext context) {
-                        return MagpieLogOperation();
-                      }));
-                },
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                  child: Text('圈选配置',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold)),
-                )),
-          ]),
-          Center(
-              child: Icon(
-            Icons.vertical_align_top,
-            color: Colors.white,
-          ))
+          Container(
+              color: Colors.deepOrange,
+              padding: EdgeInsets.fromLTRB(15, 0, 10, 0),
+              margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+              child: Row(children: <Widget>[
+                GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Icon(
+                      Icons.keyboard_arrow_left,
+                      color: Colors.white,
+                    )),
+                Container(width: 5),
+                Expanded(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                      Container(
+                        child: Text(title,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
+                      )
+                    ])),
+                GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          settings: RouteSettings(
+                              name: MagpieConstants.operationScreen),
+                          builder: (BuildContext context) {
+                            return MagpieLogOperation();
+                          }));
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                      child: Text('圈选配置',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold)),
+                    )),
+              ])),
+          GestureDetector(
+              onTap: () {
+                isExpanded ? _controller.collapse() : _controller.expand();
+              },
+              child: Center(
+                  child: Container(
+                      width: 50,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.deepOrange),
+                      //color: Colors.deepOrange,
+                      margin: EdgeInsets.fromLTRB(0, 0, 0, 15),
+                      child: Icon(
+                        isExpanded
+                            ? Icons.vertical_align_bottom
+                            : Icons.vertical_align_top,
+                        color: Colors.white,
+                      ))))
         ]));
   }
 
+  ///抽屉背景
   Widget _getLowerLayer() {
-    return Container(
-      decoration: BoxDecoration(color: Colors.transparent),
-    );
+    return GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+        },
+        child: Container(
+          decoration: BoxDecoration(color: Colors.transparent),
+        ));
   }
 
+  ///抽屉上层组件
   Widget _getUpperLayer() {
     return Container(
         color: Colors.white,
@@ -229,6 +280,7 @@ class _LogScreenState extends State<LogScreen>
             )));
   }
 
+  ///底部按钮
   Widget buttons() {
     return Container(
         color: Colors.white,
@@ -290,45 +342,55 @@ class _LogScreenState extends State<LogScreen>
                 //minWidth: MediaQuery.of(context).size.width/3,
                 shape: RoundedRectangleBorder(
                     side: BorderSide.none, borderRadius: BorderRadius.zero),
-                color: Colors.deepOrange,
-                child: Text("埋点",
+                color: isModify ? Colors.deepOrange : Colors.redAccent,
+                child: Text(isModify ? "埋点" : "修改",
                     style: TextStyle(
                         fontSize: 16,
                         color: Colors.white,
                         fontWeight: FontWeight.bold)),
                 onPressed: () {
-                  if (widget.logType == stateLogType) {
-                    widget.state.logStatus = 1;
-                    widget.state.setRealState(() {});
+                  if (isModify) {
+                    if (widget.logType == stateLogType) {
+                      widget.state.logStatus = 1;
+                      widget.state.setRealState(() {});
+                    }
+
+                    Map map = Map();
+                    getLog(map, paramList);
+                    log = convert.jsonEncode(map);
+
+                    String type;
+                    switch (widget.logType) {
+                      case screenLogType:
+                        type = AnalysisType.pageType;
+                        break;
+                      case stateLogType:
+                        type = AnalysisType.stateType;
+                        break;
+                      case circleLogType:
+                        type = AnalysisType.reduxType;
+                        break;
+                    }
+
+                    MagpieDataAnalysis()
+                        .writeData(AnalysisModel(
+                            actionName: widget.actionName,
+                            pagePath: widget.pagePath,
+                            analysisData: log,
+                            description: description,
+                            type: type))
+                        .then((value) {
+                      Fluttertoast.showToast(msg: "埋点添加成功\n请及时保存！");
+
+                      setState(() {
+                        isModify = !isModify;
+                      });
+                    });
+                  } else {
+                    setState(() {
+                      isModify = !isModify;
+                    });
                   }
-
-                  Map map = Map();
-                  getLog(map, paramList);
-                  log = convert.jsonEncode(map);
-
-                  String type;
-                  switch (widget.logType) {
-                    case screenLogType:
-                      type = AnalysisType.pageType;
-                      break;
-                    case stateLogType:
-                      type = AnalysisType.stateType;
-                      break;
-                    case circleLogType:
-                      type = AnalysisType.reduxType;
-                      break;
-                  }
-
-                  MagpieDataAnalysis()
-                      .writeData(AnalysisModel(
-                          actionName: widget.actionName,
-                          pagePath: widget.pagePath,
-                          analysisData: log,
-                          description: description,
-                          type: type))
-                      .then((value) {
-                    Fluttertoast.showToast(msg: "埋点添加成功");
-                  });
                 },
               ),
             )
@@ -336,7 +398,7 @@ class _LogScreenState extends State<LogScreen>
         ));
   }
 
-  ///递归参数圈选列表
+  ///主体列表全组件
   List<Widget> initPanelList(List<ParamItem> paramList) {
     List<Widget> list = [];
     list.add(Container(
@@ -404,6 +466,7 @@ class _LogScreenState extends State<LogScreen>
               SizedBox(
                   width: 200,
                   child: TextField(
+                    enabled: isModify,
                     controller: TextEditingController(text: description),
                     onChanged: (text) {
                       description = text;
@@ -434,23 +497,13 @@ class _LogScreenState extends State<LogScreen>
     return list;
   }
 
+  ///递归参数圈选列表
   List<Widget> intChildList(List<ParamItem> paramList) {
     List<Widget> widgetList = [];
 
     for (int index = 0; index < paramList.length; index++) {
       if (paramList[index].paramItems.length == 0) {
-        widgetList.add(CheckboxListTile(
-            secondary: Icon(Icons.remove),
-            value: paramList[index].isChecked,
-            title: Text(paramList[index].key,
-                style: TextStyle(color: Colors.black54, fontSize: 13)),
-            subtitle: Text(paramList[index].value,
-                style: TextStyle(color: Colors.black54, fontSize: 11)),
-            onChanged: (bool) {
-              setState(() {
-                paramList[index].isChecked = bool;
-              });
-            }));
+        widgetList.add(getFinalItem(paramList[index]));
       } else {
         widgetList.add(Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -462,24 +515,20 @@ class _LogScreenState extends State<LogScreen>
                     });
                   },
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(16, 10, 0, 0),
+                    padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
                     child: Row(children: <Widget>[
                       !paramList[index].isPaneled
                           ? Icon(Icons.add_circle_outline,
-                              color: Colors.black54)
+                              size: 15, color: Colors.black54)
                           : Icon(Icons.remove_circle_outline,
-                              color: Colors.black54),
+                              size: 15, color: Colors.black54),
                       Padding(
-                          padding: EdgeInsets.fromLTRB(31, 0, 0, 0),
+                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                           child: Text(paramList[index].key,
                               style: TextStyle(
                                   color: Colors.black54,
                                   fontSize: 13,
                                   fontWeight: FontWeight.bold)))
-
-//                      !paramList[index].isPaneled
-//                          ? Icon(Icons.keyboard_arrow_down)
-//                          : Icon(Icons.keyboard_arrow_up),
                     ]),
                   )),
               getPaneledItem(paramList[index].isPaneled, paramList[index])
@@ -493,11 +542,69 @@ class _LogScreenState extends State<LogScreen>
   Widget getPaneledItem(bool isPaneled, ParamItem paramItem) {
     if (isPaneled) {
       return Padding(
-          padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
-          child: Column(children: intChildList(paramItem.paramItems)));
+          padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: intChildList(paramItem.paramItems)));
     } else {
-      return Container(height: 0, width: 0);
+      return Container();
     }
+  }
+
+  Widget getFinalItem(ParamItem paramItem) {
+    if (!isModify) {
+      if (paramItem.isChecked) {
+        return
+//          Padding(
+//            padding: EdgeInsets.fromLTRB(40, 0, 0, 0),
+//            child: Text(paramItem.key,
+//                style: TextStyle(
+//                    color: Colors.orange,
+//                    fontSize: 13,
+//                    fontWeight: FontWeight.bold)));
+            Container(height: 40, child: getCheckBoxTile(paramItem));
+      } else {
+        return Container();
+      }
+    } else {
+      return Container(height: 40, child: getCheckBoxTile(paramItem));
+    }
+  }
+
+  Widget getCheckBoxTile(ParamItem paramItem) {
+    return Row(children: <Widget>[
+      Padding(
+          padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+          child: Icon(
+            Icons.remove,
+            size: 15,
+            color: isModify ? Colors.black54 : Colors.orange,
+          )),
+      Padding(
+          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+          child: Text(paramItem.key,
+              style: TextStyle(
+                  color: isModify ? Colors.black54 : Colors.orange,
+                  fontSize: 13))),
+      Expanded(
+        child: Text(": " + paramItem.value,
+            style: TextStyle(color: Colors.black26, fontSize: 13)),
+      ),
+      getCheckBox(paramItem)
+    ]);
+  }
+
+  Widget getCheckBox(ParamItem paramItem) {
+    return isModify
+        ? Checkbox(
+            value: paramItem.isChecked,
+            onChanged: (bool) {
+              setState(() {
+                paramItem.isChecked = bool;
+              });
+            },
+          )
+        : Container();
   }
 
   ///生成日志递归
