@@ -10,7 +10,6 @@ class MagpieActionList extends StatefulWidget {
 class _ActionListState extends State<MagpieActionList> {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
         appBar: AppBar(
           title: Text('圈选配置列表（侧滑删除）'),
