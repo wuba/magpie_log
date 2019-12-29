@@ -13,15 +13,20 @@ class _ActionListState extends State<MagpieActionList> {
     // TODO: implement build
     return Scaffold(
         appBar: AppBar(
-          title: Text('已圈选数据列表'),
+          title: Text('圈选配置列表（侧滑删除）'),
         ),
         body: Container(
           child: _getListView(),
         ));
   }
 
-  ListView _getListView() => ListView.builder(
+  ListView _getListView() => ListView.separated(
         itemCount: MagpieDataAnalysis().getListData().length,
+        separatorBuilder: (context, index) {
+          return Divider(
+            height: 0,
+          );
+        },
         itemBuilder: (BuildContext context, int position) {
           return _getItem(position);
         },
@@ -34,17 +39,17 @@ class _ActionListState extends State<MagpieActionList> {
         },
         direction: DismissDirection.endToStart,
         background: Container(
-            color: Colors.red,
+            color: Colors.deepOrange,
             child: Align(
                 alignment: Alignment.centerRight,
                 child: Container(
                   child: Text(
                     '删除',
                     style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        backgroundColor: Colors.red),
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   margin: EdgeInsets.fromLTRB(0, 0, 50, 0),
@@ -56,39 +61,31 @@ class _ActionListState extends State<MagpieActionList> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                'ActionName: ${MagpieDataAnalysis().getListData()[position].actionName}',
+                '标识: ${MagpieDataAnalysis().getListData()[position].actionName}',
                 textAlign: TextAlign.left,
                 style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16),
-              ),
-              Container(
-                margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: Text(
-                  'AnalysisData: ${MagpieDataAnalysis().getListData()[position].analysisData}',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14),
-                ),
-              ),
-              Text(
-                'Description: ${MagpieDataAnalysis().getListData()[position].description}',
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                    color: Colors.orange,
+                    color: Colors.deepOrange,
                     fontWeight: FontWeight.bold,
                     fontSize: 14),
               ),
+              Text(
+                '路由: ${MagpieDataAnalysis().getListData()[position].pagePath}',
+                textAlign: TextAlign.left,
+                style: TextStyle(color: Colors.orange, fontSize: 14),
+              ),
+              Text(
+                '描述: ${MagpieDataAnalysis().getListData()[position].description}',
+                textAlign: TextAlign.left,
+                style: TextStyle(color: Colors.black54, fontSize: 14),
+              ),
               Container(
-                margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                child: Divider(
-                  height: 1,
-                  color: Colors.black54,
+                margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                child: Text(
+                  '参数: ${MagpieDataAnalysis().getListData()[position].analysisData}',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(color: Colors.black54, fontSize: 14),
                 ),
-              )
+              ),
             ],
           ),
         ),
