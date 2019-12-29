@@ -32,23 +32,24 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
     var actionName = getActionName();
     String pagePath = MagpieLog.instance.getCurrentPath();
     if (MagpieLog.instance.isDebug) {
-      Navigator.of(context).push(MaterialPageRoute(
-          settings: RouteSettings(name: MagpieConstants.logScreen),
-          builder: (BuildContext context) {
-            return LogScreen(
-              data: json,
-              logType: stateLogType,
-              pagePath: pagePath,
-              actionName: actionName,
-              func: fn,
-              state: this,
-            );
-          }));
+      Navigator.push(
+          MagpieLog.instance.logContext,
+          PageRouteBuilder(
+              opaque: false,
+              settings: RouteSettings(name: MagpieConstants.logScreen),
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  LogScreen(
+                    data: json,
+                    logType: stateLogType,
+                    pagePath: pagePath,
+                    actionName: actionName,
+                    func: fn,
+                    state: this,
+                  )));
     } else {
       MagpieLogUtil.runTimeLog(actionName, pagePath, json);
       super.setState(fn);
     }
-    //super.setState(fn);
   }
 
   setRealState(Function func) {

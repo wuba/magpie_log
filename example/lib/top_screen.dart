@@ -226,7 +226,7 @@ Widget pageDemo(BuildContext context) {
               fontSize: 18, color: Colors.black54, fontWeight: FontWeight.bold),
         ),
         Text(
-          "\n原理：通过过NavigatorObserver监听页面push事件，现push页面后 默认3秒跳转圈选部分\n\n示例：���击跳转页面\n",
+          "\n原理：通过过NavigatorObserver监听页面push事件，现push页面后 默认0.5秒跳转圈选部分\n\n示例：点击跳转页面\n",
           style: TextStyle(fontSize: 14, color: Colors.black54),
         ),
         MaterialButton(
