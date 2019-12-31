@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:magpie_log/handler/analysis_handler.dart';
+import 'package:magpie_log/handler/statistics_handler.dart';
 import 'data_analysis.dart';
 
 class MagpieLogUtil {
@@ -11,7 +11,7 @@ class MagpieLogUtil {
 
       Map<String, dynamic> dataMap = data.toJson();
       trueData(json, dataMap);
-      MagpieAnalysisHandler.instance.sendData(dataMap);
+      MagpieStatisticsHandler.instance.writeData(dataMap);
       debugPrint("runtime log:" + dataMap.toString());
     });
   }

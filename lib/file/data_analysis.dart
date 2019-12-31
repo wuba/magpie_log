@@ -25,8 +25,10 @@ class MagpieDataAnalysis {
     var data;
     //圈选数据以文件中的为准，只有首次的时候从assets下读取并copy到内存中
     //动态下发的埋点数据需要全部写入到文件中
-    if (await MagpieFileUtils().isExistsFile(_fileName, dirName: _dirName)) {
-      data = await MagpieFileUtils().readFile(_fileName, dirName: _dirName);
+    if (await MagpieFileUtils.isExistsFile(
+        fileName: _fileName, dirName: _dirName)) {
+      data = await MagpieFileUtils.readFile(
+          fileName: _fileName, dirName: _dirName);
     } else {
       //原则上assets目录中的配置文件只会读取一次
       data = await DefaultAssetBundle.of(context)
@@ -51,10 +53,11 @@ class MagpieDataAnalysis {
       return;
     }
     //判断是否有之前写入的文件,有则删除
-    await MagpieFileUtils().rmFile(_fileName, dirName: _dirName);
+    await MagpieFileUtils.rmFile(fileName: _fileName, dirName: _dirName);
 
-    await MagpieFileUtils().writeFile(
-        _fileName, jsonEncode(AnalysisData(_listData).toJson()),
+    await MagpieFileUtils.writeFile(
+        fileName: _fileName,
+        contents: jsonEncode(AnalysisData(_listData).toJson()),
         dirName: _dirName);
   }
 
@@ -142,13 +145,14 @@ class MagpieDataAnalysis {
 
   ///获取文件路径
   Future<String> getSavePath() async {
-    return await MagpieFileUtils().getFilePath(_fileName, dirName: _dirName);
+    return await MagpieFileUtils.getFilePath(
+        fileName: _fileName, dirName: _dirName);
   }
 
   ///清除全部数据。直接删除文件就完了呀呀呀呀呀
   Future<Null> clearAnalysisData() async {
     _listData.clear();
-    MagpieFileUtils().clearFileData(_fileName, dirName: _dirName);
+    MagpieFileUtils.clearFileData(fileName: _fileName, dirName: _dirName);
     print('$_tag clearAnalysisData _listData.length = ${_listData.length}');
   }
 

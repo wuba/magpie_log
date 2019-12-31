@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:example/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:magpie_log/handler/analysis_handler.dart';
+import 'package:magpie_log/handler/statistics_handler.dart';
 import 'package:magpie_log/interceptor/interceptor_state_log.dart';
 import 'package:magpie_log/magpie_log.dart';
 import 'package:redux/redux.dart';
@@ -206,8 +208,12 @@ Widget manuallyDemo() {
             child: Text('手动埋点',
                 style: TextStyle(fontSize: 15, color: Colors.white)),
             onPressed: () {
-              //TODO 手动埋点数据示例
-              MagpieAnalysisHandler.instance.sendData({'data': '手动埋点数据示例'});
+              // 手动埋点数据示例
+              MagpieStatisticsHandler.instance.writeData({'data': '手动埋点数据示例'});
+              // Timer.periodic(const Duration(milliseconds: 1000), (Void) {
+              //   MagpieStatisticsHandler.instance
+              //       .writeData({'data': '手动埋点数据示例'});
+              // });
             },
           ),
         )
