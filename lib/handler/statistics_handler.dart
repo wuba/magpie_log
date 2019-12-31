@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:magpie_log/file/data_statistics.dart';
+import 'package:magpie_log/model/analysis_model.dart';
 
 ///已圈选数据统计上报
 
@@ -24,7 +25,23 @@ class MagpieStatisticsHandler {
     return _instance;
   }
 
-  int _reportedMethod, _time, _count;
+  int _time, _count;
+
+  ReportChannel _reportChannel;
+
+  ReportMethod _reportMethod;
+
+  get reportChannel => _reportChannel;
+
+  get reportMethod => _reportMethod;
+
+  void setReportChannel(ReportChannel channelType) {
+    this._reportChannel = channelType;
+  }
+
+  void setReportMethod(ReportMethod method) {
+    this._reportMethod = method;
+  }
 
   Timer _timer;
 
@@ -36,20 +53,21 @@ class MagpieStatisticsHandler {
 
   /**
    * 初始化配置。
-   *  [reportedMethod]  数据上报方式，0 - 单条上报，1 - 定时上报，2 - 计数上报。默认单条上报
-   *  [channel]         数据上报通道，0 - Flutter，1 - Native BasicMessageChannel。默认Flutter
-   *  [time]           定时上报方式需要设置的时间周期。默认为2*60*1000 mill
+   *  [reportMethod]    数据上报方式，0 - 单条上报，1 - 定时上报，2 - 计数上报。默认单条上报
+   *  [reportChannel]   数据上报通道，0 - Flutter，1 - Native BasicMessageChannel。默认Flutter
+   *  [time]            定时上报方式需要设置的时间周期。默认为2*60*1000 mill
    *  [count]           计数上报方式需要设置的采集数量。默认为50条
    *  [callback]        设置Flutter通信的callback。如果数据上报通过flutter实现，此方法必须实现！！！
    */
-  void initConfig(int reportedMethod, int channel,
+  void initConfig(ReportMethod reportMethod, ReportChannel reportChannel,
       {int time: 2 * 60 * 1000,
       int count: 50,
       AnalysisCallback callback}) async {
     this._count = count;
     this._time = time;
-    this._reportedMethod = reportedMethod;
-    _MagpieAnalysisHandler.instance.initHandler(channel, callback);
+    this._reportMethod = reportMethod;
+    this._reportChannel = reportChannel;
+    _MagpieAnalysisHandler.instance.initHandler(reportChannel, callback);
 
     ///初始化时判断是否有之前写入的未上报数据，有则上报后删除
     if (await MagpieDataStatistics.isExistsStatistics()) {
@@ -61,15 +79,15 @@ class MagpieStatisticsHandler {
 
   ///写入要上报的圈选数据
   void writeData(Map<String, dynamic> data) {
-    if (_reportedMethod != 0) {
+    if (_reportMethod != ReportMethod.each) {
       _saveData(data);
     }
-    if (_reportedMethod == 1) {
+    if (_reportMethod == ReportMethod.timing) {
       if (_timer == null) {
-        _reportedDataToTimer();
+        _reportDataToTimer();
       }
-    } else if (_reportedMethod == 2) {
-      _reportedDataToCount(data);
+    } else if (_reportMethod == ReportMethod.total) {
+      _reportDataToCount(data);
     } else {
       _MagpieAnalysisHandler.instance.sendDataToMap(data);
     }
@@ -95,7 +113,7 @@ class MagpieStatisticsHandler {
   }
 
   //定时上报
-  void _reportedDataToTimer() {
+  void _reportDataToTimer() {
     _timer = Timer.periodic(Duration(milliseconds: _time), (Void) async {
       if (_dataStatistics.isNotEmpty ||
           await MagpieDataStatistics.isExistsStatistics()) {
@@ -112,7 +130,7 @@ class MagpieStatisticsHandler {
   }
 
   //计数上报
-  void _reportedDataToCount(Map<String, dynamic> data) async {
+  void _reportDataToCount(Map<String, dynamic> data) async {
     if (_dataStatistics.length >= _count) {
       var params = {'data': _dataStatistics};
       String jsonData = jsonEncode(params).toString();
@@ -140,7 +158,7 @@ class _MagpieAnalysisHandler {
   static final String _channelName = 'magpie_analysis_channel';
 
   //上报圈选数据通道类型，0 - Flutter，1 - Native
-  int _channelType = 0;
+  ReportChannel _channelType;
 
   factory _MagpieAnalysisHandler() => _getInstance();
 
@@ -164,19 +182,19 @@ class _MagpieAnalysisHandler {
 
   void sendDataToJson(String jsonData) {
     if (jsonData.isNotEmpty) {
-      if (_channelType == 0) {
-        _MagpieAnalysisHandler.instance._sendMsgToFlutter(jsonData);
-      } else {
+      if (_channelType == ReportChannel.natives) {
         _MagpieAnalysisHandler.instance._sendMsgToNative(jsonData);
+      } else {
+        _MagpieAnalysisHandler.instance._sendMsgToFlutter(jsonData);
       }
       print('$_tag sendDataToJson jsonData = $jsonData');
     }
   }
 
   //设置Flutter通信的callback。如果数据上报通过flutter实现，此方法必须实现！！！
-  void initHandler(int channelType, AnalysisCallback callback) {
+  void initHandler(ReportChannel channelType, AnalysisCallback callback) {
     this._channelType = channelType;
-    if (channelType == 0) {
+    if (channelType != ReportChannel.natives) {
       this._callback = callback;
     }
   }

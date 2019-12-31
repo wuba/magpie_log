@@ -32,10 +32,50 @@ AnalysisData _$AnalysisDataFromJson(Map<String, dynamic> json) {
             ? null
             : AnalysisModel.fromJson(e as Map<String, dynamic>))
         ?.toList(),
+    decodeChannel(json['reportChannel']),
+    decodeMethod(json['reportMethod']),
   );
 }
 
 Map<String, dynamic> _$AnalysisDataToJson(AnalysisData instance) =>
     <String, dynamic>{
       'data': instance.data,
+      'reportChannel': endoceChannel(instance.reportChannel),
+      'reportMethod': encodeMethod(instance.reportMethod),
     };
+
+int encodeMethod(ReportMethod method) {
+  if (method == ReportMethod.timing) {
+    return 1;
+  } else if (method == ReportMethod.total) {
+    return 2;
+  } else {
+    return 0;
+  }
+}
+
+ReportMethod decodeMethod(dynamic method) {
+  if (method == 1) {
+    return ReportMethod.timing;
+  } else if (method == 2) {
+    return ReportMethod.total;
+  } else {
+    return ReportMethod.each;
+  }
+}
+
+int endoceChannel(ReportChannel channel) {
+  if (channel == ReportChannel.natives) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+ReportChannel decodeChannel(dynamic channel) {
+  if (channel == 1) {
+    return ReportChannel.natives;
+  } else {
+    return ReportChannel.flutter;
+  }
+}

@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:magpie_log/file/data_analysis.dart';
 import 'package:magpie_log/magpie_constants.dart';
 import 'package:magpie_log/magpie_log.dart';
+import 'package:magpie_log/ui/log_select_report.dart';
 
 import 'log_actiion_list.dart';
 
@@ -62,6 +63,18 @@ class _LogOperationState extends State<MagpieLogOperation> {
                   Fluttertoast.showToast(
                       msg: '数据清除成功～', toastLength: Toast.LENGTH_SHORT);
                 });
+              }),
+              listItem("选择数据上报方式",
+                  leftWidget: Icon(
+                    Icons.delete_forever,
+                    color: Colors.black26,
+                  ), onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    settings: RouteSettings(
+                        name: MagpieConstants.selectChannelScreen),
+                    builder: (BuildContext context) {
+                      return MagpieSelectReport();
+                    }));
               }),
               listItem("打开Debug模式",
                   content: "是否打开圈选 关闭上传埋点 \n需重启才能开启",

@@ -28,8 +28,8 @@ public class MainActivity extends FlutterActivity {
     private void registerMsgChannel() {
         BasicMessageChannel<String> messageChannel = new BasicMessageChannel<>(getFlutterView(),MSG_CHANNEL_TAG, StringCodec.INSTANCE);
         messageChannel.setMessageHandler((s, reply) -> {
-            Toast.makeText(getApplicationContext(),"Native端收到了数据：" + s,Toast.LENGTH_LONG).show();
-            Log.d("basicMessageChannel","Native端收到了数据：" + s);
+            Toast.makeText(getApplicationContext(),"Native端收到了上报数据：" + s,Toast.LENGTH_LONG).show();
+            Log.d("basicMessageChannel","Native端收到了上报数据：" + s);
         });
     }
 }

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:magpie_log/file/file_utils.dart';
+import 'package:magpie_log/handler/statistics_handler.dart';
 import 'package:magpie_log/model/analysis_model.dart';
 import 'package:magpie_log/model/device_data.dart';
 
@@ -40,6 +41,8 @@ class MagpieDataAnalysis {
         Map<String, dynamic> analysis = jsonDecode(data);
         AnalysisData analysisData = AnalysisData.fromJson(analysis);
         _listData.addAll(analysisData.data);
+        print(
+            '$_tag initMagpieData, ${analysisData.reportChannel} , ${analysisData.reportMethod}');
       }
     }
 
@@ -57,7 +60,11 @@ class MagpieDataAnalysis {
 
     await MagpieFileUtils.writeFile(
         fileName: _fileName,
-        contents: jsonEncode(AnalysisData(_listData).toJson()),
+        contents: jsonEncode(AnalysisData(
+                _listData,
+                MagpieStatisticsHandler.instance.reportChannel,
+                MagpieStatisticsHandler.instance.reportMethod)
+            .toJson()),
         dirName: _dirName);
   }
 
@@ -105,7 +112,10 @@ class MagpieDataAnalysis {
   ///完整的圈选数据读取
   Future<String> readFileData() async {
     try {
-      return jsonEncode(AnalysisData(_listData));
+      return jsonEncode(AnalysisData(
+          _listData,
+          MagpieStatisticsHandler.instance.reportChannel,
+          MagpieStatisticsHandler.instance.reportMethod));
     } catch (e) {
       print('$_tag : readFile error = $e');
     }
