@@ -194,7 +194,7 @@ class MagpieDataAnalysis {
   ///构造公共参数
   Future<DeviceData> _createCommonParams() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    var platform, deviceVersion, clientId, deviceName, deviceId, product, model;
+    var platform, deviceVersion, clientId, deviceName, deviceId, model;
     if (Platform.isAndroid) {
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       platform = 'Android';

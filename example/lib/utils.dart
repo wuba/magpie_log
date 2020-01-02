@@ -24,9 +24,7 @@ class MagpieExampleUtils {
   }
 
   void init(BuildContext context) {
-    MagpieLog.instance.init(context);
-    MagpieStatisticsHandler.instance.initConfig(
-        ReportMethod.timing, ReportChannel.natives,
+    MagpieLog.instance.init(context, ReportMethod.timing, ReportChannel.natives,
         callback: _receiverMagpieData, time: 1 * 60 * 1000, count: 3);
   }
 

@@ -24,7 +24,6 @@ class _LogOperationState extends State<MagpieLogOperation> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(title: Text('圈选配置')),
       body: Container(

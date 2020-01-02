@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:magpie_log/file/data_statistics.dart';
 import 'package:magpie_log/model/analysis_model.dart';
@@ -36,7 +34,9 @@ class MagpieStatisticsHandler {
   get reportMethod => _reportMethod;
 
   void setReportChannel(ReportChannel channelType) {
-    this._reportChannel = channelType;
+    // this._reportChannel = channelType;
+    _reportChannel = channelType;
+    print('ReportChannel value = $_reportChannel');
   }
 
   void setReportMethod(ReportMethod method) {
@@ -53,9 +53,9 @@ class MagpieStatisticsHandler {
 
   /**
    * 初始化配置。
-   *  [reportMethod]    数据上报方式，0 - 单条上报，1 - 定时上报，2 - 计数上报。默认单条上报
-   *  [reportChannel]   数据上报通道，0 - Flutter，1 - Native BasicMessageChannel。默认Flutter
-   *  [time]            定时上报方式需要设置的时间周期。默认为2*60*1000 mill
+   *  [reportMethod]    数据上报方式，默认单条上报
+   *  [reportChannel]   数据上报通道，默认Flutter
+   *  [time]            定时上报方式需要设置的时间周期。默认为2*60*1000ms
    *  [count]           计数上报方式需要设置的采集数量。默认为50条
    *  [callback]        设置Flutter通信的callback。如果数据上报通过flutter实现，此方法必须实现！！！
    */
@@ -68,6 +68,7 @@ class MagpieStatisticsHandler {
     this._reportMethod = reportMethod;
     this._reportChannel = reportChannel;
     _MagpieAnalysisHandler.instance.initHandler(reportChannel, callback);
+    print('$_tag initConfig');
 
     ///初始化时判断是否有之前写入的未上报数据，有则上报后删除
     if (await MagpieDataStatistics.isExistsStatistics()) {
@@ -114,7 +115,7 @@ class MagpieStatisticsHandler {
 
   //定时上报
   void _reportDataToTimer() {
-    _timer = Timer.periodic(Duration(milliseconds: _time), (Void) async {
+    _timer = Timer.periodic(Duration(milliseconds: _time), (method) async {
       if (_dataStatistics.isNotEmpty ||
           await MagpieDataStatistics.isExistsStatistics()) {
         var data;
