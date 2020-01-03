@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
-
 import 'file_utils.dart';
 
 class MagpieDataStatistics {

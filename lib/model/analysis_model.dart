@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:magpie_log/handler/statistics_handler.dart';
 part 'analysis_model.g.dart';
 
 @JsonSerializable()
@@ -45,16 +46,34 @@ class AnalysisModel {
 class AnalysisData {
   List<AnalysisModel> data;
 
-  AnalysisData(this.data);
+  //数据上报通道
+  ReportChannel reportChannel;
+
+  //数据上报方式
+  ReportMethod reportMethod;
+
+  AnalysisData(this.data, this.reportChannel, this.reportMethod) {
+    MagpieStatisticsHandler.instance.setReportChannel(reportChannel);
+    MagpieStatisticsHandler.instance.setReportMethod(reportMethod);
+  }
 
   factory AnalysisData.fromJson(Map<String, dynamic> json) =>
       _$AnalysisDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$AnalysisDataToJson(this);
+}
 
-  set updateData(List<AnalysisModel> data) {
-    this.data = data;
-  }
+/// 数据上报方式
+enum ReportMethod {
+  each, //每条上报
+  timing, //定时上报
+  total, //计数上报
+}
+
+///数据上报通道
+enum ReportChannel {
+  flutter, //Flutter 通道
+  natives, //Native BasicMessageChannel 通道
 }
 
 class AnalysisType {
@@ -64,6 +83,4 @@ class AnalysisType {
   static final String stateType = 'state';
   //redux统计
   static final String reduxType = 'redux';
-  //手动埋点
-  static final String manuallyType = 'manually';
 }

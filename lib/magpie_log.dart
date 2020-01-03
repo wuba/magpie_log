@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'file/data_analysis.dart';
+import 'handler/statistics_handler.dart';
+import 'model/analysis_model.dart';
 
-//TODO:release modify
 //const bool isDebug = const bool.fromEnvironment("dart.vm.product");
 const bool globalIsDebug = true;
 const bool globalIsPageLogOn = true;
@@ -34,11 +35,16 @@ class MagpieLog {
     return _instance;
   }
 
-  init(BuildContext context) {
-    //TODO 暂时还没有更好的办法来处理某些只需要初始化一次的函数
+  init(BuildContext context, ReportMethod reportMethod,
+      ReportChannel reportChannel,
+      {int time, int count, AnalysisCallback callback}) {
+    // 暂时还没有更好的办法来处理某些只需要初始化一次的函数
     if (!_isInit) {
       logContext = context;
       MagpieDataAnalysis().initMagpieData(context); //初始化圈选数据
+      MagpieStatisticsHandler.instance.initConfig(
+          ReportMethod.timing, ReportChannel.natives,
+          callback: callback, time: 1 * 60 * 1000, count: 3);
       _isInit = true;
     }
   }

@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:magpie_log/handler/statistics_handler.dart';
 import 'package:magpie_log/magpie_log.dart';
+import 'package:magpie_log/model/analysis_model.dart';
 
 class MagpieExampleUtils {
   final String tag = 'MagpieExampleUtils';
-
-  final int channelType = 1, reportedMethod = 2;
 
   factory MagpieExampleUtils() => _getInstance();
 
@@ -25,8 +24,7 @@ class MagpieExampleUtils {
   }
 
   void init(BuildContext context) {
-    MagpieLog.instance.init(context);
-    MagpieStatisticsHandler.instance.initConfig(reportedMethod, channelType,
+    MagpieLog.instance.init(context, ReportMethod.timing, ReportChannel.natives,
         callback: _receiverMagpieData, time: 1 * 60 * 1000, count: 3);
   }
 
