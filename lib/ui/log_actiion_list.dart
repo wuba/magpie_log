@@ -20,7 +20,7 @@ class _ActionListState extends State<MagpieActionList> {
   }
 
   ListView _getListView() => ListView.separated(
-        itemCount: MagpieDataAnalysis().getListData().length,
+        itemCount: MagpieDataAnalysis.getListData().length,
         separatorBuilder: (context, index) {
           return Divider(
             height: 0,
@@ -34,7 +34,7 @@ class _ActionListState extends State<MagpieActionList> {
   Container _getItem(int position) => Container(
           child: Dismissible(
         onDismissed: (_) {
-          MagpieDataAnalysis().getListData().removeAt(position);
+          MagpieDataAnalysis.getListData().removeAt(position);
         },
         direction: DismissDirection.endToStart,
         background: Container(
@@ -53,14 +53,14 @@ class _ActionListState extends State<MagpieActionList> {
                   ),
                   margin: EdgeInsets.fromLTRB(0, 0, 50, 0),
                 ))),
-        key: Key(MagpieDataAnalysis().getListData()[position].actionName),
+        key: Key(MagpieDataAnalysis.getListData()[position].actionName),
         child: Padding(
           padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                '标识: ${MagpieDataAnalysis().getListData()[position].actionName}',
+                '标识: ${MagpieDataAnalysis.getListData()[position].actionName}',
                 textAlign: TextAlign.left,
                 style: TextStyle(
                     color: Colors.deepOrange,
@@ -68,19 +68,19 @@ class _ActionListState extends State<MagpieActionList> {
                     fontSize: 14),
               ),
               Text(
-                '路由: ${MagpieDataAnalysis().getListData()[position].pagePath}',
+                '路由: ${MagpieDataAnalysis.getListData()[position].pagePath}',
                 textAlign: TextAlign.left,
                 style: TextStyle(color: Colors.orange, fontSize: 14),
               ),
               Text(
-                '描述: ${MagpieDataAnalysis().getListData()[position].description}',
+                '描述: ${MagpieDataAnalysis.getListData()[position].description}',
                 textAlign: TextAlign.left,
                 style: TextStyle(color: Colors.black54, fontSize: 14),
               ),
               Container(
                 margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
                 child: Text(
-                  '参数: ${MagpieDataAnalysis().getListData()[position].analysisData}',
+                  '参数: ${MagpieDataAnalysis.getListData()[position].analysisData}',
                   textAlign: TextAlign.left,
                   style: TextStyle(color: Colors.black54, fontSize: 14),
                 ),

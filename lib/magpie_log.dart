@@ -41,7 +41,7 @@ class MagpieLog {
     // 暂时还没有更好的办法来处理某些只需要初始化一次的函数
     if (!_isInit) {
       logContext = context;
-      MagpieDataAnalysis().initMagpieData(context); //初始化圈选数据
+      MagpieDataAnalysis.initMagpieData(context); //初始化圈选数据
       MagpieStatisticsHandler.instance.initConfig(
           ReportMethod.timing, ReportChannel.natives,
           callback: callback, time: 1 * 60 * 1000, count: 3);

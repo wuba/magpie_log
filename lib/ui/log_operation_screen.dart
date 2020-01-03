@@ -46,8 +46,8 @@ class _LogOperationState extends State<MagpieLogOperation> {
                     Icons.save_alt,
                     color: Colors.black26,
                   ), onTap: () {
-                MagpieDataAnalysis().saveData().then((data) async {
-                  MagpieDataAnalysis().getSavePath().then((path) {
+                MagpieDataAnalysis.saveData().then((data) async {
+                  MagpieDataAnalysis.getSavePath().then((path) {
                     Fluttertoast.showToast(
                         msg: '数据已保存至：$path', toastLength: Toast.LENGTH_SHORT);
                   });
@@ -58,7 +58,7 @@ class _LogOperationState extends State<MagpieLogOperation> {
                     Icons.delete_forever,
                     color: Colors.black26,
                   ), onTap: () {
-                MagpieDataAnalysis().clearAnalysisData().then((value) {
+                MagpieDataAnalysis.clearAnalysisData().then((value) {
                   Fluttertoast.showToast(
                       msg: '数据清除成功～', toastLength: Toast.LENGTH_SHORT);
                 });

@@ -4,8 +4,8 @@ import 'data_analysis.dart';
 
 class MagpieLogUtil {
   static void runTimeLog(String actionName, String pagePath, Map json) {
-    MagpieDataAnalysis()
-        .readActionData(actionName: actionName, pagePath: pagePath)
+    MagpieDataAnalysis.readActionData(
+            actionName: actionName, pagePath: pagePath)
         .then((data) {
       if (data == null) return;
 

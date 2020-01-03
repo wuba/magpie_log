@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:magpie_log/file/data_analysis.dart';
 import 'package:magpie_log/file/data_statistics.dart';
+import 'package:magpie_log/file/file_utils.dart';
 import 'package:magpie_log/model/analysis_model.dart';
 
 ///已圈选数据统计上报
@@ -34,7 +36,6 @@ class MagpieStatisticsHandler {
   get reportMethod => _reportMethod;
 
   void setReportChannel(ReportChannel channelType) {
-    // this._reportChannel = channelType;
     _reportChannel = channelType;
     print('ReportChannel value = $_reportChannel');
   }
@@ -68,7 +69,8 @@ class MagpieStatisticsHandler {
     this._reportMethod = reportMethod;
     this._reportChannel = reportChannel;
     _MagpieAnalysisHandler.instance.initHandler(reportChannel, callback);
-    print('$_tag initConfig');
+    print(
+        '$_tag initConfig, reportMethod = $_reportMethod,reportChannel = $_reportChannel');
 
     ///初始化时判断是否有之前写入的未上报数据，有则上报后删除
     if (await MagpieDataStatistics.isExistsStatistics()) {
