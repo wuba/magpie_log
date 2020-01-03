@@ -260,7 +260,7 @@ class _LogScreenState extends State<LogScreen>
   Widget _getLowerLayer() {
     return GestureDetector(
         onTap: () {
-          Navigator.pop(context);
+          //Navigator.pop(context);
         },
         child: Container(
           decoration: BoxDecoration(color: Colors.transparent),
