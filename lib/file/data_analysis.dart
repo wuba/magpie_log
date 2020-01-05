@@ -127,7 +127,9 @@ class MagpieDataAnalysis {
 
   ///根据圈选埋点的action，读取指定数据。[action] 圈选埋点的key。
   Future<AnalysisModel> readActionData(
-      {@required String actionName, @required String pagePath}) async {
+      {@required String actionName,
+      @required String pagePath,
+      String type}) async {
     if (_listData.isEmpty) {
       print('$_tag readActionData listData isEmpty！！！');
       return null;
@@ -137,15 +139,29 @@ class MagpieDataAnalysis {
     } else {
       // if (_listData.any((item) =>
       //     item.actionName == actionName && item.pagePath == pagePath)) {
+
+      List<AnalysisModel> modelList = [];
+
       for (var item in _listData) {
         print(
             '$_tag readActionData actionName = ${item.actionName} , pagePath = ${item.pagePath} ,data = ${item.analysisData}');
         if (item.actionName == actionName && item.pagePath == pagePath) {
           print(
               '$_tag readActionData select actionName = ${item.actionName} , pagePath = ${item.pagePath} ,data = ${item.analysisData}');
-          return item;
+          modelList.add(item);
         }
       }
+
+      if (null != type) {
+        for (var item in modelList) {
+          if (item.type == type) {
+            return item;
+          }
+        }
+      } else if (modelList.length > 0) {
+        return modelList[0];
+      }
+
       // }
       print(
           '$_tag readActionData listData none , actionName = $actionName , pagePath = $pagePath');

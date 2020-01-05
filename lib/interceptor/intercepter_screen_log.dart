@@ -34,7 +34,7 @@ class LogObserver<S> extends NavigatorObserver {
                           pagePath: pagePath,
                           actionName: actionName,
                           data: logState.toJson(),
-                          logType: screenLogType)),
+                          logType: pageType)),
             );
           }
         } else {

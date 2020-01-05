@@ -13,15 +13,12 @@ import 'package:rubber/rubber.dart';
 
 import 'log_operation_screen.dart';
 
-const int screenLogType = 1; //埋点类型：页面
-const int circleLogType = 2; //埋点类型：redux全局数据埋点
-const int stateLogType = 3; //埋点类型：state局部数据埋点
-
 class LogScreen extends StatefulWidget {
   //通用参数
-  final int logType; //埋点类型
+  final String logType; //埋点类型
   final Map<String, dynamic> data;
   final String actionName;
+  final String pagePath;
 
   //circleLogType参数
   final dynamic action; //没有actionName用action替代
@@ -31,8 +28,6 @@ class LogScreen extends StatefulWidget {
   //stateLogType参数
   final Function func;
   final WidgetLogState state;
-
-  final String pagePath;
 
   const LogScreen(
       {Key key,
@@ -56,7 +51,7 @@ class ParamItem {
   String value;
   bool isChecked; //是否选中
   bool isPaneled; //是否展开
-  List<ParamItem> paramItems;
+  List<ParamItem> paramItems; //子参数item
 
   ParamItem(this.key, this.value,
       {this.paramItems, this.isPaneled = false, this.isChecked = false});
@@ -64,31 +59,33 @@ class ParamItem {
 
 class _LogScreenState extends State<LogScreen>
     with SingleTickerProviderStateMixin {
+  //抽屉滚动监听
   RubberAnimationController _controller;
   ScrollController _scrollController = ScrollController();
 
-  List<ParamItem> paramList = [];
-  String log = "", readAllLog, readActionLog;
-  String title = "";
-  String description = "";
-  bool isExpanded = false;
+  String title = ""; //标题展示
+  String description = ""; //描述展示
+  String type = ""; //埋点类型展示
+  bool isExpanded = false; //抽屉是否打开
   bool isModify = true; //是否是修改状态
+
+  List<ParamItem> paramList = []; //参数列表数据
 
   @override
   void initState() {
     //埋点类型判断
     switch (widget.logType) {
-      case screenLogType:
+      case pageType:
         title = "页面圈选";
         break;
-      case circleLogType:
-        title = "Redux圈选";
+      case reduxType:
+        title = "点击圈选-Redux";
         break;
-      case stateLogType:
-        title = "State圈选";
+      case stateType:
+        title = "点击圈选-State";
         break;
     }
-
+    type = "${widget.logType}($title)";
     //初始化抽屉组件
     _controller = RubberAnimationController(
         vsync: this,
@@ -286,170 +283,96 @@ class _LogScreenState extends State<LogScreen>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Container(
-                height: 45,
-                width: MediaQuery.of(context).size.width / 4 - 1,
-                child: FlatButton(
-                  shape: RoundedRectangleBorder(
-                      side: BorderSide.none, borderRadius: BorderRadius.zero),
-                  color: Colors.lightGreen,
-                  child: Text("跳过",
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold)),
-                  onPressed: () {
-                    switch (widget.logType) {
-                      case screenLogType:
-                        break;
-                      case stateLogType:
-                        widget.state.setRealState(widget.func);
-                        break;
-                      case circleLogType:
-                        widget.next(widget.action);
-                        break;
-                    }
-                    Navigator.pop(context);
-                  },
-                )),
-            Container(
-                height: 45,
-                width: MediaQuery.of(context).size.width / 4 - 1,
-                child: FlatButton(
-                  shape: RoundedRectangleBorder(
-                      side: BorderSide.none, borderRadius: BorderRadius.zero),
-                  color: Colors.orange,
-                  child: Text("保存",
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold)),
-                  onPressed: () {
-                    MagpieDataAnalysis().saveData().then((data) async {
-                      MagpieDataAnalysis().getSavePath().then((path) {
-                        Fluttertoast.showToast(
-                            msg: '数据已保存至：$path',
-                            toastLength: Toast.LENGTH_SHORT);
-                      });
-                    });
-                  },
-                )),
-            Container(
-              height: 45,
-              width: MediaQuery.of(context).size.width / 2,
-              child: FlatButton(
-                //minWidth: MediaQuery.of(context).size.width/3,
-                shape: RoundedRectangleBorder(
-                    side: BorderSide.none, borderRadius: BorderRadius.zero),
-                color: isModify ? Colors.deepOrange : Colors.redAccent,
-                child: Text(isModify ? "埋点" : "修改",
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold)),
-                onPressed: () {
-                  if (isModify) {
-                    if (widget.logType == stateLogType) {
-                      widget.state.logStatus = 1;
-                      widget.state.setRealState(() {});
-                    }
+            getButtonItem("跳过", MediaQuery.of(context).size.width / 4 - 1,
+                Colors.lightGreen, () {
+              switch (widget.logType) {
+                case pageType:
+                  break;
+                case stateType:
+                  widget.state.setRealState(widget.func);
+                  break;
+                case reduxType:
+                  widget.next(widget.action);
+                  break;
+              }
+              Navigator.pop(context);
+            }),
+            getButtonItem(
+                "保存", MediaQuery.of(context).size.width / 4 - 1, Colors.orange,
+                () {
+              MagpieDataAnalysis().saveData().then((data) async {
+                MagpieDataAnalysis().getSavePath().then((path) {
+                  Fluttertoast.showToast(
+                      msg: '数据已保存至：$path', toastLength: Toast.LENGTH_SHORT);
+                });
+              });
+            }),
+            getButtonItem(
+                isModify ? "埋点" : "修改",
+                MediaQuery.of(context).size.width / 2,
+                isModify ? Colors.deepOrange : Colors.redAccent, () {
+              if (isModify) {
+                if (widget.logType == stateType) {
+                  widget.state.logStatus = 1;
+                  widget.state.setRealState(() {});
+                }
 
-                    Map map = Map();
-                    getLog(map, paramList);
-                    log = convert.jsonEncode(map);
+                Map map = Map();
+                getLog(map, paramList);
+                String log = convert.jsonEncode(map);
 
-                    String type;
-                    switch (widget.logType) {
-                      case screenLogType:
-                        type = AnalysisType.pageType;
-                        break;
-                      case stateLogType:
-                        type = AnalysisType.stateType;
-                        break;
-                      case circleLogType:
-                        type = AnalysisType.reduxType;
-                        break;
-                    }
+                String type = widget.logType;
 
-                    MagpieDataAnalysis()
-                        .writeData(AnalysisModel(
-                            actionName: widget.actionName,
-                            pagePath: widget.pagePath,
-                            analysisData: log,
-                            description: description,
-                            type: type))
-                        .then((value) {
-                      Fluttertoast.showToast(msg: "埋点添加成功\n请及时保存！");
+                MagpieDataAnalysis()
+                    .writeData(AnalysisModel(
+                        actionName: widget.actionName,
+                        pagePath: widget.pagePath,
+                        analysisData: log,
+                        description: description,
+                        type: type))
+                    .then((value) {
+                  Fluttertoast.showToast(msg: "埋点添加成功\n请及时保存！");
 
-                      setState(() {
-                        isModify = !isModify;
-                      });
-                    });
-                  } else {
-                    setState(() {
-                      isModify = !isModify;
-                    });
-                  }
-                },
-              ),
-            )
+                  setState(() {
+                    isModify = !isModify;
+                  });
+                });
+              } else {
+                setState(() {
+                  isModify = !isModify;
+                });
+              }
+            }),
           ],
+        ));
+  }
+
+  ///底部按钮Button封装
+  Widget getButtonItem(text, width, color, onPressed) {
+    return Container(
+        height: 45,
+        width: width,
+        child: FlatButton(
+          shape: RoundedRectangleBorder(
+              side: BorderSide.none, borderRadius: BorderRadius.zero),
+          color: color,
+          child: Text(text,
+              style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold)),
+          onPressed: onPressed,
         ));
   }
 
   ///主体列表全组件
   List<Widget> initPanelList(List<ParamItem> paramList) {
     List<Widget> list = [];
-    list.add(Container(
-      padding: EdgeInsets.fromLTRB(15, 5, 5, 5),
-      width: MediaQuery.of(context).size.width,
-      color: Color(0x66CCCCCC),
-      child: Text(
-        "基础配置",
-        style: TextStyle(
-            fontSize: 14, color: Colors.black54, fontWeight: FontWeight.bold),
-      ),
-    ));
-    list.add(Padding(
-        padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-        child: Row(
-          children: <Widget>[
-            Text(
-              "事件标识: ",
-              style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.black26,
-                  fontWeight: FontWeight.bold),
-            ),
-            Text(
-              widget.actionName,
-              style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.bold),
-            ),
-          ],
-        )));
-    list.add(Padding(
-        padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-        child: Row(
-          children: <Widget>[
-            Text(
-              "页面路径: ",
-              style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.black26,
-                  fontWeight: FontWeight.bold),
-            ),
-            Text(
-              widget.pagePath,
-              style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.bold),
-            ),
-          ],
-        )));
+    list.add(getBasicTitle("基础配置"));
+    list.add(getBasicItem("事件标识: ", widget.actionName));
+    list.add(getBasicItem("页面路径: ", widget.pagePath));
+    list.add(getBasicItem("埋点类型: ", type));
+    //描述信息TextField
     list.add(
       Padding(
           padding: EdgeInsets.fromLTRB(15, 0, 15, 10),
@@ -482,18 +405,46 @@ class _LogScreenState extends State<LogScreen>
             ],
           )),
     );
-    list.add(Container(
+    list.add(getBasicTitle("参数配置"));
+    //添加所有参数view
+    list.addAll(intChildList(paramList));
+    return list;
+  }
+
+  Widget getBasicTitle(title) {
+    return Container(
       padding: EdgeInsets.fromLTRB(15, 5, 5, 5),
       width: MediaQuery.of(context).size.width,
       color: Color(0x66CCCCCC),
       child: Text(
-        "参数配置",
+        title,
         style: TextStyle(
             fontSize: 14, color: Colors.black54, fontWeight: FontWeight.bold),
       ),
-    ));
-    list.addAll(intChildList(paramList));
-    return list;
+    );
+  }
+
+  Widget getBasicItem(key, value) {
+    return Padding(
+        padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+        child: Row(
+          children: <Widget>[
+            Text(
+              key,
+              style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.black26,
+                  fontWeight: FontWeight.bold),
+            ),
+            Text(
+              value,
+              style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.bold),
+            ),
+          ],
+        ));
   }
 
   ///递归参数圈选列表
@@ -553,15 +504,7 @@ class _LogScreenState extends State<LogScreen>
   Widget getFinalItem(ParamItem paramItem) {
     if (!isModify) {
       if (paramItem.isChecked) {
-        return
-//          Padding(
-//            padding: EdgeInsets.fromLTRB(40, 0, 0, 0),
-//            child: Text(paramItem.key,
-//                style: TextStyle(
-//                    color: Colors.orange,
-//                    fontSize: 13,
-//                    fontWeight: FontWeight.bold)));
-            Container(height: 40, child: getCheckBoxTile(paramItem));
+        return Container(height: 40, child: getCheckBoxTile(paramItem));
       } else {
         return Container();
       }

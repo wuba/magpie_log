@@ -26,7 +26,7 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
               pageBuilder: (context, animation, secondaryAnimation) =>
                   LogScreen(
                       data: json,
-                      logType: circleLogType,
+                      logType: reduxType,
                       store: store,
                       action: action,
                       pagePath: pagePath,
