@@ -40,7 +40,7 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
               pageBuilder: (context, animation, secondaryAnimation) =>
                   LogScreen(
                     data: json,
-                    logType: stateLogType,
+                    logType: stateType,
                     pagePath: pagePath,
                     actionName: actionName,
                     func: fn,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:magpie_log/handler/statistics_handler.dart';
+
 part 'analysis_model.g.dart';
 
 @JsonSerializable()
@@ -76,11 +77,4 @@ enum ReportChannel {
   natives, //Native BasicMessageChannel 通道
 }
 
-class AnalysisType {
-  //页面t
-  static final String pageType = 'page';
-  //state统计
-  static final String stateType = 'state';
-  //redux统计
-  static final String reduxType = 'redux';
-}
+
