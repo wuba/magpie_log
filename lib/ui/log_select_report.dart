@@ -70,6 +70,16 @@ class _SelectReport extends State<MagpieSelectReport> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.fromLTRB(20, 10, 20, 25),
+                      child: Text(
+                        '修改后请记得及时保存，否则它只有在内存中存活的机会……',
+                        style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      )),
                   Align(
                     alignment: Alignment.topLeft,
                     child: Text(

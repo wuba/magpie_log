@@ -5,31 +5,27 @@ import android.util.Log;
 import android.widget.Toast;
 
 import io.flutter.app.FlutterActivity;
-import io.flutter.plugin.common.BasicMessageChannel;
-import io.flutter.plugin.common.StringCodec;
 import io.flutter.plugins.GeneratedPluginRegistrant;
+import io.flutter.plugins.wuba.magpielog.MagpieLogListener;
+import io.flutter.plugins.wuba.magpielog.MagpieLogPlugin;
 
-public class MainActivity extends FlutterActivity {
-
-    private static final String MSG_CHANNEL_TAG = "magpie_analysis_channel";
+public class MainActivity extends FlutterActivity implements MagpieLogListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         GeneratedPluginRegistrant.registerWith(this);
 
-        registerMsgChannel();
+        MagpieLogPlugin.getInstance().registerLogListener(this::magpieDataListener);
 
     }
 
     /**
      * 接收Flutter端圈选上报数据
      */
-    private void registerMsgChannel() {
-        BasicMessageChannel<String> messageChannel = new BasicMessageChannel<>(getFlutterView(),MSG_CHANNEL_TAG, StringCodec.INSTANCE);
-        messageChannel.setMessageHandler((s, reply) -> {
-            Toast.makeText(getApplicationContext(),"Native端收到了上报数据：" + s,Toast.LENGTH_LONG).show();
-            Log.d("basicMessageChannel","Native端收到了上报数据：" + s);
-        });
+    @Override
+    public void magpieDataListener(String jsonData) {
+        Toast.makeText(getApplicationContext(),"Native端收到了上报数据：" + jsonData,Toast.LENGTH_LONG).show();
+        Log.d("basicMessageChannel","Native端收到了上报数据：" + jsonData);
     }
 }

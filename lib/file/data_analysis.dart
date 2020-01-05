@@ -12,17 +12,17 @@ import '../magpie_log.dart';
 
 ///数据分析配置文件操作
 class MagpieDataAnalysis {
-  final String _tag = 'Magpie Data Analysis';
+  static final String _tag = 'Magpie Data Analysis';
 
-  final String _dirName = 'data_analysis';
+  static final String _dirName = 'data_analysis';
 
   ///数据分析配置参数统一写到统一文件中，所以在此直接定义好文件名称
-  final String _fileName = 'analysis.json';
+  static final String _fileName = 'analysis.json';
 
   static final List<AnalysisModel> _listData = List();
 
   /// 初始化接口
-  Future<String> initMagpieData(BuildContext context) async {
+  static Future<String> initMagpieData(BuildContext context) async {
     var data;
     //圈选数据以文件中的为准，只有首次的时候从assets下读取并copy到内存中
     //动态下发的埋点数据需要全部写入到文件中
@@ -50,7 +50,7 @@ class MagpieDataAnalysis {
     return (await _createCommonParams()).toJson().toString();
   }
 
-  Future<Null> saveData() async {
+  static Future<Null> saveData() async {
     if (_listData.isEmpty) {
       print('$_tag saveData error!!! _listData is empty...');
       return;
@@ -68,7 +68,7 @@ class MagpieDataAnalysis {
         dirName: _dirName);
   }
 
-  Future<Null> writeData(AnalysisModel analysisModel) async {
+  static Future<Null> writeData(AnalysisModel analysisModel) async {
     if (analysisModel == null ||
         analysisModel.actionName.isEmpty ||
         analysisModel.pagePath.isEmpty ||
@@ -110,7 +110,7 @@ class MagpieDataAnalysis {
   }
 
   ///完整的圈选数据读取
-  Future<String> readFileData() async {
+  static Future<String> readFileData() async {
     try {
       return jsonEncode(AnalysisData(
           _listData,
@@ -123,10 +123,10 @@ class MagpieDataAnalysis {
   }
 
   ///获取已选择的圈选数据集合
-  List<AnalysisModel> getListData() => _listData;
+  static List<AnalysisModel> getListData() => _listData;
 
   ///根据圈选埋点的action，读取指定数据。[action] 圈选埋点的key。
-  Future<AnalysisModel> readActionData(
+  static Future<AnalysisModel> readActionData(
       {@required String actionName,
       @required String pagePath,
       String type}) async {
@@ -170,19 +170,19 @@ class MagpieDataAnalysis {
   }
 
   ///获取文件路径
-  Future<String> getSavePath() async {
+  static Future<String> getSavePath() async {
     return await MagpieFileUtils.getFilePath(
         fileName: _fileName, dirName: _dirName);
   }
 
   ///清除全部数据。直接删除文件就完了呀呀呀呀呀
-  Future<Null> clearAnalysisData() async {
+  static Future<Null> clearAnalysisData() async {
     _listData.clear();
     MagpieFileUtils.clearFileData(fileName: _fileName, dirName: _dirName);
     print('$_tag clearAnalysisData _listData.length = ${_listData.length}');
   }
 
-  Future<int> deleteActionData({@required String actionName}) async {
+  static Future<int> deleteActionData({@required String actionName}) async {
     if (actionName.isEmpty) {
       print('$_tag deleteActionData actionName isEmpty');
       return -1;
@@ -208,7 +208,7 @@ class MagpieDataAnalysis {
   }
 
   ///构造公共参数
-  Future<DeviceData> _createCommonParams() async {
+  static Future<DeviceData> _createCommonParams() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     var platform, deviceVersion, clientId, deviceName, deviceId, model;
     if (Platform.isAndroid) {

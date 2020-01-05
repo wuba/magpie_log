@@ -95,8 +95,7 @@ class _LogScreenState extends State<LogScreen>
     _controller.animationState.addListener(_stateListener);
 
     //初始化已有埋点数据
-    MagpieDataAnalysis()
-        .readActionData(
+    MagpieDataAnalysis.readActionData(
             actionName: widget.actionName, pagePath: widget.pagePath)
         .then((logModel) {
       Map map;
@@ -300,8 +299,8 @@ class _LogScreenState extends State<LogScreen>
             getButtonItem(
                 "保存", MediaQuery.of(context).size.width / 4 - 1, Colors.orange,
                 () {
-              MagpieDataAnalysis().saveData().then((data) async {
-                MagpieDataAnalysis().getSavePath().then((path) {
+              MagpieDataAnalysis.saveData().then((data) async {
+                MagpieDataAnalysis.getSavePath().then((path) {
                   Fluttertoast.showToast(
                       msg: '数据已保存至：$path', toastLength: Toast.LENGTH_SHORT);
                 });
@@ -323,7 +322,7 @@ class _LogScreenState extends State<LogScreen>
 
                 String type = widget.logType;
 
-                MagpieDataAnalysis()
+                MagpieDataAnalysis
                     .writeData(AnalysisModel(
                         actionName: widget.actionName,
                         pagePath: widget.pagePath,
