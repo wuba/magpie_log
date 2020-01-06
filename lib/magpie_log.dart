@@ -70,7 +70,7 @@ class LogAction {
     return LogAction(actionName, index: index, actionParams: actionParams);
   }
 
-  LogAction(this.actionName, {this.index, this.actionParams});
+  LogAction(this.actionName, {this.index = 0, this.actionParams});
 
   String actionName;
   int index; //用于列表页position

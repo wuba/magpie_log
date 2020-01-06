@@ -33,7 +33,8 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
                       actionName: actionName,
                       next: next)));
     } else {
-      MagpieLogUtil.runTimeLog(actionName, pagePath, json);
+      MagpieLogUtil.runTimeLog(actionName, pagePath, json,
+          type: reduxType, index: action is LogAction ? action.index : 0);
       next(action);
     }
   }
