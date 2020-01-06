@@ -272,4 +272,9 @@ class AddTextState extends WidgetLogState<AddTextWidget> {
   String getActionName() {
     return "AddText";
   }
+
+  @override
+  int getIndex() {
+    return 0;
+  }
 }

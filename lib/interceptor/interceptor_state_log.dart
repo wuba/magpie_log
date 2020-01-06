@@ -9,6 +9,8 @@ import '../magpie_constants.dart';
 abstract class WidgetLogState<T extends StatefulWidget> extends State {
   String getActionName();
 
+  int getIndex();
+
   var logStatus;
 
   @override
@@ -47,7 +49,8 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
                     state: this,
                   )));
     } else {
-      MagpieLogUtil.runTimeLog(actionName, pagePath, json);
+      MagpieLogUtil.runTimeLog(actionName, pagePath, json,
+          type: stateType, index: getIndex());
       super.setState(fn);
     }
   }

@@ -407,6 +407,11 @@ class _LogScreenState extends State<LogScreen>
     list.add(getBasicTitle("参数配置"));
     //添加所有参数view
     list.addAll(intChildList(paramList));
+
+    if(isModify){
+      list.add(getBasicTitle("埋点数据"));
+    }
+
     return list;
   }
 

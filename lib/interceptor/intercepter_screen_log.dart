@@ -22,8 +22,6 @@ class LogObserver<S> extends NavigatorObserver {
         String pagePath = MagpieLog.instance.getCurrentPath();
         if (MagpieLog.instance.isDebug && MagpieLog.instance.isPageLogOn) {
           {
-
-
             Navigator.push(
               MagpieLog.instance.logContext,
               PageRouteBuilder(
@@ -38,7 +36,7 @@ class LogObserver<S> extends NavigatorObserver {
             );
           }
         } else {
-          MagpieLogUtil.runTimeLog(actionName, pagePath, json);
+          MagpieLogUtil.runTimeLog(actionName, pagePath, json, type: pageType);
         }
       } catch (e) {
         debugPrint(e.toString());
