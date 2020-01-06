@@ -41,6 +41,14 @@ pubspec.lock
 
 **/ios/**/Runner/GeneratedPluginRegistrant.h
 **/ios/**/GeneratedPluginRegistrant.m
+**/ios/**/.symlinks/
+**/ios/**/Flutter/
+**/ios/**/Pods/
+**/ios/**/Runner.*
+**/ios/**/*.xcconfig
+**/ios/**/*.json
+**/ios/**/.gitkeep
+**/ios/**/magpie_log_plugin.podspec
 
 
 # Exceptions to above rules.
