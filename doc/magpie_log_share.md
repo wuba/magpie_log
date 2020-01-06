@@ -210,3 +210,6 @@ native上报：我们提供了channel和native的sdk，只需要native侧实现�
 1.服务端配合，动态化配置的上传和加载
 2.级联赋值问题 导致日志参数和数据一样，可以增加用户配置
 3.store 参数为空 级联圈参null不全问题
+
+# 视频演示![magpie_log_video](media/magpie_log_video.gif)
+
