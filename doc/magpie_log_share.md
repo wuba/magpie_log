@@ -186,7 +186,7 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
 
 配置文件是用来存储圈选埋点配置
 
-为避免频繁的读取文件我们加了一级缓存我们的所有api操作都是与缓存交互，只有点击保存按钮，才会同步到data/data文件中。（已android为例）
+为避免频繁的读取文件我们加了一级缓存我们的所有api操作都是与缓存交互，只有点击保存按钮，才会同步到data/data文件中。（以android为例）
 
 在所有埋点圈选完成后，需要手动去data/data里面取到文件放入工程assets里面，后期有服务端支持可以直接上传到服务端，避免这步的操作
 
