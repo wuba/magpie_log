@@ -12,7 +12,7 @@
 
 圈选埋点主要做了三种事件的拦截，页面级别事件基于Redux拦截action事件；页面跳转事件基于Navigator拦截页面跳转事件；局部点击刷新事件通过拦截setState方法实现。
 
-配置部分主要为圈选埋点服务，包括配置的UI部分，圈选页面圈选配置页面等。配置管理部分主要是对配置文件的管理包括写入，读取拷贝，文件化存储等，将来可以通过服务网络下发配置，进一步简化流程同时何以实现埋点的动态化配置。
+配置部分主要为圈选埋点服务，包括配置的UI部分，圈选页面圈选配置页面等。配置管理部分主要是对配置文件的管理包括写入，读取拷贝，文件化存储等，将来可以通过服务网络下发配置，进一步简化流程同时可以实现埋点的动态化配置。
 
 手动埋点因为圈选埋点不可能覆盖100%的埋点，因此我们提供了手动埋点的能力，最终在运行时和圈选埋点走同一套上传逻辑，这样做统一接口，统一逻辑，使接入更加的方便，全面。
 
@@ -30,7 +30,7 @@
 ![medium_tree-w343](media/medium_tree.png)![hairy_tree-w469](media/hairy_tree.png)
 
 你的项目不太适用我们的圈选，或者你可以看下面的setState部分，
-如果你使用了redux，那么恭喜你，你的app非常的优秀，至少你需要状态管理，只需要简单的设置，即可使用我们的圈选功能。
+如果你使用了redux，那么恭喜你，你的app非常的优秀，依托状态管理，只需要简单的设置，即可使用我们的圈选功能。
 
 下图是flutter-redux的原理图
 ![redux-architecture-overview-middleware](media/redux-architecture-overview-middleware.png)
@@ -66,7 +66,7 @@ store.dispatch(LogAction(actionListClick, index: index));
 参数和配置上传在后面详细说明。
 
 ## 页面跳转拦截实现
-页面跳转的拦截主要通过NavigateObserve
+页面跳转的拦截主要通过NavigatorObserver
 
 ```
 class LogObserver<S> extends NavigatorObserver {
@@ -131,8 +131,8 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
 ### 圈选页面展示
 ![](media/15782168162404.jpg)
 
-抽屉栏的设计方便看到自己在那个页面做了圈选操作
-基础配置部分
+抽屉栏的设计方便看到自己在那个页面做了圈选操作。
+基础配置部分：
 埋点和修改两种展示方式方便区分已有配置和新增配置的区别；
 事件标识 页面路径 埋点类型（可选）作为埋点的唯一标识；
 描述信息可以自定义添加，作为备注；
@@ -174,7 +174,7 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
 ```
 
 这里需要注意当点击埋点操作时，实际是生成配置文件到内存中，只有点击保存操作才会存入文件
-跳过操作就是走正常的原有逻辑
+跳过操作就是走正常的原有逻辑。
 
 ### 圈选配置页面
 ![](media/15782185559383.jpg)
@@ -203,9 +203,9 @@ MagpieStatisticsHandler.instance.writeData({'data': '手动埋点数据示例'})
 因为flutter和native频繁通讯必然对性能有影响，所以我们在交互之前添加了定时器和计数器，并交由用户自定义设置，方便接入使用，同时为避免缓存期间的日志丢失我们做了文件备份的功能避免埋点数据丢失
 ## 上报
 由于大部分flutter app没有自己的埋点上报策略。所以我们在提供flutter回调接口的同时，
-提供了native上报的能力，因为大部分app都有自己的native侧成熟的埋点上报体系。
-flutter上报：只需要在初始化方法里面实现对应回调即可
-native上报：我们提供了channel和native的sdk，只需要native侧实现对应的具体实现即可
+提供了native上报的能力，因为大部分app都有自己的native侧成熟的埋点上报体系。\
+flutter上报：只需要在初始化方法里面实现对应回调即可。\
+native上报：我们提供了channel和native的sdk，只需要native侧实现对应的具体实现即可。
 # 优化空间
 1.服务端配合，动态化配置的上传和加载
 2.级联赋值问题 导致日志参数和数据一样，可以增加用户配置
