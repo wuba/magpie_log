@@ -1,10 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/services.dart';
 import 'package:magpie_log/file/data_analysis.dart';
 import 'package:magpie_log/file/data_statistics.dart';
 import 'package:magpie_log/file/file_utils.dart';
 import 'package:magpie_log/model/analysis_model.dart';
+
+import '../file/data_statistics.dart';
+import '../magpie_log.dart';
+import '../model/device_data.dart';
 
 ///已圈选数据统计上报
 
@@ -72,11 +78,20 @@ class MagpieStatisticsHandler {
     print(
         '$_tag initConfig, reportMethod = $_reportMethod,reportChannel = $_reportChannel');
 
+    //返回公共参数。原则上初始化的时候需要上报一次，但是不强制
+    String _deviceInfo = (await _createCommonParams()).toJson().toString();
+
     ///初始化时判断是否有之前写入的未上报数据，有则上报后删除
     if (await MagpieDataStatistics.isExistsStatistics()) {
-      String jsonData = await MagpieDataStatistics.readStatisticsData();
-      _MagpieAnalysisHandler.instance.sendDataToJson(jsonData);
+      await MagpieDataStatistics.writeStatisticsData(
+          {'deviceInfo': _deviceInfo});
+
+      _MagpieAnalysisHandler.instance
+          .sendDataToJson(await MagpieDataStatistics.readStatisticsData());
       MagpieDataStatistics.clearStatisticsData();
+    } else {
+      _MagpieAnalysisHandler.instance
+          .sendDataToMap({'deviceInfo': _deviceInfo});
     }
   }
 
@@ -146,6 +161,35 @@ class MagpieStatisticsHandler {
     _MagpieAnalysisHandler.instance.sendDataToJson(jsonData);
     _dataStatistics.clear();
     await MagpieDataStatistics.clearStatisticsData();
+  }
+
+  ///构造公共参数
+  Future<DeviceData> _createCommonParams() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    var platform, deviceVersion, clientId, deviceName, deviceId, model;
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      platform = 'Android';
+      deviceVersion = androidInfo.version.release;
+      deviceName = androidInfo.brand;
+      model = androidInfo.model;
+      deviceId = androidInfo.androidId;
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      platform = "iOS";
+      deviceVersion = iosInfo.systemVersion;
+      deviceName = iosInfo.name;
+      model = iosInfo.model;
+      deviceId = iosInfo.identifierForVendor;
+    }
+    clientId = globalClientId;
+
+    DeviceData info = DeviceData(
+        platform, clientId, deviceName, deviceId, deviceVersion, model);
+
+    print('$_tag createCommonParams Android device Info =  ${info.toJson()}');
+
+    return info;
   }
 }
 

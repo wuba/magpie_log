@@ -22,7 +22,7 @@ class MagpieDataAnalysis {
   static final List<AnalysisModel> _listData = List();
 
   /// 初始化接口
-  static Future<String> initMagpieData(BuildContext context) async {
+  static void initMagpieData(BuildContext context) async {
     var data;
     //圈选数据以文件中的为准，只有首次的时候从assets下读取并copy到内存中
     //动态下发的埋点数据需要全部写入到文件中
@@ -45,9 +45,6 @@ class MagpieDataAnalysis {
             '$_tag initMagpieData, ${analysisData.reportChannel} , ${analysisData.reportMethod}');
       }
     }
-
-    //返回公共参数。原则上初始化的时候需要上报一次，但是不强制
-    return (await _createCommonParams()).toJson().toString();
   }
 
   static Future<Null> saveData() async {
@@ -205,34 +202,5 @@ class MagpieDataAnalysis {
     }
 
     return -2;
-  }
-
-  ///构造公共参数
-  static Future<DeviceData> _createCommonParams() async {
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    var platform, deviceVersion, clientId, deviceName, deviceId, model;
-    if (Platform.isAndroid) {
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      platform = 'Android';
-      deviceVersion = androidInfo.version.release;
-      deviceName = androidInfo.brand;
-      model = androidInfo.model;
-      deviceId = androidInfo.androidId;
-    } else if (Platform.isIOS) {
-      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-      platform = "iOS";
-      deviceVersion = iosInfo.systemVersion;
-      deviceName = iosInfo.name;
-      model = iosInfo.model;
-      deviceId = iosInfo.identifierForVendor;
-    }
-    clientId = globalClientId;
-
-    DeviceData info = DeviceData(
-        platform, clientId, deviceName, deviceId, deviceVersion, model);
-
-    print('$_tag createCommonParams Android device Info =  ${info.toJson()}');
-
-    return info;
   }
 }
