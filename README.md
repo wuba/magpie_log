@@ -3,7 +3,7 @@
 Add this to your package's pubspec.yaml 
 ```  
 dependencies:
- magpie_log: ^1.0.0
+ magpie_log: ^1.0.1
 ```
 
 ### 2. Install it
@@ -34,6 +34,7 @@ Widget build(BuildContext context) {
     return Container();
 }
 ```
+这里需要注意context必须是包含Navigator的context
 ### redux圈选使用方式
 redux圈选 你的工程需要使用flutter-redux做状态管理
 需要注入一个中间件`CircleMiddleWare`
@@ -91,3 +92,8 @@ class AddTextState extends WidgetLogState<AddTextWidget> {
 ```
 # 详细文档参见
 [magpie圈选埋点实现](http://ishare.58corp.com/#/articleDetail?id=6879)
+
+# 待完善
+1.服务端配合，动态化配置的上传和加载
+2.级联赋值问题 导致日志参数和数据一样，可以增加用户配置
+3.store 参数为空 级联圈参null不全问题

@@ -50,11 +50,15 @@ class MagpieLog {
   }
 
   String getCurrentPath() {
-    return getCurrentRoute().settings.name;
+    return getCurrentRoute() != null
+        ? getCurrentRoute().settings.name
+        : "not define";
   }
 
   Route getCurrentRoute() {
-    return routeStack[MagpieLog.instance.routeStack.length - 1];
+    return MagpieLog.instance.routeStack.length > 0
+        ? routeStack[MagpieLog.instance.routeStack.length - 1]
+        : null;
   }
 }
 
