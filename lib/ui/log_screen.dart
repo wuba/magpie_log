@@ -176,6 +176,7 @@ class _LogScreenState extends State<LogScreen>
             upperLayer: _getUpperLayer(),
             animationController: _controller,
           )),
+          Container(height: 0.5, color: Color(0xFFf6f7fb)),
           buttons(),
         ]));
   }
@@ -183,72 +184,58 @@ class _LogScreenState extends State<LogScreen>
   ///抽屉头部组件
   Widget _getHeader() {
     return Container(
-        height: 60,
         child: Stack(children: <Widget>[
-          Container(
-              color: Colors.deepOrange,
-              padding: EdgeInsets.fromLTRB(15, 0, 10, 0),
-              margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-              child: Row(children: <Widget>[
-                GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Icon(
-                      Icons.keyboard_arrow_left,
-                      color: Colors.white,
-                    )),
-                Container(width: 5),
-                Expanded(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                      Container(
-                        child: Text(title,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold)),
-                      )
-                    ])),
-                GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          settings: RouteSettings(
-                              name: MagpieConstants.operationScreen),
-                          builder: (BuildContext context) {
-                            return MagpieLogOperation();
-                          }));
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                      child: Text('圈选配置',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold)),
-                    )),
-              ])),
-          GestureDetector(
-              onTap: () {
-                isExpanded ? _controller.collapse() : _controller.expand();
-              },
-              child: Center(
-                  child: Container(
-                      width: 50,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.deepOrange),
-                      //color: Colors.deepOrange,
-                      margin: EdgeInsets.fromLTRB(0, 0, 0, 15),
-                      child: Icon(
-                        isExpanded
-                            ? Icons.vertical_align_bottom
-                            : Icons.vertical_align_top,
-                        color: Colors.white,
-                      ))))
-        ]));
+      Container(
+          color: Colors.white,
+          padding: EdgeInsets.fromLTRB(15, 0, 10, 0),
+          margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+          child: Row(children: <Widget>[
+            GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Icon(
+                  Icons.keyboard_arrow_left,
+                  color: Colors.black,
+                )),
+            Container(width: 50),
+            Expanded(
+              child: Container(),
+            ),
+            GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      settings:
+                          RouteSettings(name: MagpieConstants.operationScreen),
+                      builder: (BuildContext context) {
+                        return MagpieLogOperation();
+                      }));
+                },
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                  child: Text('圈选配置',
+                      style: TextStyle(
+                        color: Colors.black54,
+                        fontSize: 16,
+                      )),
+                )),
+            GestureDetector(
+                onTap: () {
+                  isExpanded ? _controller.collapse() : _controller.expand();
+                },
+                child: Row(children: <Widget>[
+                  Text(isExpanded ? "收起" : "展开",
+                      style: TextStyle(
+                        color: Colors.black54,
+                        fontSize: 16,
+                      )),
+                  Icon(
+                    isExpanded ? Icons.arrow_drop_down : Icons.arrow_drop_up,
+                    color: Colors.black,
+                  )
+                ])),
+          ])),
+    ]));
   }
 
   ///抽屉背景
@@ -282,8 +269,8 @@ class _LogScreenState extends State<LogScreen>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            getButtonItem("跳过", MediaQuery.of(context).size.width / 4 - 1,
-                Colors.lightGreen, () {
+            getButtonItem(
+                "跳过", MediaQuery.of(context).size.width / 4, Colors.white, () {
               switch (widget.logType) {
                 case pageType:
                   break;
@@ -295,21 +282,20 @@ class _LogScreenState extends State<LogScreen>
                   break;
               }
               Navigator.pop(context);
-            }),
+            }, textColor: Colors.deepOrange),
             getButtonItem(
-                "保存", MediaQuery.of(context).size.width / 4 - 1, Colors.orange,
-                () {
+                "保存", MediaQuery.of(context).size.width / 4, Colors.white, () {
               MagpieDataAnalysis.saveData().then((data) async {
                 MagpieDataAnalysis.getSavePath().then((path) {
                   Fluttertoast.showToast(
                       msg: '数据已保存至：$path', toastLength: Toast.LENGTH_SHORT);
                 });
               });
-            }),
+            }, textColor: Colors.deepOrange),
             getButtonItem(
                 isModify ? "埋点" : "修改",
                 MediaQuery.of(context).size.width / 2,
-                isModify ? Colors.deepOrange : Colors.redAccent, () {
+                isModify ? Colors.deepOrange : Colors.deepOrange, () {
               if (isModify) {
                 if (widget.logType == stateType) {
                   widget.state.logStatus = 1;
@@ -322,8 +308,7 @@ class _LogScreenState extends State<LogScreen>
 
                 String type = widget.logType;
 
-                MagpieDataAnalysis
-                    .writeData(AnalysisModel(
+                MagpieDataAnalysis.writeData(AnalysisModel(
                         actionName: widget.actionName,
                         pagePath: widget.pagePath,
                         analysisData: log,
@@ -347,7 +332,7 @@ class _LogScreenState extends State<LogScreen>
   }
 
   ///底部按钮Button封装
-  Widget getButtonItem(text, width, color, onPressed) {
+  Widget getButtonItem(text, width, color, onPressed, {textColor}) {
     return Container(
         height: 45,
         width: width,
@@ -358,8 +343,7 @@ class _LogScreenState extends State<LogScreen>
           child: Text(text,
               style: TextStyle(
                   fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold)),
+                  color: textColor != null ? textColor : Colors.white)),
           onPressed: onPressed,
         ));
   }
@@ -380,9 +364,9 @@ class _LogScreenState extends State<LogScreen>
               Text(
                 "描述信息: ",
                 style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.black26,
-                    fontWeight: FontWeight.bold),
+                  fontSize: 14,
+                  color: Color(0xFF999999),
+                ),
               ),
               SizedBox(
                   width: 200,
@@ -393,24 +377,24 @@ class _LogScreenState extends State<LogScreen>
                       description = text;
                     },
                     style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.black54,
-                        fontWeight: FontWeight.bold),
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
                     decoration: InputDecoration(
                         hintStyle:
-                            TextStyle(fontSize: 13, color: Colors.black26),
+                            TextStyle(fontSize: 14, color: Color(0xFF999999)),
                         hintText: '如：列表页点击'),
                   )),
             ],
           )),
     );
-    list.add(getBasicTitle("参数配置"));
-    //添加所有参数view
-    list.addAll(intChildList(paramList));
-
-    if(isModify){
+    if (isModify) {
+      list.add(getBasicTitle("参数配置"));
+    } else {
       list.add(getBasicTitle("埋点数据"));
     }
+    //添加所有参数view
+    list.addAll(intChildList(paramList));
 
     return list;
   }
@@ -419,11 +403,10 @@ class _LogScreenState extends State<LogScreen>
     return Container(
       padding: EdgeInsets.fromLTRB(15, 5, 5, 5),
       width: MediaQuery.of(context).size.width,
-      color: Color(0x66CCCCCC),
+      color: Color(0xFFF6F7FB),
       child: Text(
         title,
-        style: TextStyle(
-            fontSize: 14, color: Colors.black54, fontWeight: FontWeight.bold),
+        style: TextStyle(fontSize: 14, color: Color(0xFF999999)),
       ),
     );
   }
@@ -436,16 +419,16 @@ class _LogScreenState extends State<LogScreen>
             Text(
               key,
               style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.black26,
-                  fontWeight: FontWeight.bold),
+                fontSize: 14,
+                color: Color(0xFF999999),
+              ),
             ),
             Text(
               value,
               style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.bold),
+                fontSize: 14,
+                color: Colors.black,
+              ),
             ),
           ],
         ));
@@ -472,17 +455,15 @@ class _LogScreenState extends State<LogScreen>
                     padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
                     child: Row(children: <Widget>[
                       !paramList[index].isPaneled
-                          ? Icon(Icons.add_circle_outline,
-                              size: 15, color: Colors.black54)
-                          : Icon(Icons.remove_circle_outline,
-                              size: 15, color: Colors.black54),
+                          ? Icon(Icons.add, size: 15, color: Colors.black54)
+                          : Icon(Icons.remove, size: 15, color: Colors.black54),
                       Padding(
                           padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                           child: Text(paramList[index].key,
                               style: TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold)))
+                                color: Colors.black54,
+                                fontSize: 13,
+                              )))
                     ]),
                   )),
               getPaneledItem(paramList[index].isPaneled, paramList[index])
@@ -520,14 +501,7 @@ class _LogScreenState extends State<LogScreen>
   Widget getCheckBoxTile(ParamItem paramItem) {
     return Row(children: <Widget>[
       Padding(
-          padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
-          child: Icon(
-            Icons.remove,
-            size: 15,
-            color: isModify ? Colors.black54 : Colors.orange,
-          )),
-      Padding(
-          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+          padding: EdgeInsets.fromLTRB(40, 0, 0, 0),
           child: Text(paramItem.key,
               style: TextStyle(
                   color: isModify ? Colors.black54 : Colors.orange,

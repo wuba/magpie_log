@@ -13,8 +13,10 @@ class _ActionListState extends State<MagpieActionList> {
     return Scaffold(
         appBar: AppBar(
           title: Text('圈选配置列表（侧滑删除）'),
+          centerTitle: true,
         ),
         body: Container(
+          color: Color(0xFFf6f7fb),
           child: _getListView(),
         ));
   }
@@ -32,7 +34,9 @@ class _ActionListState extends State<MagpieActionList> {
       );
 
   Container _getItem(int position) => Container(
-          child: Dismissible(
+      color: Colors.white,
+      margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+      child: Dismissible(
         onDismissed: (_) {
           MagpieDataAnalysis.getListData().removeAt(position);
         },
@@ -55,38 +59,37 @@ class _ActionListState extends State<MagpieActionList> {
                 ))),
         key: Key(MagpieDataAnalysis.getListData()[position].actionName),
         child: Padding(
-          padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                '标识: ${MagpieDataAnalysis.getListData()[position].actionName}',
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                    color: Colors.deepOrange,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14),
-              ),
-              Text(
-                '路由: ${MagpieDataAnalysis.getListData()[position].pagePath}',
-                textAlign: TextAlign.left,
-                style: TextStyle(color: Colors.orange, fontSize: 14),
-              ),
-              Text(
-                '描述: ${MagpieDataAnalysis.getListData()[position].description}',
-                textAlign: TextAlign.left,
-                style: TextStyle(color: Colors.black54, fontSize: 14),
-              ),
-              Container(
-                margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                child: Text(
-                  '参数: ${MagpieDataAnalysis.getListData()[position].analysisData}',
+            padding: EdgeInsets.fromLTRB(15, 15, 15, 15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  '标识: ${MagpieDataAnalysis.getListData()[position].actionName}',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                      color: Colors.black54,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14),
+                ),
+                Text(
+                  '路由: ${MagpieDataAnalysis.getListData()[position].pagePath}',
                   textAlign: TextAlign.left,
                   style: TextStyle(color: Colors.black54, fontSize: 14),
                 ),
-              ),
-            ],
-          ),
-        ),
+                Text(
+                  '描述: ${MagpieDataAnalysis.getListData()[position].description}',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(color: Colors.black54, fontSize: 14),
+                ),
+                Container(
+                  margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
+                  child: Text(
+                    '参数: ${MagpieDataAnalysis.getListData()[position].analysisData}',
+                    textAlign: TextAlign.left,
+                    style: TextStyle(color: Colors.black54, fontSize: 14),
+                  ),
+                ),
+              ],
+            )),
       ));
 }

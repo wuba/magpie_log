@@ -14,6 +14,8 @@ class TopScreen extends StatefulWidget {
 }
 
 class _TopScreenState extends State<TopScreen> {
+  int index = 0;
+
   @override
   Widget build(BuildContext context) {
     MagpieExampleUtils().init(context);
@@ -21,28 +23,25 @@ class _TopScreenState extends State<TopScreen> {
       length: choices.length,
       child: Scaffold(
           appBar: AppBar(
-            title: Text('Magpie Log'),
-            bottom: TabBar(
-              isScrollable: false,
-              tabs: choices.map((Choice choice) {
-                return Tab(
-                  child: Text(
-                    '${choice.title}',
-                    style: TextStyle(fontSize: 10),
-                  ),
-                  icon: Icon(
-                    choice.icon,
-                    size: 30,
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
+              title: Text("Magpie-Log"),
+              centerTitle: true,
+              bottom: TabBar(
+                isScrollable: false,
+                tabs: choices.map((Choice choice) {
+                  return Tab(
+                    child: Text(
+                      '${choice.title}',
+                      style: TextStyle(fontSize: 10),
+                    ),
+                    icon: Image.asset(choice.icon, height: 30, width: 30),
+                  );
+                }).toList(),
+              )),
           body: TabBarView(children: <Widget>[
-            reduxDemo(),
-            listDemo(),
-            stateDemo(),
-            manuallyDemo(),
+            reduxDemo(context),
+            listDemo(context),
+            stateDemo(context),
+            manuallyDemo(context),
             pageDemo(context),
           ])),
     );
@@ -53,72 +52,83 @@ class Choice {
   const Choice({this.title, this.icon});
 
   final String title;
-  final IconData icon;
+  final String icon;
 }
 
 const List<Choice> choices = const <Choice>[
-  const Choice(title: 'Redux', icon: Icons.group_work),
-  const Choice(title: 'List', icon: Icons.list),
-  const Choice(title: 'State', icon: Icons.adjust),
-  const Choice(title: 'verbose', icon: Icons.colorize),
-  const Choice(title: '页面', icon: Icons.content_copy),
+  const Choice(title: 'Redux', icon: "images/redux.png"),
+  const Choice(title: 'List', icon: "images/list.png"),
+  const Choice(title: 'State', icon: "images/state.png"),
+  const Choice(title: 'Verbose', icon: "images/verbose.png"),
+  const Choice(title: 'Page', icon: "images/page.png"),
 ];
 
-Widget reduxDemo() {
-  return Padding(
-      padding: EdgeInsets.fromLTRB(50, 30, 50, 30),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        Text(
-          "\n基于Redux的普通圈选展示",
-          style: TextStyle(
-              fontSize: 18, color: Colors.black54, fontWeight: FontWeight.bold),
-        ),
-        Text(
-          "\n原理：拦截redux分发action事件,插入中间件，进行统一埋点\n\n示例：以系统count+1为例：\n",
-          style: TextStyle(fontSize: 14, color: Colors.black54),
-        ),
-        StoreConnector<AppState, int>(
-          converter: (store) => store.state.countState.count,
-          builder: (context, count) {
-            return Text(
-              count.toString(),
-              style: TextStyle(fontSize: 30, color: Colors.red),
-            );
-          },
-        ),
-        StoreConnector<AppState, VoidCallback>(
-          converter: (store) {
-            return () => store.dispatch(LogAction(actionAddCount));
-          },
-          builder: (context, callback) {
-            return MaterialButton(
-              color: Colors.deepOrange,
-              child: Text("数字+1",
-                  style: TextStyle(fontSize: 15, color: Colors.white)),
-              onPressed: callback,
-            );
-          },
-        ),
-      ]));
+Widget demo(context, title, demoView, {description}) {
+  return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    Padding(
+        padding: EdgeInsets.fromLTRB(15, 25, 15, 20),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(
+            "\n" + title,
+            style: TextStyle(fontSize: 18, color: Colors.black),
+          ),
+          Text(
+            description != null ? "\n" + description : "",
+            style: TextStyle(fontSize: 14, color: Colors.black54),
+          )
+        ])),
+    Container(
+      color: Color(0xFFf6f7fb),
+      width: MediaQuery.of(context).size.width,
+      child: Padding(
+          padding: EdgeInsets.fromLTRB(15, 15, 15, 5),
+          child: Text(
+            "示例:",
+            style: TextStyle(fontSize: 14, color: Colors.black54),
+          )),
+    ),
+    demoView,
+  ]);
 }
 
-Widget listDemo() {
-  return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-    Padding(
-        padding: EdgeInsets.fromLTRB(50, 30, 50, 10),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          Text(
-            "\n基于Redux的List圈选展示",
-            style: TextStyle(
-                fontSize: 18,
-                color: Colors.black54,
-                fontWeight: FontWeight.bold),
-          ),
-          Text(
-            "\n原理和redux圈选一样，说明一下处理list的圈选数据取的item里面bean值\n\n示例：如下简单列表\n",
-            style: TextStyle(fontSize: 14, color: Colors.black54),
-          ),
-        ])),
+Widget reduxDemo(context) {
+  return demo(
+      context,
+      "基于Redux的普通圈选展示",
+      Padding(
+          padding: EdgeInsets.fromLTRB(15, 15, 15, 5),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            StoreConnector<AppState, int>(
+              converter: (store) => store.state.countState.count,
+              builder: (context, count) {
+                return Text(
+                  count.toString(),
+                  style: TextStyle(fontSize: 30, color: Colors.red),
+                );
+              },
+            ),
+            StoreConnector<AppState, VoidCallback>(
+              converter: (store) {
+                return () => store.dispatch(LogAction(actionAddCount));
+              },
+              builder: (context, callback) {
+                return MaterialButton(
+                  color: Colors.deepOrange,
+                  child: Text("数字+1",
+                      style: TextStyle(fontSize: 15, color: Colors.white)),
+                  onPressed: callback,
+                );
+              },
+            ),
+          ])),
+      description: "原理：拦截redux分发action事件,插入中间件，进行统一埋点");
+}
+
+Widget listDemo(context) {
+  return demo(
+    context,
+    "基于Redux的List圈选展示",
     Expanded(
         child: StoreConnector<AppState, Store<AppState>>(
             converter: (store) => store,
@@ -145,81 +155,55 @@ Widget listDemo() {
                         child: Divider(height: 1));
                   },
                   itemCount: store.state.listState.length);
-            }))
-  ]);
+            })),
+    description: "原理：redux圈选一样，说明一下处理list的圈选数据取的item里面bean值",
+  );
 }
 
-Widget stateDemo() {
-  return Padding(
-      padding: EdgeInsets.fromLTRB(50, 30, 50, 30),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        Text(
-          "\n局部setState()操作圈选",
-          style: TextStyle(
-              fontSize: 18, color: Colors.black54, fontWeight: FontWeight.bold),
-        ),
-        Text(
-          "\n原理：通过使用LogState，拦截setState事件进行统一埋点\n\n示例：以系统count+1为例：\n",
-          style: TextStyle(fontSize: 14, color: Colors.black54),
-        ),
-        AddTextWidget()
-      ]));
+Widget stateDemo(context) {
+  return demo(
+    context,
+    "局部setState()操作圈选",
+    Container(padding: EdgeInsets.all(15), child: AddTextWidget()),
+    description: "原理：通过使用LogState，拦截setState事件进行统一埋点",
+  );
 }
 
-Widget manuallyDemo() {
-  return Padding(
-    padding: EdgeInsets.fromLTRB(50, 30, 50, 30),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          '手动埋点展示 \n 示例：',
-          style: TextStyle(
-              fontSize: 18, color: Colors.black54, fontWeight: FontWeight.bold),
+Widget manuallyDemo(context) {
+  return demo(
+      context,
+      "手动埋点展示",
+      Container(
+        margin: EdgeInsets.all(30),
+        child: MaterialButton(
+          color: Colors.deepOrange,
+          child:
+              Text('手动埋点', style: TextStyle(fontSize: 15, color: Colors.white)),
+          onPressed: () {
+            // 手动埋点数据示例
+            MagpieStatisticsHandler.instance.writeData({'data': '手动埋点数据示例'});
+          },
         ),
+      ));
+}
+
+Widget pageDemo(BuildContext context) {
+  return
+    demo(
+        context,
+        "页面级曝光统计",
         Container(
           margin: EdgeInsets.all(30),
           child: MaterialButton(
             color: Colors.deepOrange,
-            child: Text('手动埋点',
-                style: TextStyle(fontSize: 15, color: Colors.white)),
+            child:
+            Text("跳转", style: TextStyle(fontSize: 15, color: Colors.white)),
             onPressed: () {
-              // 手动埋点数据示例
-              MagpieStatisticsHandler.instance.writeData({'data': '手动埋点数据示例'});
-              // Timer.periodic(const Duration(milliseconds: 1000), (Void) {
-              //   MagpieStatisticsHandler.instance
-              //       .writeData({'data': '手动埋点数据示例'});
-              // });
+              Navigator.pushNamed(context, '/UnderScreen');
             },
-          ),
-        )
-      ],
-    ),
-  );
-}
-
-Widget pageDemo(BuildContext context) {
-  return Padding(
-      padding: EdgeInsets.fromLTRB(50, 30, 50, 30),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        Text(
-          "\n页面级曝光统计",
-          style: TextStyle(
-              fontSize: 18, color: Colors.black54, fontWeight: FontWeight.bold),
+          )
         ),
-        Text(
-          "\n原理：通过过NavigatorObserver监听页面push事件，现push页面后 默认0.5秒跳转圈选部分\n\n示例：点击跳转页面\n",
-          style: TextStyle(fontSize: 14, color: Colors.black54),
-        ),
-        MaterialButton(
-          color: Colors.deepOrange,
-          child:
-              Text("跳转", style: TextStyle(fontSize: 15, color: Colors.white)),
-          onPressed: () {
-            Navigator.pushNamed(context, '/UnderScreen');
-          },
-        )
-      ]));
+      description: "原理：通过过NavigatorObserver监听页面push事件，现push页面后 默认0.5秒跳转圈选部分");
 }
 
 class AddTextWidget extends StatefulWidget {

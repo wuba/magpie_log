@@ -41,6 +41,16 @@ flutter:
 
   assets:
     - assets/analysis.json
+    - images/list.png
+    - images/list_selected.png
+    - images/page.png
+    - images/page_selected.png
+    - images/redux.png
+    - images/redux_selected.png
+    - images/state.png
+    - images/state_selected.png
+    - images/verbose.png
+    - images/verbose_selected.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg

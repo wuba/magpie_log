@@ -25,15 +25,16 @@ class _LogOperationState extends State<MagpieLogOperation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('圈选配置')),
+      appBar: AppBar(centerTitle: true, title: Text('圈选配置')),
       body: Container(
-          color: Color(0x66CCCCCC),
+          color: Color(0xFFf6f7fb),
           child: ListView(
             children: <Widget>[
               listItem("查看圈选数据",
                   leftWidget: Icon(
                     Icons.list,
                     color: Colors.black26,
+                    size: 15,
                   ), onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     settings: RouteSettings(name: MagpieConstants.actionScreen),
@@ -45,6 +46,7 @@ class _LogOperationState extends State<MagpieLogOperation> {
                   leftWidget: Icon(
                     Icons.save_alt,
                     color: Colors.black26,
+                    size: 15,
                   ), onTap: () {
                 MagpieDataAnalysis.saveData().then((data) async {
                   MagpieDataAnalysis.getSavePath().then((path) {
@@ -57,6 +59,7 @@ class _LogOperationState extends State<MagpieLogOperation> {
                   leftWidget: Icon(
                     Icons.delete_forever,
                     color: Colors.black26,
+                    size: 15,
                   ), onTap: () {
                 MagpieDataAnalysis.clearAnalysisData().then((value) {
                   Fluttertoast.showToast(
@@ -64,9 +67,11 @@ class _LogOperationState extends State<MagpieLogOperation> {
                 });
               }),
               listItem("选择数据上报方式",
+                  marginBottom: 10.0,
                   leftWidget: Icon(
-                    Icons.delete_forever,
+                    Icons.cloud_upload,
                     color: Colors.black26,
+                    size: 15,
                   ), onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     settings: RouteSettings(
@@ -80,6 +85,7 @@ class _LogOperationState extends State<MagpieLogOperation> {
                   leftWidget: Icon(
                     Icons.adjust,
                     color: Colors.black26,
+                    size: 15,
                   ),
                   rightWidget: Switch(
                     value: MagpieLog.instance.isDebug,
@@ -97,6 +103,7 @@ class _LogOperationState extends State<MagpieLogOperation> {
                   leftWidget: Icon(
                     Icons.content_copy,
                     color: Colors.black26,
+                    size: 15,
                   ),
                   rightWidget: Switch(
                     value: MagpieLog.instance.isPageLogOn,
@@ -118,13 +125,15 @@ class _LogOperationState extends State<MagpieLogOperation> {
       {Widget leftWidget,
       String content,
       Widget rightWidget,
-      GestureTapCallback onTap}) {
+      GestureTapCallback onTap,
+      marginBottom}) {
     return GestureDetector(
         onTap: onTap,
         child: Container(
             height: 50,
             color: Colors.white,
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+            margin: EdgeInsets.fromLTRB(
+                0, 0, 0, marginBottom != null ? marginBottom : 0.5),
             padding: EdgeInsets.fromLTRB(15, 0, 10, 0),
             child: Row(
               children: <Widget>[
@@ -132,7 +141,8 @@ class _LogOperationState extends State<MagpieLogOperation> {
                     ? leftWidget
                     : Icon(
                         Icons.settings,
-                        color: Colors.black26,
+                        color: Colors.black38,
+                        size: 15,
                       ),
                 Container(width: 5),
                 Expanded(
@@ -141,7 +151,10 @@ class _LogOperationState extends State<MagpieLogOperation> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
                       Container(
-                        child: Text(title),
+                        child: Text(
+                          title,
+                          style: TextStyle(fontSize: 14),
+                        ),
                       )
                     ])),
                 rightWidget != null

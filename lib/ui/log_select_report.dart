@@ -12,8 +12,6 @@ class MagpieSelectReport extends StatefulWidget {
 }
 
 class _SelectReport extends State<MagpieSelectReport> {
-  // int _totalNum, _minNum, _secsNum;
-
   TextEditingController _totalCon = TextEditingController(),
       _minCon = TextEditingController(),
       _secsCon = TextEditingController();
@@ -21,87 +19,59 @@ class _SelectReport extends State<MagpieSelectReport> {
   @override
   void initState() {
     super.initState();
-    // _totalCon.addListener(() {
-    //   int value = int.parse(_totalCon.text);
-    //   if (value <= 0) {
-    //     Fluttertoast.showToast(msg: '参数必须设置大于0');
-    //     _totalCon.clear();
-    //     return;
-    //   }
-    //   _totalNum = value;
-    // });
-
-    // _minCon.addListener(() {
-    //   int value = int.parse(_minCon.text);
-    //   if (value <= 0) {
-    //     Fluttertoast.showToast(msg: '参数必须设置大于0');
-    //     _minCon.clear();
-    //     return;
-    //   }
-    //   if (value < 60) {
-    //     Fluttertoast.showToast(msg: 'secs必须设置为60');
-    //     _minCon.clear();
-    //   } else {
-    //     _minNum = value;
-    //   }
-    // });
-
-    // _secsCon.addListener(() {
-    //   int value = int.parse(_secsCon.text);
-    //   if (value <= 0) {
-    //     Fluttertoast.showToast(msg: '参数必须设置大于0');
-    //     _secsCon.clear();
-    //     return;
-    //   }
-    //   _secsNum = value;
-    // });
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           title: Text('修改数据上报方式'),
         ),
         body: SingleChildScrollView(
           child: Container(
-              margin: EdgeInsets.all(15),
+              color: Color(0xFFf6f7fb),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Padding(
-                      padding: EdgeInsets.fromLTRB(20, 10, 20, 25),
+                  Container(
+                      width: MediaQuery.of(context).size.width,
+                      color: Colors.white,
+                      padding: EdgeInsets.fromLTRB(15, 25, 15, 25),
                       child: Text(
-                        '修改后请记得及时保存，否则它只有在内存中存活的机会……',
+                        '修改后请记得及时保存，否则它只有在内存中存活的机会',
+                        textAlign: TextAlign.start,
                         style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
+                          color: Colors.deepOrange,
+                          fontSize: 14,
+                        ),
                       )),
-                  Align(
-                    alignment: Alignment.topLeft,
+                  Container(
+                    padding: EdgeInsets.fromLTRB(15, 20, 15, 7),
                     child: Text(
                       '选择数据上报通道：',
                       textAlign: TextAlign.left,
-                      style: TextStyle(color: Colors.black, fontSize: 16),
+                      style: TextStyle(color: Colors.black, fontSize: 14),
                     ),
                   ),
                   Container(
-                      margin: EdgeInsets.fromLTRB(5, 5, 5, 15),
+                      padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
+                      color: Colors.white,
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           RadioListTile(
                             value: 0,
                             groupValue: _channelType,
-                            activeColor: Colors.orangeAccent,
+                            activeColor: Colors.deepOrange,
                             title: Text(
                               'Flutter channel',
                               textAlign: TextAlign.left,
                               style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
+                                fontSize: 14,
+                              ),
                             ),
                             subtitle: Text(
                               '通过Flutter端上报圈选统计数据',
@@ -114,15 +84,20 @@ class _SelectReport extends State<MagpieSelectReport> {
                               _changeChannel(value);
                             },
                           ),
+                          Container(
+                              color: Color(0xFFf6f7fb),
+                              height: 1,
+                              width: MediaQuery.of(context).size.width),
                           RadioListTile(
                             value: 1,
                             groupValue: _channelType,
-                            activeColor: Colors.orangeAccent,
+                            activeColor: Colors.deepOrange,
                             title: Text(
                               'Native channel',
                               textAlign: TextAlign.left,
                               style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
+                                fontSize: 14,
+                              ),
                             ),
                             subtitle: Text(
                               '通过Native message Channel上报圈选统计数据',
@@ -137,28 +112,30 @@ class _SelectReport extends State<MagpieSelectReport> {
                           ),
                         ],
                       )),
-                  Align(
-                    alignment: Alignment.topLeft,
+                  Container(
+                    padding: EdgeInsets.fromLTRB(15, 20, 15, 7),
                     child: Text(
                       '选择数据上报方式：',
                       textAlign: TextAlign.left,
-                      style: TextStyle(color: Colors.black, fontSize: 16),
+                      style: TextStyle(color: Colors.black, fontSize: 14),
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.all(5),
+                    padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
+                    color: Colors.white,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         RadioListTile(
                           value: 0,
                           groupValue: _methodType,
-                          activeColor: Colors.orangeAccent,
+                          activeColor: Colors.deepOrange,
                           title: Text(
                             '每条上报',
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold),
+                              fontSize: 14,
+                            ),
                           ),
                           subtitle: Text(
                             '每次圈选数据触发后立刻上报',
@@ -171,15 +148,20 @@ class _SelectReport extends State<MagpieSelectReport> {
                             _changeMethod(value);
                           },
                         ),
+                        Container(
+                            color: Color(0xFFf6f7fb),
+                            height: 1,
+                            width: MediaQuery.of(context).size.width),
                         RadioListTile(
                           value: 1,
                           groupValue: _methodType,
-                          activeColor: Colors.orangeAccent,
+                          activeColor: Colors.deepOrange,
                           title: Text(
                             '定时上报',
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold),
+                              fontSize: 14,
+                            ),
                           ),
                           subtitle: Text(
                               '设置定时周期，定时上报周期内统计的圈选数据。默认定时周期：2 * 60 * 1000ms',
@@ -191,16 +173,20 @@ class _SelectReport extends State<MagpieSelectReport> {
                             _changeMethod(value);
                           },
                         ),
-                        // _buildTimeWidget(),
+                        Container(
+                            color: Color(0xFFf6f7fb),
+                            height: 1,
+                            width: MediaQuery.of(context).size.width),
                         RadioListTile(
                           value: 2,
                           groupValue: _methodType,
-                          activeColor: Colors.orangeAccent,
+                          activeColor: Colors.deepOrange,
                           title: Text(
                             '计数上报',
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold),
+                              fontSize: 14,
+                            ),
                           ),
                           subtitle: Text('设置统计数量阈值，达到阈值后自动上报圈选数据',
                               textAlign: TextAlign.left,
