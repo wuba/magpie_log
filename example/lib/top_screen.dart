@@ -174,7 +174,7 @@ Widget manuallyDemo(context) {
       context,
       "手动埋点展示",
       Container(
-        margin: EdgeInsets.all(30),
+        margin: EdgeInsets.all(15),
         child: MaterialButton(
           color: Colors.deepOrange,
           child:
@@ -193,7 +193,7 @@ Widget pageDemo(BuildContext context) {
         context,
         "页面级曝光统计",
         Container(
-          margin: EdgeInsets.all(30),
+          margin: EdgeInsets.all(15),
           child: MaterialButton(
             color: Colors.deepOrange,
             child:
