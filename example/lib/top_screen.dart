@@ -64,10 +64,10 @@ const List<Choice> choices = const <Choice>[
 ];
 
 Widget demo(context, title, demoView, {description}) {
-  return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+  return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
     Padding(
         padding: EdgeInsets.fromLTRB(15, 25, 15, 20),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Text(
             "\n" + title,
             style: TextStyle(fontSize: 18, color: Colors.black),
@@ -108,18 +108,26 @@ Widget reduxDemo(context) {
                 );
               },
             ),
-            StoreConnector<AppState, VoidCallback>(
-              converter: (store) {
-                return () => store.dispatch(LogAction(actionAddCount));
-              },
-              builder: (context, callback) {
-                return MaterialButton(
-                  color: Colors.deepOrange,
-                  child: Text("数字+1",
-                      style: TextStyle(fontSize: 15, color: Colors.white)),
-                  onPressed: callback,
-                );
-              },
+            Container(
+              margin: EdgeInsets.all(15),
+              child: StoreConnector<AppState, VoidCallback>(
+                converter: (store) {
+                  return () => store.dispatch(LogAction(actionAddCount));
+                },
+                builder: (context, callback) {
+                  return MaterialButton(
+                    child: Text("数字+1",
+                        style:
+                            TextStyle(fontSize: 15, color: Colors.deepOrange)),
+                    onPressed: callback,
+                    color: Colors.white,
+                    shape: Border.all(
+                        color: Colors.deepOrange,
+                        width: 2,
+                        style: BorderStyle.solid),
+                  );
+                },
+              ),
             ),
           ])),
       description: "原理：拦截redux分发action事件,插入中间件，进行统一埋点");
@@ -176,9 +184,11 @@ Widget manuallyDemo(context) {
       Container(
         margin: EdgeInsets.all(15),
         child: MaterialButton(
-          color: Colors.deepOrange,
-          child:
-              Text('手动埋点', style: TextStyle(fontSize: 15, color: Colors.white)),
+          color: Colors.white,
+          shape: Border.all(
+              color: Colors.deepOrange, width: 2, style: BorderStyle.solid),
+          child: Text('手动埋点',
+              style: TextStyle(fontSize: 15, color: Colors.deepOrange)),
           onPressed: () {
             // 手动埋点数据示例
             MagpieStatisticsHandler.instance.writeData({'data': '手动埋点数据示例'});
@@ -188,21 +198,21 @@ Widget manuallyDemo(context) {
 }
 
 Widget pageDemo(BuildContext context) {
-  return
-    demo(
-        context,
-        "页面级曝光统计",
-        Container(
+  return demo(
+      context,
+      "页面级曝光统计",
+      Container(
           margin: EdgeInsets.all(15),
           child: MaterialButton(
-            color: Colors.deepOrange,
-            child:
-            Text("跳转", style: TextStyle(fontSize: 15, color: Colors.white)),
+            color: Colors.white,
+            shape: Border.all(
+                color: Colors.deepOrange, width: 2, style: BorderStyle.solid),
+            child: Text("跳转",
+                style: TextStyle(fontSize: 15, color: Colors.deepOrange)),
             onPressed: () {
               Navigator.pushNamed(context, '/UnderScreen');
             },
-          )
-        ),
+          )),
       description: "原理：通过过NavigatorObserver监听页面push事件，现push页面后 默认0.5秒跳转圈选部分");
 }
 
@@ -231,16 +241,24 @@ class AddTextState extends WidgetLogState<AddTextWidget> {
           count.toString(),
           style: TextStyle(fontSize: 30, color: Colors.red),
         ),
-        MaterialButton(
-          color: Colors.deepOrange,
-          child:
-              Text("数字+1", style: TextStyle(fontSize: 15, color: Colors.white)),
-          onPressed: () {
-            setState(() {
-              count++;
-            });
-          },
-        )
+        Container(
+          margin: EdgeInsets.all(15),
+          child: MaterialButton(
+            color: Colors.white,
+            shape: Border.all(
+              color: Colors.deepOrange,
+              width: 2,
+              style: BorderStyle.solid,
+            ),
+            child: Text("数字+1",
+                style: TextStyle(fontSize: 15, color: Colors.deepOrange)),
+            onPressed: () {
+              setState(() {
+                count++;
+              });
+            },
+          ),
+        ),
       ],
     );
   }

@@ -27,6 +27,15 @@ class _SelectReport extends State<MagpieSelectReport> {
         appBar: AppBar(
           centerTitle: true,
           title: Text('修改数据上报方式'),
+          leading: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                  icon: Icon(Icons.arrow_back_ios),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  });
+            },
+          ),
         ),
         body: SingleChildScrollView(
           child: Container(

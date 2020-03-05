@@ -195,7 +195,7 @@ class _LogScreenState extends State<LogScreen>
                   Navigator.pop(context);
                 },
                 child: Icon(
-                  Icons.keyboard_arrow_left,
+                  Icons.arrow_back_ios,
                   color: Colors.black,
                 )),
             Container(width: 50),

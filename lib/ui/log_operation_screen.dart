@@ -25,7 +25,18 @@ class _LogOperationState extends State<MagpieLogOperation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text('圈选配置')),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text('圈选配置'),
+        leading: Builder(builder: (BuildContext context) {
+          return IconButton(
+            icon: Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          );
+        }),
+      ),
       body: Container(
           color: Color(0xFFf6f7fb),
           child: ListView(
@@ -95,8 +106,8 @@ class _LogOperationState extends State<MagpieLogOperation> {
                             !MagpieLog.instance.isDebug;
                       });
                     },
-                    activeTrackColor: Colors.orange,
-                    activeColor: Colors.deepOrange,
+                    activeTrackColor: Colors.deepOrange,
+                    activeColor: Colors.white,
                   )),
               listItem("打开页面圈选",
                   content: "是否打开页面展示圈选 \n开启跳转0.5秒后打开圈选页面",
@@ -113,8 +124,8 @@ class _LogOperationState extends State<MagpieLogOperation> {
                             !MagpieLog.instance.isPageLogOn;
                       });
                     },
-                    activeTrackColor: Colors.orange,
-                    activeColor: Colors.deepOrange,
+                    activeTrackColor: Colors.deepOrange,
+                    activeColor: Colors.white,
                   )),
             ],
           )),

@@ -14,6 +14,13 @@ class _ActionListState extends State<MagpieActionList> {
         appBar: AppBar(
           title: Text('圈选配置列表（侧滑删除）'),
           centerTitle: true,
+          leading: Builder(builder: (BuildContext context) {
+            return IconButton(
+                icon: Icon(Icons.arrow_back_ios),
+                onPressed: () {
+                  Navigator.pop(context);
+                });
+          }),
         ),
         body: Container(
           color: Color(0xFFf6f7fb),
