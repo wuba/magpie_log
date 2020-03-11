@@ -1,3 +1,5 @@
+A visualized dynamic programme for log collection based on flutter.
+
 # Pub使用
 ### 1. Depend on it
 Add this to your package's pubspec.yaml 
