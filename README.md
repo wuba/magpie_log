@@ -92,8 +92,6 @@ class AddTextState extends WidgetLogState<AddTextWidget> {
   }
 }
 ```
-# 详细文档参见
-[magpie圈选埋点实现](http://ishare.58corp.com/#/articleDetail?id=6879)
 
 # 待完善
 1.服务端配合，动态化配置的上传和加载
