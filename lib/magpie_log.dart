@@ -5,7 +5,7 @@ import 'handler/statistics_handler.dart';
 import 'model/analysis_model.dart';
 
 //const bool isDebug = const bool.fromEnvironment("dart.vm.product");
-const bool globalIsDebug = true;
+const bool globalIsDebug = !const bool.fromEnvironment("dart.vm.product");
 const bool globalIsPageLogOn = true;
 const String globalClientId = "com.wuba.flutter.magpie_log";
 
@@ -42,9 +42,10 @@ class MagpieLog {
     if (!_isInit) {
       logContext = context;
       MagpieDataAnalysis.initMagpieData(context); //初始化圈选数据
-      MagpieStatisticsHandler.instance.initConfig(
-          ReportMethod.timing, ReportChannel.natives,
-          callback: callback, time: 1 * 60 * 1000, count: 3);
+      MagpieStatisticsHandler.instance.initConfig(reportMethod, reportChannel,
+          callback: callback,
+          time: time != null ? time : 1 * 60 * 1000,
+          count: count != null ? count : 3);
       _isInit = true;
     }
   }

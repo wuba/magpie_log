@@ -100,7 +100,7 @@ class AddTextState extends WidgetLogState<AddTextWidget> {
 
 3.store 参数为空 级联圈参null不全问题
 
-#致谢
+# 致谢
 
 1.感谢PonnamKarthik的[fluttertoast](https://github.com/PonnamKarthik/FlutterToast)插件
 
