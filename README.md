@@ -105,3 +105,18 @@ class AddTextState extends WidgetLogState<AddTextWidget> {
 1.感谢PonnamKarthik的[fluttertoast](https://github.com/PonnamKarthik/FlutterToast)插件
 
 2.感谢Rubber的[rubber](https://github.com/rubber/rubber)插件
+
+
+# Mapie系列链接
+
+Mapie包含了一系列的开源项目，访问对应仓库以便了解更多。
+
+> Magpie Workflow
+Flutter可视化工作流。 [https://github.com/wuba/magpie_workflow](https://github.com/wuba/magpie_workflow)
+
+> Magpie Native&Dart SDK
+与Workflow配套，用于接入App，Flutter的SDK。[https://github.com/wuba/magpie](https://github.com/wuba/magpie)
+
+> Magpie Fly 
+所见即所得的Flutter UI组件库。[https://github.com/wuba/magpie_fly][https://github.com/wuba/magpie_fly]
+
