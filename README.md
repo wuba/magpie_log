@@ -118,5 +118,5 @@ Flutter可视化工作流。 [https://github.com/wuba/magpie_workflow](https://g
 与Workflow配套，用于接入App，Flutter的SDK。[https://github.com/wuba/magpie](https://github.com/wuba/magpie)
 
 > Magpie Fly 
-所见即所得的Flutter UI组件库。[https://github.com/wuba/magpie_fly][https://github.com/wuba/magpie_fly]
+所见即所得的Flutter UI组件库。[https://github.com/wuba/magpie_fly](https://github.com/wuba/magpie_fly)
 
