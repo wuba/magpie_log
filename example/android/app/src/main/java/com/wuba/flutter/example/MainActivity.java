@@ -1,31 +1,30 @@
 package com.wuba.flutter.example;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
 
-import io.flutter.app.FlutterActivity;
-import io.flutter.plugins.GeneratedPluginRegistrant;
-import io.flutter.plugins.wuba.magpielog.MagpieLogListener;
-import io.flutter.plugins.wuba.magpielog.MagpieLogPlugin;
+import java.util.HashMap;
+import java.util.Map;
 
-public class MainActivity extends FlutterActivity implements MagpieLogListener {
+public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GeneratedPluginRegistrant.registerWith(this);
+        setContentView(R.layout.activity_main);
+        Map params = new HashMap();
+        params.put("test1", "v_test1");
+        params.put("test2", "v_test2");
 
-        MagpieLogPlugin.getInstance().registerLogListener(this::magpieDataListener);
+        findViewById(R.id.tv_flutter_boost).setOnClickListener(v ->
+                PageRouter.openPageByUrl(MainActivity.this, PageRouter.FLUTTER_TOP_SCREEN, params));
 
-    }
+        findViewById(R.id.tv_flutter_boost_2).setOnClickListener(v ->
+                PageRouter.openPageByUrl(MainActivity.this, PageRouter.FLUTTER_UNDER_SCREEN, params));
 
-    /**
-     * 接收Flutter端圈选上报数据
-     */
-    @Override
-    public void magpieDataListener(String jsonData) {
-        Toast.makeText(getApplicationContext(),"Native端收到了上报数据：" + jsonData,Toast.LENGTH_LONG).show();
-        Log.d("basicMessageChannel","Native端收到了上报数据：" + jsonData);
+        findViewById(R.id.tv_normal).setOnClickListener(v ->
+                startActivity(new Intent(MainActivity.this, NormalActivity.class)));
+
     }
 }

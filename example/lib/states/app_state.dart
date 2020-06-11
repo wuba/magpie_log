@@ -10,6 +10,7 @@ class CountState {
   final int count;
   final String param1;
   final int param2;
+  int param3;
 
   CountState(this.count, {this.param1, this.param2});
 
@@ -21,7 +22,7 @@ class CountState {
       _$CountStateFromJson(json);
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class AppState extends LogState {
   final CountState countState;
   final List<ListItem> listState;

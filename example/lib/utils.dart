@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:magpie_log/handler/statistics_handler.dart';
 import 'package:magpie_log/magpie_log.dart';
 import 'package:magpie_log/model/analysis_model.dart';
 
@@ -24,7 +23,7 @@ class MagpieExampleUtils {
   }
 
   void init(BuildContext context) {
-    MagpieLog.instance.init(context, ReportMethod.timing, ReportChannel.natives,
+    MagpieLog.instance.init(context, ReportMethod.timing, ReportChannel.flutter,
         callback: _receiverMagpieData, time: 1 * 60 * 1000, count: 3);
   }
 

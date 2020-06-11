@@ -1,4 +1,3 @@
-import 'package:example/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:magpie_log/handler/statistics_handler.dart';
@@ -18,7 +17,6 @@ class _TopScreenState extends State<TopScreen> {
 
   @override
   Widget build(BuildContext context) {
-    MagpieExampleUtils().init(context);
     return DefaultTabController(
       length: choices.length,
       child: Scaffold(

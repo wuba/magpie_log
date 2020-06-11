@@ -15,12 +15,15 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
     Map<String, dynamic> json = logState.toJson();
     print("MyMiddleWare call:${json.toString()}");
     String actionName =
-        action is LogAction ? action.actionName : action.toString();
+    action is LogAction ? action.actionName : action.toString();
     String pagePath = MagpieLog.instance.getCurrentPath();
     if (MagpieLog.instance.isDebug) {
-      Navigator.push(
-          MagpieLog.instance.logContext,
-          PageRouteBuilder(
+      try {
+        Future.delayed(Duration.zero, () {
+          MagpieLog.instance
+              .getCurrentRoute()
+              .navigator
+              .push(PageRouteBuilder(
               opaque: false,
               settings: RouteSettings(name: MagpieConstants.logScreen),
               pageBuilder: (context, animation, secondaryAnimation) =>
@@ -32,6 +35,10 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
                       pagePath: pagePath,
                       actionName: actionName,
                       next: next)));
+        });
+      } catch (e) {
+        print(e.toString());
+      }
     } else {
       MagpieLogUtil.runTimeLog(actionName, pagePath, json,
           type: reduxType, index: action is LogAction ? action.index : 0);
@@ -68,7 +75,9 @@ class LogStoreConnector<S, ViewModel> extends StoreConnector<S, ViewModel> {
 
   @override
   Widget build(BuildContext context) {
-    LogState logState = StoreProvider.of<S>(context).state as LogState;
+    LogState logState = StoreProvider
+        .of<S>(context)
+        .state as LogState;
     var width = 0.0;
     if (logState.logStatus == 1) {
       width = 2.0;

@@ -29,17 +29,16 @@ class LogScreen extends StatefulWidget {
   final Function func;
   final WidgetLogState state;
 
-  const LogScreen(
-      {Key key,
-      @required this.data,
-      @required this.logType,
-      @required this.actionName,
-      this.store,
-      this.pagePath,
-      this.action,
-      this.next,
-      this.func,
-      this.state})
+  const LogScreen({Key key,
+    @required this.data,
+    @required this.logType,
+    @required this.actionName,
+    this.store,
+    this.pagePath,
+    this.action,
+    this.next,
+    this.func,
+    this.state})
       : super(key: key);
 
   @override
@@ -96,7 +95,7 @@ class _LogScreenState extends State<LogScreen>
 
     //初始化已有埋点数据
     MagpieDataAnalysis.readActionData(
-            actionName: widget.actionName, pagePath: widget.pagePath)
+        actionName: widget.actionName, pagePath: widget.pagePath)
         .then((logModel) {
       Map map;
       if (null != logModel) {
@@ -127,7 +126,7 @@ class _LogScreenState extends State<LogScreen>
             initParam(v, logConfig == null ? null : logConfig[k], paramList2);
       } else if (v is List && v != null && v.length > 0) {
         isPaneled = initParam(
-            v[0],
+            v[0] is Map ? v[0] : null,
             logConfig == null || logConfig[k] == null ? null : logConfig[k],
             paramList2);
       } else {
@@ -139,7 +138,7 @@ class _LogScreenState extends State<LogScreen>
       paramList.add(ParamItem(k, v.toString(),
           paramItems: paramList2, isChecked: isChecked, isPaneled: isPaneled));
     });
-    //自己施展开的或者父View是展开的都要返回true
+    //自己是展开的或者父View是展开的都要返回true
     return isPaneled || isParentPaneled;
   }
 
@@ -169,13 +168,13 @@ class _LogScreenState extends State<LogScreen>
         body: Column(children: <Widget>[
           Expanded(
               child: RubberBottomSheet(
-            header: _getHeader(),
-            headerHeight: 50,
-            scrollController: _scrollController,
-            lowerLayer: _getLowerLayer(),
-            upperLayer: _getUpperLayer(),
-            animationController: _controller,
-          )),
+                header: _getHeader(),
+                headerHeight: 50,
+                scrollController: _scrollController,
+                lowerLayer: _getLowerLayer(),
+                upperLayer: _getUpperLayer(),
+                animationController: _controller,
+              )),
           Container(height: 0.5, color: Color(0xFFf6f7fb)),
           buttons(),
         ]));
@@ -185,57 +184,59 @@ class _LogScreenState extends State<LogScreen>
   Widget _getHeader() {
     return Container(
         child: Stack(children: <Widget>[
-      Container(
-          color: Colors.white,
-          padding: EdgeInsets.fromLTRB(15, 0, 10, 0),
-          margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-          child: Row(children: <Widget>[
-            GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.black,
-                )),
-            Container(width: 50),
-            Expanded(
-              child: Container(),
-            ),
-            GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      settings:
+          Container(
+              color: Colors.white,
+              padding: EdgeInsets.fromLTRB(15, 0, 10, 0),
+              margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              child: Row(children: <Widget>[
+                GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.black,
+                    )),
+                Container(width: 50),
+                Expanded(
+                  child: Container(),
+                ),
+                GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          settings:
                           RouteSettings(name: MagpieConstants.operationScreen),
-                      builder: (BuildContext context) {
-                        return MagpieLogOperation();
-                      }));
-                },
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
-                  child: Text('圈选配置',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 16,
-                      )),
-                )),
-            GestureDetector(
-                onTap: () {
-                  isExpanded ? _controller.collapse() : _controller.expand();
-                },
-                child: Row(children: <Widget>[
-                  Text(isExpanded ? "收起" : "展开",
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 16,
-                      )),
-                  Icon(
-                    isExpanded ? Icons.arrow_drop_down : Icons.arrow_drop_up,
-                    color: Colors.black,
-                  )
-                ])),
-          ])),
-    ]));
+                          builder: (BuildContext context) {
+                            return MagpieLogOperation();
+                          }));
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 15, 0),
+                      child: Text('圈选配置',
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 16,
+                          )),
+                    )),
+                GestureDetector(
+                    onTap: () {
+                      isExpanded ? _controller.collapse() : _controller
+                          .expand();
+                    },
+                    child: Row(children: <Widget>[
+                      Text(isExpanded ? "收起" : "展开",
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 16,
+                          )),
+                      Icon(
+                        isExpanded ? Icons.arrow_drop_down : Icons
+                            .arrow_drop_up,
+                        color: Colors.black,
+                      )
+                    ])),
+              ])),
+        ]));
   }
 
   ///抽屉背景
@@ -270,7 +271,10 @@ class _LogScreenState extends State<LogScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             getButtonItem(
-                "跳过", MediaQuery.of(context).size.width / 4, Colors.white, () {
+                "跳过", MediaQuery
+                .of(context)
+                .size
+                .width / 4, Colors.white, () {
               switch (widget.logType) {
                 case pageType:
                   break;
@@ -284,7 +288,10 @@ class _LogScreenState extends State<LogScreen>
               Navigator.pop(context);
             }, textColor: Colors.deepOrange),
             getButtonItem(
-                "保存", MediaQuery.of(context).size.width / 4, Colors.white, () {
+                "保存", MediaQuery
+                .of(context)
+                .size
+                .width / 4, Colors.white, () {
               MagpieDataAnalysis.saveData().then((data) async {
                 MagpieDataAnalysis.getSavePath().then((path) {
                   Fluttertoast.showToast(
@@ -294,7 +301,10 @@ class _LogScreenState extends State<LogScreen>
             }, textColor: Colors.deepOrange),
             getButtonItem(
                 isModify ? "埋点" : "修改",
-                MediaQuery.of(context).size.width / 2,
+                MediaQuery
+                    .of(context)
+                    .size
+                    .width / 2,
                 isModify ? Colors.deepOrange : Colors.deepOrange, () {
               if (isModify) {
                 if (widget.logType == stateType) {
@@ -309,11 +319,11 @@ class _LogScreenState extends State<LogScreen>
                 String type = widget.logType;
 
                 MagpieDataAnalysis.writeData(AnalysisModel(
-                        actionName: widget.actionName,
-                        pagePath: widget.pagePath,
-                        analysisData: log,
-                        description: description,
-                        type: type))
+                    actionName: widget.actionName,
+                    pagePath: widget.pagePath,
+                    analysisData: log,
+                    description: description,
+                    type: type))
                     .then((value) {
                   Fluttertoast.showToast(msg: "埋点添加成功\n请及时保存！");
 
@@ -382,7 +392,7 @@ class _LogScreenState extends State<LogScreen>
                     ),
                     decoration: InputDecoration(
                         hintStyle:
-                            TextStyle(fontSize: 14, color: Color(0xFF999999)),
+                        TextStyle(fontSize: 14, color: Color(0xFF999999)),
                         hintText: '如：列表页点击'),
                   )),
             ],
@@ -402,7 +412,10 @@ class _LogScreenState extends State<LogScreen>
   Widget getBasicTitle(title) {
     return Container(
       padding: EdgeInsets.fromLTRB(15, 5, 5, 5),
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       color: Color(0xFFF6F7FB),
       child: Text(
         title,
@@ -424,7 +437,7 @@ class _LogScreenState extends State<LogScreen>
               ),
             ),
             Text(
-              value,
+              value ?? "",
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.black,
@@ -517,13 +530,13 @@ class _LogScreenState extends State<LogScreen>
   Widget getCheckBox(ParamItem paramItem) {
     return isModify
         ? Checkbox(
-            value: paramItem.isChecked,
-            onChanged: (bool) {
-              setState(() {
-                paramItem.isChecked = bool;
-              });
-            },
-          )
+      value: paramItem.isChecked,
+      onChanged: (bool) {
+        setState(() {
+          paramItem.isChecked = bool;
+        });
+      },
+    )
         : Container();
   }
 

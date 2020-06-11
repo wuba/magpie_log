@@ -9,6 +9,8 @@ const bool globalIsDebug = !const bool.fromEnvironment("dart.vm.product");
 const bool globalIsPageLogOn = true;
 const String globalClientId = "com.wuba.flutter.magpie_log";
 
+typedef PageNameCallback = String Function(Route route);
+
 class MagpieLog {
   // 工厂模式
   factory MagpieLog() => _getInstance();
@@ -20,11 +22,11 @@ class MagpieLog {
     // 初始化
   }
 
-  BuildContext logContext;
-
   bool isDebug = globalIsDebug;
   bool isPageLogOn = globalIsPageLogOn;
   List<Route<dynamic>> routeStack = List();
+
+  PageNameCallback pageNameCallback;
 
   static bool _isInit = false;
 
@@ -37,10 +39,15 @@ class MagpieLog {
 
   init(BuildContext context, ReportMethod reportMethod,
       ReportChannel reportChannel,
-      {int time, int count, AnalysisCallback callback}) {
+      {int time,
+      int count,
+      AnalysisCallback callback,
+      PageNameCallback pageNameCallback}) {
     // 暂时还没有更好的办法来处理某些只需要初始化一次的函数
+
+    this.pageNameCallback = pageNameCallback;
+
     if (!_isInit) {
-      logContext = context;
       MagpieDataAnalysis.initMagpieData(context); //初始化圈选数据
       MagpieStatisticsHandler.instance.initConfig(reportMethod, reportChannel,
           callback: callback,
@@ -51,9 +58,18 @@ class MagpieLog {
   }
 
   String getCurrentPath() {
+    if (pageNameCallback != null) {
+      return pageNameCallback(getCurrentRoute());
+    }
+
     return getCurrentRoute() != null
         ? getCurrentRoute().settings.name
         : "not define";
+  }
+
+  BuildContext getCurrentContext() {
+    Route route = getCurrentRoute();
+    return route.navigator.context;
   }
 
   Route getCurrentRoute() {

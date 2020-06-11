@@ -39,6 +39,7 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
@@ -47,10 +48,24 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
         }
+        debug {
+            minifyEnabled false
+            useProguard false
+        }
     }
     packagingOptions {
         exclude 'META-INF/proguard/androidx-annotations.pro'
     }
+
+//    splits {
+//        abi {
+//            enable true
+//            reset()
+//            universalApk false
+//            include 'arm64-v8a'//'armeabi'//'armeabi-v7a', 'arm64-v8a', 'x86_64'
+//        }
+//    }
+
 }
 
 flutter {
@@ -58,6 +73,7 @@ flutter {
 }
 
 dependencies {
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

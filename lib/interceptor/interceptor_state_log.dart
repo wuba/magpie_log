@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:magpie_log/file/log_util.dart';
+import 'package:magpie_log/magpie_constants.dart';
 import 'package:magpie_log/magpie_log.dart';
 import 'package:magpie_log/ui/log_screen.dart';
-
-import '../magpie_constants.dart';
 
 abstract class WidgetLogState<T extends StatefulWidget> extends State {
   String getActionName();
@@ -34,20 +33,17 @@ abstract class WidgetLogState<T extends StatefulWidget> extends State {
     var actionName = getActionName();
     String pagePath = MagpieLog.instance.getCurrentPath();
     if (MagpieLog.instance.isDebug) {
-      Navigator.push(
-          MagpieLog.instance.logContext,
-          PageRouteBuilder(
-              opaque: false,
-              settings: RouteSettings(name: MagpieConstants.logScreen),
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  LogScreen(
-                    data: json,
-                    logType: stateType,
-                    pagePath: pagePath,
-                    actionName: actionName,
-                    func: fn,
-                    state: this,
-                  )));
+      MagpieLog.instance.getCurrentRoute().navigator.push(PageRouteBuilder(
+          opaque: false,
+          settings: RouteSettings(name: MagpieConstants.logScreen),
+          pageBuilder: (context, animation, secondaryAnimation) => LogScreen(
+                data: json,
+                logType: stateType,
+                pagePath: pagePath,
+                actionName: actionName,
+                func: fn,
+                state: this,
+              )));
     } else {
       MagpieLogUtil.runTimeLog(actionName, pagePath, json,
           type: stateType, index: getIndex());
