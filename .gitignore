@@ -40,3 +40,6 @@ pubspec.lock
 stash
 
 example/android/.idea
+example/build/
+android/build/
+example/android/.gradle
