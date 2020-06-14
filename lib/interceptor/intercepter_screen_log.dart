@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:magpie_log/file/log_util.dart';
 import 'package:magpie_log/magpie_constants.dart';
 import 'package:magpie_log/magpie_log.dart';
+import 'package:magpie_log/ui/log_float_view.dart';
 import 'package:magpie_log/ui/log_screen.dart';
 
 /// 1.LogObserver是页面跳转监听，拦截页面入栈用于统计页面曝光
@@ -23,27 +24,28 @@ class LogObserver<S> extends NavigatorObserver {
     await Future.delayed(Duration(milliseconds: 500)); //可以去掉
     try {
       LogState logState =
-      StoreProvider
-          .of<S>(route.navigator.context)
-          .state as LogState;
+          StoreProvider.of<S>(route.navigator.context).state as LogState;
       var json = logState.toJson();
 
       String actionName =
-      MagpieLog.instance.getCurrentPath(); //TODO：考虑actionName可以自定义
+          MagpieLog.instance.getCurrentPath(); //TODO：考虑actionName可以自定义
       String pagePath = MagpieLog.instance.getCurrentPath();
 
       if (MagpieLog.instance.isDebug && MagpieLog.instance.isPageLogOn) {
+        FloatEntry.singleton.showOverlayEntry();
         Future.delayed(Duration.zero, () {
           try {
-            route.navigator.push(PageRouteBuilder(
-                opaque: false,
-                settings: RouteSettings(name: MagpieConstants.logScreen),
-                pageBuilder: (context, animation, secondaryAnimation) =>
-                    LogScreen(
-                        pagePath: pagePath,
-                        actionName: actionName,
-                        data: logState.toJson(),
-                        logType: pageType)));
+            MagpieLog.instance.addToActionList(
+                actionName,
+                PageRouteBuilder(
+                    opaque: false,
+                    settings: RouteSettings(name: MagpieConstants.logScreen),
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        LogScreen(
+                            pagePath: pagePath,
+                            actionName: actionName,
+                            data: logState.toJson(),
+                            logType: pageType)));
           } catch (e) {
             print(e.toString());
           }

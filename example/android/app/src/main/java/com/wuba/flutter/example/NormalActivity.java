@@ -29,7 +29,7 @@ public class NormalActivity extends FlutterActivity implements MagpieLogListener
      */
     @Override
     public void magpieDataListener(String jsonData) {
-        Toast.makeText(getApplicationContext(),"Native端收到了上报数据：" + jsonData,Toast.LENGTH_LONG).show();
-        Log.d("basicMessageChannel","Native端收到了上报数据：" + jsonData);
+        Toast.makeText(getApplicationContext(), "Native端收到了上报数据：" + jsonData, Toast.LENGTH_LONG).show();
+        Log.d("basicMessageChannel", "Native端收到了上报数据：" + jsonData);
     }
 }

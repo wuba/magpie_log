@@ -1,4 +1,7 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
+import 'package:magpie_log/ui/log_float_view.dart';
 
 import 'file/data_analysis.dart';
 import 'handler/statistics_handler.dart';
@@ -76,6 +79,19 @@ class MagpieLog {
     return MagpieLog.instance.routeStack.length > 0
         ? routeStack[MagpieLog.instance.routeStack.length - 1]
         : null;
+  }
+
+  ///actionListMap
+  ///事件列表
+  LinkedHashMap actionListMap = LinkedHashMap();
+
+  addToActionList(String key, Route route) {
+    actionListMap[key] = route;
+    FloatEntry.singleton.refresh();
+  }
+
+  removeFromActionList(String key) {
+    actionListMap.remove(key);
   }
 }
 

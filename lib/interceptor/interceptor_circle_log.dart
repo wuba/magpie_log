@@ -15,35 +15,33 @@ class CircleMiddleWare extends MiddlewareClass<LogState> {
     Map<String, dynamic> json = logState.toJson();
     print("MyMiddleWare call:${json.toString()}");
     String actionName =
-    action is LogAction ? action.actionName : action.toString();
+    action is LogAction ? action.actionName : action.toString().replaceAll(
+        "Instance of ", "").replaceAll("'", "");
     String pagePath = MagpieLog.instance.getCurrentPath();
     if (MagpieLog.instance.isDebug) {
       try {
-        Future.delayed(Duration.zero, () {
-          MagpieLog.instance
-              .getCurrentRoute()
-              .navigator
-              .push(PageRouteBuilder(
-              opaque: false,
-              settings: RouteSettings(name: MagpieConstants.logScreen),
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  LogScreen(
-                      data: json,
-                      logType: reduxType,
-                      store: store,
-                      action: action,
-                      pagePath: pagePath,
-                      actionName: actionName,
-                      next: next)));
-        });
+        MagpieLog.instance.addToActionList(
+            actionName + "|" + pagePath,
+            PageRouteBuilder(
+                opaque: false,
+                settings: RouteSettings(name: MagpieConstants.logScreen),
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    LogScreen(
+                        data: json,
+                        logType: reduxType,
+                        store: store,
+                        action: action,
+                        pagePath: pagePath,
+                        actionName: actionName,
+                        next: next)));
       } catch (e) {
         print(e.toString());
       }
     } else {
       MagpieLogUtil.runTimeLog(actionName, pagePath, json,
           type: reduxType, index: action is LogAction ? action.index : 0);
-      next(action);
     }
+    next(action);
   }
 }
 
